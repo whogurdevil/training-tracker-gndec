@@ -5,6 +5,7 @@ import Login from './Components/Authentication/Login';
 import Verify from './Components/Authentication/Verify';
 import ForgotPassword from './Components/Authentication/Forgotpassword';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Navbar from './Components/Navbar/Navbar';
 
 // import './App.css';
 
@@ -13,6 +14,8 @@ class App extends Component {
     return (
       <div className="App">
         <BrowserRouter>
+        <Navbar />
+
           <Routes>
             {/* Redirect to the dashboard if user is authenticated */}
             <Route path="/" element={<Navigate to="/dashboard" />} />
