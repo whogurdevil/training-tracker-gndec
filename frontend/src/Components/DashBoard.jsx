@@ -8,10 +8,10 @@ import FileBase from 'react-file-base64';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ChipInput from 'material-ui-chip-input';
-
 import Box from '@mui/material/Box';
-
 import axios from 'axios';
+import Grid from '@mui/material/Grid'; // Import Grid component
+import Navbar from './Navbar/Navbar';
 
 export default function Form() {
   const [formData, setFormData] = useState({
@@ -21,7 +21,7 @@ export default function Form() {
     contact: '',
     experience: '',
     education: '',
-    skills: '',
+    skills: [],
     location: '',
     resume: null
   });
@@ -69,127 +69,165 @@ export default function Form() {
   };
 
   return (
-    <Container>
-      <Typography
-        variant="h5"
-        color='textSecondary'
-        component='h2'
-        align='center'
-        justify='center'
-        fontWeight='bold'
-        margin={5}
-        gutterBottom
-      >
-        Please fill in your information below.
-      </Typography>
-      <ToastContainer />
-      <form onSubmit={handleSubmit}>
-        {/* Personal Details */}
-        <Typography variant="h6" gutterBottom>
-          Personal Details
-        </Typography>
-        <TextField
-          label="First Name"
-          variant="outlined"
-          fullWidth
-          required
-          name="firstName"
-          value={formData.firstName}
-          onChange={handleChange}
-        />
-        <TextField
-          label="Last Name"
-          variant="outlined"
-          fullWidth
-          required
-          name="lastName"
-          value={formData.lastName}
-          onChange={handleChange}
-        />
-        <TextField
-          label="Email"
-          variant="outlined"
-          fullWidth
-          required
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-        />
-        <TextField
-          label="Contact"
-          variant="outlined"
-          fullWidth
-          required
-          name="contact"
-          value={formData.contact}
-          onChange={handleChange}
-        />
-        <TextField
-          label="Experience"
-          variant="outlined"
-          fullWidth
-          required
-          name="experience"
-          value={formData.experience}
-          onChange={handleChange}
-        />
-        <TextField
-          label="Education"
-          variant="outlined"
-          fullWidth
-          required
-          name="education"
-          value={formData.education}
-          onChange={handleChange}
-        />
-        <Box marginTop={3}>
-          <Typography variant="h6" gutterBottom>
-            Skills
-          </Typography>
-          <ChipInput
-            label="Skills"
-            variant="outlined"
-            helperText="Press enter to add skills"
-            value={formData.skills}
-            onAdd={(chip) => handleSkillsChange([...formData.skills, chip])}
-            onDelete={(chip, index) => {
-              const updatedSkills = formData.skills.filter((_, i) => i !== index);
-              handleSkillsChange(updatedSkills);
-            }}
-            fullWidth
-          />
-        </Box>
-        <TextField
-          label="Location"
-          variant="outlined"
-          fullWidth
-          required
-          name="location"
-          value={formData.location}
-          onChange={handleChange}
-        />
-
-        {/* Upload Resume */}
-        <Typography variant="h6" gutterBottom>
-          Upload Resume
-        </Typography>
-        <FileBase
-          type="file"
-          multiple={false}
-          onDone={handleFileChange}
-        />
-
-        {/* Submit Button */}
-        <Button
-          type="submit"
-          color='primary'
-          variant="contained"
+    <>
+      <Navbar/>
+      <Container style={{ paddingBottom: '20vh' }}>
+        <Typography
+          variant="h5"
+          color='textSecondary'
+          component='h2'
+          align='center'
           justify='center'
-          endIcon={<KeyboardArrowRightIcon />}
+          fontWeight='bold'
+          margin={5}
+          gutterBottom
         >
-          Submit
-        </Button>
-      </form>
-    </Container>
+          Please fill in your information below.
+        </Typography>
+        <ToastContainer />
+        <form onSubmit={handleSubmit}>
+          {/* Personal Details */}
+          <Typography variant="h6" gutterBottom textAlign={'left'}>
+            Personal Details
+          </Typography>
+          <Grid container spacing={2}> {/* Add Grid container with spacing */}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="First Name"
+                variant="outlined"
+                fullWidth
+                required
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Last Name"
+                variant="outlined"
+                fullWidth
+                required
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Email"
+                variant="outlined"
+                fullWidth
+                required
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Contact"
+                variant="outlined"
+                fullWidth
+                required
+                name="contact"
+                value={formData.contact}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Experience"
+                variant="outlined"
+                fullWidth
+                required
+                name="experience"
+                value={formData.experience}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Education"
+                variant="outlined"
+                fullWidth
+                required
+                name="education"
+                value={formData.education}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12} >
+            <TextField
+                label="Location"
+                variant="outlined"
+                fullWidth
+                required
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+              />
+              </Grid>
+          </Grid>
+
+          <Grid container spacing={2} marginTop={1}>
+            {/* Skills */}
+            <Grid item xs={12}>
+              <Typography variant="h6" gutterBottom textAlign={'left'}>
+                Skills
+              </Typography>
+              <ChipInput
+                // label="Skills"
+                variant="outlined"
+                helperText="Press enter to add skills"
+                value={formData.skills}
+                onAdd={(chip) => handleSkillsChange([...formData.skills, chip])}
+                onDelete={(chip, index) => {
+                  const updatedSkills = formData.skills.filter((_, i) => i !== index);
+                  handleSkillsChange(updatedSkills);
+                }}
+                fullWidth
+              />
+            </Grid>
+            {/* Location */}
+            <Grid item xs={12}>
+              {/* <Typography variant="h6" gutterBottom textAlign={'left'} marginTop={2}>
+                Location
+              </Typography> */}
+
+              <Typography variant="h6" gutterBottom textAlign={'left'} marginTop={2}>
+                Upload Resume
+              </Typography>
+            </Grid>
+
+            <Grid item xs={12} container justifyContent="space-between">
+              {/* Upload Resume */}
+              <Grid item>
+
+                <FileBase
+                  type="file"
+                  multiple={false}
+                  onDone={handleFileChange}
+                />
+              </Grid>
+
+              {/* Submit Button */}
+              <Grid item>
+                <Button
+                  type="submit"
+                  color='primary'
+                  variant="contained"
+                  endIcon={<KeyboardArrowRightIcon />}
+                  size='large'
+                >
+                  Submit
+                </Button>
+              </Grid>
+            </Grid>
+          </Grid>
+
+        </form>
+      </Container>
+    </>
   );
 }

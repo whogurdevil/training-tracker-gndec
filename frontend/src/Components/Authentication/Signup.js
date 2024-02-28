@@ -63,6 +63,10 @@ function Signup() {
       setLoading(false);
     }
   };
+  const handleGenderChange = (e) => {
+    setCredentials({ ...credentials, gender: e.target.value });
+  };
+  
 
   const onChange = (e) => {
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
@@ -73,7 +77,7 @@ function Signup() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
+      <Container component="main" maxWidth="xs" sx={{pb:5}}>
         <CssBaseline />
         <ToastContainer />
         <Box
@@ -146,7 +150,21 @@ function Signup() {
                 sx: { padding: '8px' },
               }}
             />
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth>
+              <InputLabel id="gender-label">Gender</InputLabel>
+              <Select
+                labelId="gender-label"
+                id="gender"
+                value={credentials.gender}
+                label="Gender"
+                onChange={handleGenderChange}
+                sx={{height:80, textAlign:'left', pl:1}}
+              >
+                <MenuItem value="male">Male</MenuItem>
+                <MenuItem value="female">Female</MenuItem>
+              </Select>
+            </FormControl>
+            {/* <FormControl fullWidth margin="normal">
               <InputLabel id="gender-label">Gender</InputLabel>
               <Select
                 labelId="gender-label"
@@ -158,7 +176,7 @@ function Signup() {
                 <MenuItem value="male">Male</MenuItem>
                 <MenuItem value="female">Female</MenuItem>
               </Select>
-            </FormControl>
+            </FormControl> */}
             <FormControlLabel
               control={
                 <Checkbox
