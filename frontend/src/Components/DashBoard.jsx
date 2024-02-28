@@ -1,195 +1,195 @@
-import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
-import { useNavigate } from "react-router-dom";
-import { Drawer, AppBar, Toolbar, Typography, Button, TextField, FormControl, InputLabel, Select, MenuItem, Grid } from "@mui/material";
-import { makeStyles } from '@mui/styles';// Correct import for makeStyles
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import axios from "axios";
+import React, { useState } from 'react';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import TextField from '@mui/material/TextField';
+import FileBase from 'react-file-base64';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import ChipInput from 'material-ui-chip-input';
 
-const useStyles = makeStyles((theme) => ({
-  // drawerPaper: {
-  //   width: 240,
-  // },
-  content: {
-    flexGrow: 1,
-    
-  },
-  formControl: {
-    
-    minWidth: 120,
-  },
-  
-}));
+import Box from '@mui/material/Box';
 
-function DrawerAppBar(props) {
-  const classes = useStyles();
-  const navigate = useNavigate();
-  const [isAdmin, setIsAdmin] = useState(false);
+import axios from 'axios';
+
+export default function Form() {
   const [formData, setFormData] = useState({
-    name: "",
-    location: "",
-    skills: [],
-    contact: "",
-    email: "",
-    experience: "",
-    resume: null,
+    firstName: '',
+    lastName: '',
+    email: '',
+    contact: '',
+    experience: '',
+    education: '',
+    skills: '',
+    location: '',
+    resume: null
   });
 
-  useEffect(() => {
-    const fetchUserDetails = async () => {
-      try {
-        const response = await axios.get("http://localhost:8000/api/users/getuser", {
-          headers: {
-            "auth-token": localStorage.getItem("authtoken"),
-          },
-        });
-        const userData = response.data;
-        if (userData.success) {
-          setIsAdmin(userData.data.role === "admin");
-        } else {
-          console.error("Error fetching user details:", userData.error);
-        }
-      } catch (error) {
-        console.error("Error fetching user details:", error);
-      }
-    };
-
-    fetchUserDetails();
-  }, []);
-
-  const handleFileChange = (event) => {
-    setFormData({ ...formData, resume: event.target.files[0] });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
-  const handleFormSubmit = async (event) => {
-    event.preventDefault();
-    // Implement form submission logic here
-    console.log(formData);
+  const handleSkillsChange = (chips) => {
+    setFormData({ ...formData, skills: chips });
+  };
+
+  const handleFileChange = (files) => {
+    setFormData({ ...formData, resume: files.base64 });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post('http://localhost:8000/userprofiles/', formData);
+      notifySuccess();
+      clearForm();
+    } catch (error) {
+      notifyFailure();
+      console.error('Error submitting data:', error);
+    }
+  };
+
+  const notifySuccess = () => toast.success("Candidate Profile Successfully Uploaded!");
+  const notifyFailure = () => toast.error("Error Occurred During Uploading...");
+
+  const clearForm = () => {
+    setFormData({
+      firstName: '',
+      lastName: '',
+      email: '',
+      contact: '',
+      experience: '',
+      education: '',
+      skills: [],
+      location: '',
+      resume: null
+    });
   };
 
   return (
-    <div>
-      <AppBar position="fixed">
-        <Toolbar>
-          <Typography variant="h6" noWrap>
-            {isAdmin ? "Admin Dashboard" : "Employee Dashboard"}
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <Drawer
-        variant="permanent"
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-        anchor="left"
+    <Container>
+      <Typography
+        variant="h5"
+        color='textSecondary'
+        component='h2'
+        align='center'
+        justify='center'
+        fontWeight='bold'
+        margin={5}
+        gutterBottom
       >
-        <div />
-      </Drawer>
-      <main className={classes.content}>
-        <div className={classes.toolbar} />
-        <Typography paragraph>
-          {/* Form for employee */}
-          {!isAdmin && (
-            <form onSubmit={handleFormSubmit}>
-              <Grid container spacing={3}>
-                <Grid item xs={12}>
-                  <TextField
-                    required
-                    label="Name"
-                    fullWidth
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    required
-                    label="Location"
-                    fullWidth
-                    value={formData.location}
-                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <FormControl fullWidth className={classes.formControl}>
-                    <InputLabel id="skills-label">Skills</InputLabel>
-                    <Select
-                      labelId="skills-label"
-                      multiple
-                      value={formData.skills}
-                      onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
-                      renderValue={(selected) => selected.join(", ")}
-                    >
-                      {/* Render skills options here */}
-                      <MenuItem value="Skill 1">Skill 1</MenuItem>
-                      <MenuItem value="Skill 2">Skill 2</MenuItem>
-                      {/* Add more skills options as needed */}
-                    </Select>
-                  </FormControl>
-                </Grid>
-                {/* Add other form fields (contact, email, experience) similarly */}
-                <Grid item xs={12}>
-                  <TextField
-                    required
-                    label="Contact"
-                    fullWidth
-                    value={formData.contact}
-                    onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    required
-                    label="Email"
-                    fullWidth
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    required
-                    label="Experience"
-                    fullWidth
-                    value={formData.experience}
-                    onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <input
-                    accept="application/pdf"
-                    style={{ display: "none" }}
-                    id="resume-file"
-                    type="file"
-                    onChange={handleFileChange}
-                  />
-                  <label htmlFor="resume-file">
-                    <Button
-                      variant="contained"
-                      component="span"
-                      className={classes.uploadButton}
-                      startIcon={<CloudUploadIcon />}
-                    >
-                      Upload Resume (PDF)
-                    </Button>
-                  </label>
-                </Grid>
-                <Grid item xs={12}>
-                  <Button type="submit" variant="contained" color="primary">
-                    Submit
-                  </Button>
-                </Grid>
-              </Grid>
-            </form>
-          )}
+        Please fill in your information below.
+      </Typography>
+      <ToastContainer />
+      <form onSubmit={handleSubmit}>
+        {/* Personal Details */}
+        <Typography variant="h6" gutterBottom>
+          Personal Details
         </Typography>
-      </main>
-    </div>
+        <TextField
+          label="First Name"
+          variant="outlined"
+          fullWidth
+          required
+          name="firstName"
+          value={formData.firstName}
+          onChange={handleChange}
+        />
+        <TextField
+          label="Last Name"
+          variant="outlined"
+          fullWidth
+          required
+          name="lastName"
+          value={formData.lastName}
+          onChange={handleChange}
+        />
+        <TextField
+          label="Email"
+          variant="outlined"
+          fullWidth
+          required
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+        />
+        <TextField
+          label="Contact"
+          variant="outlined"
+          fullWidth
+          required
+          name="contact"
+          value={formData.contact}
+          onChange={handleChange}
+        />
+        <TextField
+          label="Experience"
+          variant="outlined"
+          fullWidth
+          required
+          name="experience"
+          value={formData.experience}
+          onChange={handleChange}
+        />
+        <TextField
+          label="Education"
+          variant="outlined"
+          fullWidth
+          required
+          name="education"
+          value={formData.education}
+          onChange={handleChange}
+        />
+        <Box marginTop={3}>
+          <Typography variant="h6" gutterBottom>
+            Skills
+          </Typography>
+          <ChipInput
+            label="Skills"
+            variant="outlined"
+            helperText="Press enter to add skills"
+            value={formData.skills}
+            onAdd={(chip) => handleSkillsChange([...formData.skills, chip])}
+            onDelete={(chip, index) => {
+              const updatedSkills = formData.skills.filter((_, i) => i !== index);
+              handleSkillsChange(updatedSkills);
+            }}
+            fullWidth
+          />
+        </Box>
+        <TextField
+          label="Location"
+          variant="outlined"
+          fullWidth
+          required
+          name="location"
+          value={formData.location}
+          onChange={handleChange}
+        />
+
+        {/* Upload Resume */}
+        <Typography variant="h6" gutterBottom>
+          Upload Resume
+        </Typography>
+        <FileBase
+          type="file"
+          multiple={false}
+          onDone={handleFileChange}
+        />
+
+        {/* Submit Button */}
+        <Button
+          type="submit"
+          color='primary'
+          variant="contained"
+          justify='center'
+          endIcon={<KeyboardArrowRightIcon />}
+        >
+          Submit
+        </Button>
+      </form>
+    </Container>
   );
 }
-
-DrawerAppBar.propTypes = {
-  window: PropTypes.func,
-};
-
-export default DrawerAppBar;
