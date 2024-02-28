@@ -5,6 +5,7 @@ import Login from './Components/Authentication/Login';
 import Verify from './Components/Authentication/Verify';
 import ForgotPassword from './Components/Authentication/Forgotpassword';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Admin from "./Components/AdminDashboard/Admin";
 
 // import './App.css';
 
@@ -20,6 +21,7 @@ class App extends Component {
             <Route path="/verify" element={<Verify />} />
             <Route path="/login" element={<Login />} />
             <Route path="/dashboard" element={<ProtectedRoute />} />
+            <Route path="/admin" element={<Admin/>}/>
             <Route path="/forgotpassword" element={<ForgotPassword />} />
           </Routes>
         </BrowserRouter>
@@ -30,6 +32,7 @@ class App extends Component {
 
 const ProtectedRoute = () => {
   const isAuthenticated = localStorage.getItem('authtoken');
+  
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   } else {

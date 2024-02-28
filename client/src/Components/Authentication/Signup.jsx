@@ -48,6 +48,7 @@ function Signup() {
         }),
       });
       const json = await response.json();
+      console.log(json);
       if (json.success) {
         toast('Successfully signed up');
         // ... rest of the code

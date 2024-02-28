@@ -48,11 +48,21 @@ function Login() {
         localStorage.setItem('authtoken', json.authtoken);
         localStorage.setItem('userId', json.body.user.id);
         console.log(json.body.user.id)
+        console.log(json.body.user.role)
+          const role = json.body.user.role
         setLoading(false);
-        setTimeout(() => {
-          // Adjust the routing logic as per your requirements
-          navigate('/')
-        }, 2000);
+        if(role==="admin"){
+          setTimeout(() => {
+            // Adjust the routing logic as per your requirements
+            navigate('/admin')
+          }, 2000);
+        }else{
+          setTimeout(() => {
+            // Adjust the routing logic as per your requirements
+            navigate('/')
+          }, 2000);
+        }
+        
         }
 
 
