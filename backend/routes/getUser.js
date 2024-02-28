@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const userInfo = require('../models/User');
+const userInfo = require('../models/UserInfo');
 const fetchuser = require('../middleware/fetchUser');
 router.use(express.json());
 

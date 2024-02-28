@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const userInfo = require('../../models/User');
+const userInfo = require('../../models/UserInfo');
 const { body, validationResult } = require('express-validator');
 const generateOTP = require('./generateotp');
 router.use(express.json());
