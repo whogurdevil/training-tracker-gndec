@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const userInfo = require('../models/UserInfo');
+const userInfo = require('../models/UserInfo').UserInfo;
 const fetchuser = require('../middleware/fetchUser');
-router.use(express.json());
+const isAdmin = require('../middleware/isAdmin');
 
 router.get('/getuser', fetchuser, async (req, res) => {
   try {
@@ -18,6 +18,18 @@ router.get('/getuser', fetchuser, async (req, res) => {
     catch (error) {
       console.error('Error:', error);
       res.status(500).json({ success: false, message: 'Internal server error occurred' });
+  }
+});
+router.get('/getallusers', fetchuser, isAdmin, async (req, res) => {
+  try {
+    // Fetch all users
+    const users = await userInfo.find({}).select('-password');
+
+    // Return the list of users
+    return res.status(200).json({ success: true, data: users });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ success: false, message: 'Internal server error occurred' });
   }
 });
 

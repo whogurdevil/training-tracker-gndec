@@ -44,6 +44,7 @@ router.post('/signup',
       const hash = bcrypt.hashSync(myPlaintextPassword, salt);
       const { name, email, phone, gender} = req.body;
       // Find the maximum jersey number assigned
+      
       const userDetail = await userInfo.create({
         name: name,
         email: email,
@@ -54,9 +55,11 @@ router.post('/signup',
         userProfile: {}
       });
       await userDetail.save();
+      console.log(userDetail)
+     
       // Instead of returning just progressValue, return the entire userDetail object
     
-      return res.status(201).json({ success: true, token:token });
+      return res.status(201).json({ success: true, message:'successfully signup' });
     } catch (error) {
       res.status(400).json({ success: false, message: error.keyValue });
     }

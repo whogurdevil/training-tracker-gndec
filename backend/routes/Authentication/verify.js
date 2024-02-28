@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const userInfo = require('../../models/UserInfo');
+const userInfo = require('../../models/UserInfo').UserInfo;
 const { body, validationResult } = require('express-validator');
 const generateOTP = require('../password/generateotp');
 
