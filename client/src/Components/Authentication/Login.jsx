@@ -84,83 +84,98 @@ function Login() {
   const theme = createTheme();
 
   return (
-    <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <ToastContainer />
-        <Box
-          sx={{
-            marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign in
-          </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              value={credentials.email}
-              autoComplete="email"
-              onChange={onChange}
-              autoFocus
-              InputProps={{
-                sx: { padding: '8px' }, // Set the padding to 8px
-              }}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              value={credentials.password}
-              type="password"
-              autoComplete="current-password"
-              onChange={onChange}
-              InputProps={{
-                sx: { padding: '8px' }, // Set the padding to 8px
-              }}
-            />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              disabled={loading}
-            >
-              {loading ? 'Signing In...' : 'Sign In'}
-            </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link href="/forgotpassword" variant="body2" style={{ color: '#0015ff' }}>
-                  Forgot password?
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link href="/signup" variant="body2" style={{ color: '#0015ff' }}>
-                  Do not have an account? Sign Up
-                </Link>
-              </Grid>
+    <Container component="main" maxWidth="xs">
+      <CssBaseline />
+      <ToastContainer />
+      <Box
+        sx={{
+          marginTop: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+          <LockOutlinedIcon />
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          Sign in
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email Address"
+            name="email"
+            value={credentials.email}
+            autoComplete="email"
+            onChange={onChange}
+            autoFocus
+            InputProps={{
+              sx: { padding: '8px' }, // Set the padding to 8px
+            }}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            value={credentials.password}
+            type="password"
+            autoComplete="current-password"
+            onChange={onChange}
+            InputProps={{
+              sx: { padding: '8px' }, // Set the padding to 8px
+            }}
+          />
+          <FormControlLabel
+            control={<Checkbox value="remember" color="primary" />}
+            label="Remember me"
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+            disabled={loading}
+          >
+            {loading ? 'Signing In...' : 'Sign In'}
+          </Button>
+          <Grid container>
+            <Grid item xs>
+              <Link
+                href="/forgotpassword"
+                variant="body2"
+                sx={{
+                  color: '#1b29c2',
+                  textDecoration: 'none',
+                  '&:hover': {
+                    color: '#1bb1c2',
+                  }
+                }}
+              >
+                Forgot password?
+              </Link>
+
             </Grid>
-          </Box>
+            <Grid item>
+              <Link href="/signup" variant="body2" sx={{
+                  color: '#1b29c2',
+                  textDecoration: 'none',
+                  '&:hover': {
+                    color: '#1bb1c2',
+                  }
+                }}>
+                Do not have an account? Sign Up
+              </Link>
+            </Grid>
+          </Grid>
         </Box>
-      </Container>
-    </ThemeProvider>
+      </Box>
+    </Container>
   );
 }
 

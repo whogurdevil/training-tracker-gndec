@@ -1,9 +1,58 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App';
+import { ThemeProvider } from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+// Define your custom theme
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#3fb589',
+    },
+    secondary: {
+      main: '#f50057',
+    },
+    success: {
+      main: '#00ff0d',
+    },
+  },
+});
+
+// Main component
+const Main = () => {
+  // Determine if user prefers dark mode
+  const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+  // Create theme based on user preference
+  const darkTheme = createTheme({
+    palette: {
+      mode: prefersDarkMode ? 'dark' : 'light',
+      primary: {
+        main: '#3fb589',
+      },
+      secondary: {
+        main: '#f50057',
+      },
+      success: {
+        main: '#00ff0d',
+      },
+    },
+  });
+
+  return (
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline />
+      <App />
+    </ThemeProvider>
+  );
+};
+
+// Render the main component
+ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <Main />
   </React.StrictMode>,
-)
+  document.getElementById('root')
+);

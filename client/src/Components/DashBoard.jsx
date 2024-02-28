@@ -81,7 +81,6 @@ export default function Form() {
 
   return (
     <>
-      <Navbar/>
       <Container style={{ paddingBottom: '20vh' }}>
         <Typography
           variant="h5"
