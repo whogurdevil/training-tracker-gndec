@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -8,6 +8,7 @@ import FileBase from 'react-file-base64';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ChipInput from 'material-ui-chip-input';
+import { jwtDecode } from "jwt-decode";
 
 import Box from '@mui/material/Box';
 
@@ -15,17 +16,18 @@ import axios from 'axios';
 
 export default function Form() {
   const [formData, setFormData] = useState({
+
     firstName: '',
     lastName: '',
     email: '',
     contact: '',
     experience: '',
     education: '',
-    skills: '',
+    skills: [],
     location: '',
     resume: null
   });
-
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -42,7 +44,14 @@ export default function Form() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:8000/userprofiles/', formData);
+      const token = localStorage.getItem('userId');
+      console.log(token)
+     
+        // Set user ID in formData
+      //  setFormData({ ...formData, userId: token });
+      
+      console.log(formData)
+      await axios.post('http://localhost:8000/userprofiles/', { ...formData, userId: token });
       notifySuccess();
       clearForm();
     } catch (error) {

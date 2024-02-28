@@ -46,6 +46,8 @@ function Login() {
         else {
         toast('Successfully logged in');
         localStorage.setItem('authtoken', json.authtoken);
+        localStorage.setItem('userId', json.body.user.id);
+        console.log(json.body.user.id)
         setLoading(false);
         setTimeout(() => {
           // Adjust the routing logic as per your requirements

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const userInfo = require('../../models/UserInfo');
+const userInfo = require('../../models/UserInfo').UserInfo;
 const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt');
@@ -13,8 +13,8 @@ router.post('/signup',
   body('email').custom((value) => {
     // Check if the email ends with "@gndec.ac.in"
     const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-    if (!emailRegex.test(value) || !value.endsWith('@gmail.com')) {
-      throw new Error('Invalid email format or email must end with @gmail.com');
+    if (!emailRegex.test(value) ) {
+      throw new Error('Invalid email format ');
     }
     return true; // Return true if validation passes
   }),
@@ -42,7 +42,7 @@ router.post('/signup',
       const myPlaintextPassword = req.body.password;
       const salt = bcrypt.genSaltSync(10);
       const hash = bcrypt.hashSync(myPlaintextPassword, salt);
-      const { name, email, phone, gender, progressValue } = req.body;
+      const { name, email, phone, gender} = req.body;
       // Find the maximum jersey number assigned
       const userDetail = await userInfo.create({
         name: name,
@@ -51,10 +51,12 @@ router.post('/signup',
         phone: phone,
         gender: gender,
         isVerified: false,
+        userProfile: {}
       });
       await userDetail.save();
       // Instead of returning just progressValue, return the entire userDetail object
-      return res.status(201).json({ success: true, userDetail });
+    
+      return res.status(201).json({ success: true, token:token });
     } catch (error) {
       res.status(400).json({ success: false, message: error.keyValue });
     }
@@ -63,8 +65,8 @@ router.post('/signup',
 router.post('/login', body('password', 'Password should have a minimum length of 5').isLength({ min: 5 }), body('email').custom((value) => {
   // Check if the email ends with "@gndec.ac.in"
   const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-  if (!emailRegex.test(value) || !value.endsWith('@gmail.com')) {
-    throw new Error('Invalid email format or email must end with @gmail.com');
+  if (!emailRegex.test(value) ) {
+    throw new Error('Invalid email format ');
   }
   return true; // Return true if validation passes
 }), async (req, res) => {
@@ -87,22 +89,25 @@ router.post('/login', body('password', 'Password should have a minimum length of
     if (user.role === 'user') {
       roleSpecificData = {
         id: user.id,
-        role: 'user'
+        role: 'user',
+        email:email
       };
     } else if (user.role === 'admin') {
       roleSpecificData = {
         id: user.id,
-        role: 'admin'
+        role: 'admin',
+        email:email
       };
     }
 
     const data = {
       user: roleSpecificData
+      
     };
 
     if (user.isVerified === true) {
       const authToken = jwt.sign(data, JWT_Token);
-      return res.status(200).json({ success: true, authtoken: authToken });
+      return res.status(200).json({ success: true, authtoken: authToken , body:data });
     } else {
       return res.status(200).json({ success: true, message: "verify" });
     }
