@@ -35,7 +35,7 @@ function Login() {
       const json = await response.json();
       console.log(json)
       if (json.success) {
-        if(json.message === "verify") {
+        if (json.message === "verify") {
           toast('Please verify your account');
           setTimeout(() => {
             // Adjust the routing logic as per your requirements
@@ -55,7 +55,7 @@ function Login() {
         }, 2000);
         }
 
-        
+
       } else {
         toast('🚫 ' + json.message);
         setLoading(false);
