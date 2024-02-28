@@ -16,21 +16,20 @@ const sendOTP = (email, validate) => {
         },
     });
     const resultBody = validate === "Verification" ? `
-    <p>Hello ${frontName}! 👋</p>
-    <p>Welcome to the Khalsa Foundation Resume Portal! 🎉 Verify your account using the OTP provided below:</p>
+    <p>Hello ${frontName}!</p>
+    <p>Welcome to the Training Data Portal! 🎉 Verify your account using the OTP provided below:</p>
     <p><b>🔒 Verification OTP: ${otp} 🔒</b></p>
-    <p>Thank you for choosing Khalsa Foundation. Your journey begins now!</p>
     <p>Best regards,</p>
-    <p>Khalsa Foundation Team 🏅</p>` :
-    `<p>Hello ${frontName}! 👋</p>
-    <p>We received a request to reset your password for your Khalsa Foundation account. Use the OTP provided below to proceed with the reset:</p>
+    <p>Training Co-ordinator Team 🏅</p>` :
+    `<p>Hello ${frontName}! </p>
+    <p>We received a request to reset your password for your Training Data Portal account. Use the OTP provided below to proceed with the reset:</p>
     <p><b>🔒 Reset OTP: ${otp} 🔒</b></p>
     <p>If you didn't request a password reset, please ignore this email. Your account is safe, and no action is required.</p>
     <p>For any assistance, contact [Support Email/Phone]. We're here to help you!</p>
     <p>Best regards,</p>
-    <p>Khalsa Foundation Team 🏅</p>`;
+    <p>Training Co-ordinator Team, GNDEC</p>`;
 
-    const resultSubject = validate === "Verification" ? "🏅 Khalsa Foundation: Verify Your Account 🏅" : "🔑 Password Reset: Khalsa Foundation  🔑"
+    const resultSubject = validate === "Verification" ? "🏅 Training Data Portal: Verify Your Account 🏅" : "🔑 Password Reset: Training Data Portal  🔑"
     const mailOptions = {
         from: process.env.EMAIL,
         to: email,

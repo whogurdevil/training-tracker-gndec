@@ -17,7 +17,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from "react-router-dom";
 
 function Login() {
-  const [credentials, setCredentials] = useState({ email: '', password: '' });
+  const [credentials, setCredentials] = useState({ urn: null, password: '' });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -29,8 +29,10 @@ function Login() {
       const response = await fetch('http://localhost:8000/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: credentials.email, password: credentials.password }),
+        body: JSON.stringify({ urn: credentials.urn, password: credentials.password }),
       });
+      console.log("urn",credentials.urn)
+      console.log("password",credentials.password)
 
       const json = await response.json();
       console.log(json)
@@ -46,22 +48,22 @@ function Login() {
         else {
           toast('Successfully logged in');
           localStorage.setItem('authtoken', json.authtoken);
-          localStorage.setItem('userId', json.body.user.id);
-          console.log(json.body.user.id)
-          console.log(json.body.user.role)
-          const role = json.body.user.role
+          // localStorage.setItem('userId', json.body.user.id);
+          // console.log(json.body.user.id)
+          // // console.log(json.body.user.role)
+          // const role = json.body.user.role
           setLoading(false);
-          if (role === "admin") {
+          // if (role === "admin") {
+          //   setTimeout(() => {
+          //     // Adjust the routing logic as per your requirements
+          //     navigate('/admin')
+          //   }, 2000);
+          // } else {
             setTimeout(() => {
               // Adjust the routing logic as per your requirements
-              navigate('/admin')
-            }, 2000);
-          } else {
-            setTimeout(() => {
-              // Adjust the routing logic as per your requirements
-              navigate('/')
-            }, 2000);
-          }
+              navigate('/dashboard')
+            }, 1000);
+          // }
 
         }
 
@@ -106,11 +108,11 @@ function Login() {
             margin="normal"
             required
             fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            value={credentials.email}
-            autoComplete="email"
+            id="urn"
+            label="Urn"
+            name="urn"
+            value={credentials.urn}
+            autoComplete="urn"
             onChange={onChange}
             autoFocus
             InputProps={{

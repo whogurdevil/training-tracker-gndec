@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const userInfo = require('../../models/UserInfo').UserInfo;
+const signUp = require('../../models/UserInfo').SignUp;
 const { body, validationResult } = require('express-validator');
 const generateOTP = require('../password/generateotp');
 
@@ -8,8 +8,8 @@ router.use(express.json());
 const storedOTPs = {};
 router.post('/sendotp', body('email').custom((value) => {
     // Check if the email ends with "@gmail.com"
-    if (!value.endsWith('@gmail.com')) {
-        throw new Error('Email must end with @gmail.com');
+    if (!value.endsWith('@gndec.ac.in')) {
+        throw new Error('Email must end with @gndec.ac.in');
     }
     return true; // Return true if validation passes
 }), async (req, res) => {
@@ -21,7 +21,7 @@ router.post('/sendotp', body('email').custom((value) => {
     try {
         const { email } = req.body;
         // Check if the user with the provided email exists in your database
-        const user = await userInfo.findOne({ email });
+        const user = await signUp.findOne({ email });
 
         if (!user) {
             return res.status(400).json({ success: false, message: "User with this email does not exist" });
@@ -57,11 +57,11 @@ router.post('/verify', async (req, res) => {
             // OTP is incorrect or not found
             return res.status(400).json({ success: false, message: "Invalid OTP." });
         }
-        const user = await userInfo.findOne({ email });
+        const user = await signUp.findOne({ email });
         if (!user) {
             return res.status(400).json({ success: false, message: "User with this email does not exist" });
         }
-        await userInfo.updateOne(
+        await signUp.updateOne(
             { email: email },
             { $set: { isVerified: true } }
         );// Update the verification status

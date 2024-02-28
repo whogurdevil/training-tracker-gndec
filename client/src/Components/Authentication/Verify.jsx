@@ -84,7 +84,6 @@ navigate('/login')        }, 1000);
   const theme = createTheme();
 
   return (
-    <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <ToastContainer />
@@ -149,7 +148,6 @@ navigate('/login')        }, 1000);
           </Box>
         </Box>
       </Container>
-    </ThemeProvider>
   );
 }
 

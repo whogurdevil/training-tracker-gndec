@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const userInfo = require('../../models/UserInfo').UserInfo;
+const signUp = require('../../models/UserInfo').Signup;
 const { body, validationResult } = require('express-validator');
 const generateOTP = require('./generateotp');
 router.use(express.json());
@@ -22,8 +22,8 @@ setInterval(cleanUpExpiredOTPs, 1800000);
 // Modified /forgotpassword route
 router.post('/forgotpassword', body('email').custom((value) => {
   // Check if the email ends with "@gmail.com"
-  if (!value.endsWith('@gmail.com')) {
-    throw new Error('Email must end with @gmail.com');
+  if (!value.endsWith('@gndec.ac.in')) {
+    throw new Error('Email must end with @gndec.ac.in');
   }
   return true; // Return true if validation passes
 }), async (req, res) => {
@@ -36,7 +36,7 @@ router.post('/forgotpassword', body('email').custom((value) => {
     const { email } = req.body;
     
       // Check if the user with the provided email exists in your database
-      const user = await userInfo.findOne({ email });
+      const user = await signUp.findOne({ email });
       if (!user) {
         return res.status(400).json({ success: false, message: "User with this email does not exist" });
       }
@@ -70,7 +70,7 @@ router.post('/resetpassword', body('password', 'password should have a minimum l
       return res.status(400).json({ success: false, message: "Invalid OTP." });
     }
     // Update the user's password in the database
-    const user = await userInfo.findOne({ email });
+    const user = await signUp.findOne({ email });
     if (!user) {
       return res.status(400).json({ success: false, message: "User with this email does not exist" });
     }

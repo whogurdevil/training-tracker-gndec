@@ -5,8 +5,6 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -14,20 +12,15 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
 import { useNavigate } from 'react-router-dom';
-import MenuItem from '@mui/material/MenuItem';
 
 function Signup() {
   const navigate = useNavigate();
   const [credentials, setCredentials] = useState({
-    name: '',
+    urn: '',
     email: '',
     password: '',
-    phone: '',
-    gender: '',
+    confirmPassword: '',
   });
   const [loading, setLoading] = useState(false);
 
@@ -36,22 +29,37 @@ function Signup() {
     setLoading(true);
 
     try {
+      // Validate inputs
+      if (!/^\d{7}$/.test(credentials.urn)) {
+        toast('🚫 Invalid URN: must be a 7-digit number');
+        setLoading(false);
+        return;
+      }
+      if (!credentials.email.endsWith('@gndec.ac.in')) {
+        toast('🚫 Invalid Email: must end with @gndec.ac.in');
+        setLoading(false);
+        return;
+      }
+      if (credentials.password !== credentials.confirmPassword) {
+        toast('🚫 Passwords do not match');
+        setLoading(false);
+        return;
+      }
+
+      // Post request
       const response = await fetch('http://localhost:8000/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: credentials.name,
+          urn: credentials.urn,
           email: credentials.email,
           password: credentials.password,
-          phone: credentials.phone,
-          gender: credentials.gender,
         }),
       });
       const json = await response.json();
       console.log(json);
       if (json.success) {
         toast('Successfully signed up');
-        // ... rest of the code
         setTimeout(() => {
           navigate('/verify')
         }, 2000);
@@ -64,10 +72,6 @@ function Signup() {
       setLoading(false);
     }
   };
-  const handleGenderChange = (e) => {
-    setCredentials({ ...credentials, gender: e.target.value });
-  };
-  
 
   const onChange = (e) => {
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
@@ -77,8 +81,7 @@ function Signup() {
   const theme = createTheme();
 
   return (
-    <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs" sx={{pb:5}}>
+      <Container component="main" maxWidth="xs" sx={{ pb: 5 }}>
         <CssBaseline />
         <ToastContainer />
         <Box
@@ -100,11 +103,10 @@ function Signup() {
               margin="normal"
               required
               fullWidth
-              id="name"
-              label="Name"
-              name="name"
-              value={credentials.name}
-              // autoComplete="name"
+              id="urn"
+              label="URN"
+              name="urn"
+              value={credentials.urn}
               onChange={onChange}
               autoFocus
               InputProps={{
@@ -119,7 +121,6 @@ function Signup() {
               label="Email Address"
               name="email"
               value={credentials.email}
-              // autoComplete="email"
               onChange={onChange}
               InputProps={{
                 sx: { padding: '8px' },
@@ -133,7 +134,6 @@ function Signup() {
               label="Password"
               value={credentials.password}
               type="password"
-              // autoComplete="current-password"
               onChange={onChange}
               InputProps={{
                 sx: { padding: '8px' },
@@ -143,51 +143,14 @@ function Signup() {
               margin="normal"
               required
               fullWidth
-              name="phone"
-              label="Phone Number"
-              value={credentials.phone}
+              name="confirmPassword"
+              label="Confirm Password"
+              value={credentials.confirmPassword}
+              type="password"
               onChange={onChange}
               InputProps={{
                 sx: { padding: '8px' },
               }}
-            />
-            <FormControl fullWidth>
-              <InputLabel id="gender-label">Gender</InputLabel>
-              <Select
-                labelId="gender-label"
-                id="gender"
-                value={credentials.gender}
-                label="Gender"
-                onChange={handleGenderChange}
-                sx={{height:80, textAlign:'left', pl:1}}
-              >
-                <MenuItem value="male">Male</MenuItem>
-                <MenuItem value="female">Female</MenuItem>
-              </Select>
-            </FormControl>
-            {/* <FormControl fullWidth margin="normal">
-              <InputLabel id="gender-label">Gender</InputLabel>
-              <Select
-                labelId="gender-label"
-                id="gender"
-                name="gender"
-                value={credentials.gender}
-                onChange={onChange}
-              >
-                <MenuItem value="male">Male</MenuItem>
-                <MenuItem value="female">Female</MenuItem>
-              </Select>
-            </FormControl> */}
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="rememberMe"
-                  checked={credentials.rememberMe}
-                  onChange={onChange}
-                  color="primary"
-                />
-              }
-              label="Remember me"
             />
             <Button
               type="submit"
@@ -209,7 +172,6 @@ function Signup() {
           </Box>
         </Box>
       </Container>
-    </ThemeProvider>
   );
 }
 
