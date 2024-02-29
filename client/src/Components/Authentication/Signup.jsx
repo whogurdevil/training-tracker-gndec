@@ -36,7 +36,8 @@ function Signup() {
       case 'urn':
         return /^\d{7}$/.test(value) ? '' : 'Invalid URN: must be a 7-digit number';
       case 'email':
-        return value.endsWith('@gndec.ac.in') ? '' : 'Invalid Email: must end with @gndec.ac.in';
+        // return value.endsWith('@gndec.ac.in') ? '' : 'Invalid Email: must end with @gndec.ac.in';
+        return value.endsWith('@gmail.com') ? '' : 'Invalid Email: must end with @gndec.ac.in';
       case 'password':
         return value.length >= 8 ? '' : 'Password must be at least 8 characters long';
       case 'confirmPassword':

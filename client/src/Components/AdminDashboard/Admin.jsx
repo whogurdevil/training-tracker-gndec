@@ -1,240 +1,110 @@
 import React, { useState, useEffect } from 'react';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import TextField from '@mui/material/TextField';
-import FileBase from 'react-file-base64';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { MuiChipsInput } from 'mui-chips-input'
-
-import Box from '@mui/material/Box';
 import axios from 'axios';
-import Grid from '@mui/material/Grid'; // Import Grid component
-import Navbar from '../Navbar/Navbar';
+import { Card, CardContent, Typography, Button, Modal, Box, Grid } from '@mui/material';
 
-export default function AdminForm() {
-    const [formData, setFormData] = useState({
+const UserCard = ({ user }) => {
+    const [open, setOpen] = useState(false);
+    const [modalContent, setModalContent] = useState(null);
 
-        firstName: '',
-        lastName: '',
-        email: '',
-        contact: '',
-        experience: '',
-        education: '',
-        skills: [],
-        location: '',
-        resume: null
-    });
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+    const handleModalOpen = (content) => {
+        setModalContent(content);
+        setOpen(true);
     };
 
-    // const handleSkillsChange = (chips) => {
-    //   setFormData({ ...formData, skills: chips });
-    // };
-    const handleSkillsChange = (newChips) => {
-        setFormData({ ...formData, skills: newChips });
-    }
-    const handleFileChange = (files) => {
-        setFormData({ ...formData, resume: files.base64 });
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const token = localStorage.getItem('userId');
-            console.log(token)
-
-            // Set user ID in formData
-            //  setFormData({ ...formData, userId: token });
-
-            console.log(formData)
-            await axios.post('http://localhost:8000/userprofiles/', { ...formData, userId: token });
-            notifySuccess();
-            clearForm();
-        } catch (error) {
-            notifyFailure();
-            console.error('Error submitting data:', error);
-        }
-    };
-
-    const notifySuccess = () => toast.success("Candidate Profile Successfully Uploaded!");
-    const notifyFailure = () => toast.error("Error Occurred During Uploading...");
-
-    const clearForm = () => {
-        setFormData({
-            firstName: '',
-            lastName: '',
-            email: '',
-            contact: '',
-            experience: '',
-            education: '',
-            skills: [],
-            location: '',
-            resume: null
-        });
+    const handleModalClose = () => {
+        setOpen(false);
     };
 
     return (
         <>
-            <Navbar />
-            <Container style={{ paddingBottom: '20vh' }}>
-                <Typography
-                    variant="h5"
-                    color='textSecondary'
-                    component='h2'
-                    align='center'
-                    justify='center'
-                    fontWeight='bold'
-                    margin={5}
-                    gutterBottom
-                >
-                    Please fill in your information Admin Saab
-                </Typography>
-                <ToastContainer />
-                <form onSubmit={handleSubmit}>
-                    {/* Personal Details */}
-                    <Typography variant="h6" gutterBottom textAlign={'left'}>
-                        Personal Details
+            <Card variant="outlined" style={{ marginBottom: '50px' }}>
+                <CardContent>
+                    <Typography variant="h5" component="div">
+                        {user.userInfo.Name}
                     </Typography>
-                    <Grid container spacing={2}> {/* Add Grid container with spacing */}
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                label="First Name"
-                                variant="outlined"
-                                fullWidth
-                                required
-                                name="firstName"
-                                value={formData.firstName}
-                                onChange={handleChange}
-                            />
+                    <Typography color="text.secondary">
+                        Branch: {user.userInfo.branch} | URN: {user.urn}
+                    </Typography>
+                    <Grid container spacing={1} style={{ marginTop: '10px' }}>
+                        <Grid item>
+                            <Button variant="contained" onClick={() => handleModalOpen(user.tr101)}>
+                                TR101
+                                {console.log(user.tr101)}
+                            </Button>
                         </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                label="Last Name"
-                                variant="outlined"
-                                fullWidth
-                                required
-                                name="lastName"
-                                value={formData.lastName}
-                                onChange={handleChange}
-                            />
+                        <Grid item>
+                            <Button variant="contained" onClick={() => handleModalOpen(user.tr102)}>
+                                TR102
+                            </Button>
                         </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                label="Email"
-                                variant="outlined"
-                                fullWidth
-                                required
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                            />
+                        <Grid item>
+                            <Button variant="contained" onClick={() => handleModalOpen(user.tr103)}>
+                                TR103
+                            </Button>
                         </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                label="Contact"
-                                variant="outlined"
-                                fullWidth
-                                required
-                                name="contact"
-                                value={formData.contact}
-                                onChange={handleChange}
-                            />
+                        <Grid item>
+                            <Button variant="contained" onClick={() => handleModalOpen(user.tr104)}>
+                                TR104
+                            </Button>
                         </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                label="Experience"
-                                variant="outlined"
-                                fullWidth
-                                required
-                                name="experience"
-                                value={formData.experience}
-                                onChange={handleChange}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                label="Education"
-                                variant="outlined"
-                                fullWidth
-                                required
-                                name="education"
-                                value={formData.education}
-                                onChange={handleChange}
-                            />
-                        </Grid>
-                        <Grid item xs={12} >
-                            <TextField
-                                label="Location"
-                                variant="outlined"
-                                fullWidth
-                                required
-                                name="location"
-                                value={formData.location}
-                                onChange={handleChange}
-                            />
+                        <Grid item>
+                            <Button variant="contained" onClick={() => handleModalOpen(user.placementData)}>
+                                Placement Data
+                            </Button>
                         </Grid>
                     </Grid>
-
-                    <Grid container spacing={2} marginTop={1}>
-                        {/* Skills */}
-                        <Grid item xs={12}>
-                            <Typography variant="h6" gutterBottom textAlign={'left'}>
-                                Skills
+                </CardContent>
+            </Card>
+            <Modal open={open} onClose={handleModalClose}>
+                <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', boxShadow: 24, p: 4 }}>
+                    {modalContent && (
+                        <>
+                            <Typography variant="h6" gutterBottom>
+                                {Object.keys(modalContent).map((key) => (
+                                    <div key={key}>
+                                        <strong>{key}: </strong> {modalContent[key]}
+                                    </div>
+                                ))}
                             </Typography>
-                            <MuiChipsInput
-                                // label="Skills"
-                                variant="outlined"
-                                helperText="Press enter to add skills"
-                                value={formData.skills}
-                                onChange={handleSkillsChange}
-                                fullWidth
-                            />
-                        </Grid>
-                        {/* Location */}
-                        <Grid item xs={12}>
-                            {/* <Typography variant="h6" gutterBottom textAlign={'left'} marginTop={2}>
-                Location
-              </Typography> */}
-
-                            <Typography variant="h6" gutterBottom textAlign={'left'} marginTop={2}>
-                                Upload Resume
-                            </Typography>
-                        </Grid>
-
-                        <Grid item xs={12} container justifyContent="space-between">
-                            {/* Upload Resume */}
-                            <Grid item>
-
-                                <FileBase
-                                    type="file"
-                                    multiple={false}
-                                    onDone={handleFileChange}
-                                />
-                            </Grid>
-
-                            {/* Submit Button */}
-                            <Grid item>
-                                <Button
-                                    type="submit"
-                                    color='primary'
-                                    variant="contained"
-                                    endIcon={<KeyboardArrowRightIcon />}
-                                    size='large'
-                                >
-                                    Submit
-                                </Button>
-                            </Grid>
-                        </Grid>
-                    </Grid>
-
-                </form>
-            </Container>
+                        </>
+                    )}
+                </Box>
+            </Modal>
         </>
     );
-}
+};
+
+const AdminForm = () => {
+    const [users, setUsers] = useState([]);
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const token = localStorage.getItem('authtoken');
+                const response = await axios.get('http://localhost:8000/api/users/getallusers/', {
+                    headers: {
+                        "auth-token" : token // Include the authentication token in the request headers
+                    }
+                });
+                //   console.log(response.data)
+                setUsers(response.data.data);
+              
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        };
+
+        fetchUsers();
+    }, []);
+
+
+    return (
+        <div style={{marginTop:'100px'}}>
+            {users.map((user) => (
+                <UserCard key={user._id} user={user} />
+            ))}
+        </div>
+    );
+};
+
+export default AdminForm;
