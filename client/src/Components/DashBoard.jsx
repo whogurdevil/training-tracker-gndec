@@ -11,6 +11,7 @@ import { useLocation } from 'react-router-dom';
 import MenuItem from '@mui/material/MenuItem'; // Import MenuItem for dropdown options
 // import CustomizedTimeline from './Home/Timeline';
 
+
 export default function Form() {
   const [formData, setFormData] = useState({
     Name: '',
@@ -23,6 +24,8 @@ export default function Form() {
   });
   const location = useLocation();
   const urn = location.state && location.state.urn;
+  console.log(urn)
+
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
