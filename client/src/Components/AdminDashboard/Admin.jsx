@@ -87,7 +87,8 @@ const AdminForm = () => {
                     }
                 });
                 //   console.log(response.data)
-                setUsers(response.data.data);
+                const filteredUsers = response.data.data.filter(user => user.role === 'user');
+                setUsers(filteredUsers);
               
             } catch (error) {
                 console.error('Error fetching users:', error);
@@ -100,6 +101,7 @@ const AdminForm = () => {
 
     return (
         <div style={{marginTop:'100px'}}>
+        {console.log(users)}
             {users.map((user) => (
                 <UserCard key={user._id} user={user} />
             ))}

@@ -12,7 +12,7 @@ import MenuItem from '@mui/material/MenuItem'; // Import MenuItem for dropdown o
 
 export default function Form() {
   const [formData, setFormData] = useState({
-    technology: '',
+    technology: [],
     projectName: '', // corrected typo here
     type: ''
   });
@@ -23,7 +23,12 @@ export default function Form() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    // If it's the technology field, handle as an array
+    if (name === 'technology') {
+      setFormData({ ...formData, [name]: e.target.value });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
     // Clear errors when input changes
     setErrors({ ...errors, [name]: '' });
   };
@@ -38,7 +43,7 @@ export default function Form() {
     try {
       // Form validation
       const formErrors = {};
-      if (!formData.technology.trim()) {
+      if (formData.technology.length === 0) {
         formErrors.technology = 'Technology cannot be blank';
       }
       if (!formData.projectName.trim()) {
@@ -58,12 +63,12 @@ export default function Form() {
 
       // Submit form data
       const response = await axios.post('http://localhost:8000/tr101', { formData, urn });
-      console.log(response);
+ 
       if (response.data.success) {
         toast.success('Form submitted successfully!');
         // Clear form data after successful submission
         setFormData({
-          technology: '',
+          technology: [],
           projectName: '',
           type: ''
         });
@@ -86,6 +91,7 @@ export default function Form() {
       <form onSubmit={handleSubmit}>
         {/* Technology */}
         <TextField
+          select
           label="Technology"
           variant="outlined"
           fullWidth
@@ -93,10 +99,17 @@ export default function Form() {
           name="technology"
           value={formData.technology}
           onChange={handleChange}
+          SelectProps={{ multiple: true }}
           error={!!errors.technology}
           helperText={errors.technology}
           style={{ marginBottom: '1rem' }}
-        />
+        >
+          {/* Dropdown options */}
+          <MenuItem value="React">React</MenuItem>
+          <MenuItem value="Node.js">Node.js</MenuItem>
+          <MenuItem value="Python">Python</MenuItem>
+          {/* Add more options as needed */}
+        </TextField>
         {/* Certificate */}
         <div style={{ border: '1px solid grey', padding: '1rem', marginBottom: '1rem' }}>
           <Typography variant="subtitle1" gutterBottom>
