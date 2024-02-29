@@ -10,6 +10,7 @@ router.post('/', async (req, res) => {
         console.log("name", Name)
        
         const urn = req.body.urn
+        console.log(urn)
         const userInfo = await SignUpdata.findOne({ urn: urn });
 
         if (!userInfo) {

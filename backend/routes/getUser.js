@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const userInfo = require('../models/UserInfo').UserInfo;
+const userInfo = require('../models/UserInfo').SignUp;
 const fetchuser = require('../middleware/fetchUser');
 const isAdmin = require('../middleware/isAdmin');
 
