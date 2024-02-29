@@ -12,6 +12,7 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import CircularProgress from '@mui/material/CircularProgress'; // Import CircularProgress
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useLocation } from 'react-router-dom';
 
@@ -26,12 +27,11 @@ function Verify() {
   if (email) {
     credentials.email = email
   }
+  
   const handleGetOTP = async () => {
     setLoading(true);
 
-
     try {
-     
       const response = await fetch('http://localhost:8000/api/validate/sendotp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -66,14 +66,15 @@ function Verify() {
       });
 
       const json = await response.json();
-        console.log(json)
+
       if (json.success) {
         toast('Successfully logged in');
         setLoading(false);
 
         setTimeout(() => {
           // Adjust the routing logic as per your requirements
-navigate('/login')        }, 1000);
+          navigate('/login');
+        }, 1000);
       } else {
         toast('🚫 ' + json.message);
         setLoading(false);
@@ -88,75 +89,75 @@ navigate('/login')        }, 1000);
   const onChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
-const redirectToMail = () => {
-  window.open('https://mail.gndec.ac.in/', '_blank');
-};
 
+  const redirectToMail = () => {
+    window.open('https://mail.gndec.ac.in/', '_blank');
+  };
 
   const theme = createTheme();
 
   return (
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <ToastContainer />
-        <Box
-          sx={{
-            marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign in
-          </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+    <Container component="main" maxWidth="xs">
+      <CssBaseline />
+      <ToastContainer />
+      <Box
+        sx={{
+          marginTop: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+          <LockOutlinedIcon />
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          Sign in
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email Address"
+            name="email"
+            value={credentials.email}
+            autoComplete="email"
+            onChange={onChange}
+            autoFocus
+            InputProps={{
+              sx: { padding: '8px' },
+            }}
+          />
+          {showOTPField && (
             <TextField
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              value={credentials.email}
-              autoComplete="email"
+              name="otp"
+              label="OTP"
+              value={credentials.otp}
+              type="otp"
               onChange={onChange}
-              autoFocus
               InputProps={{
                 sx: { padding: '8px' },
               }}
             />
-            {showOTPField && (
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="otp"
-                label="OTP"
-                value={credentials.otp}
-                type="otp"
-                onChange={onChange}
-                InputProps={{
-                  sx: { padding: '8px' },
-                }}
-              />
-            )}
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
-            <Button
-              onClick={showOTPField ? handleSubmit : handleGetOTP}
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              disabled={loading}
-            >
-              {loading ? 'Processing...' : showOTPField ? 'Verify' : 'Get OTP'}
-            </Button>
+          )}
+          <FormControlLabel
+            control={<Checkbox value="remember" color="primary" />}
+            label="Remember me"
+          />
+          <Button
+            onClick={showOTPField ? handleSubmit : handleGetOTP}
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+            disabled={loading}
+          >
+            {loading ? <CircularProgress size={24} color="primary" /> : showOTPField ? 'Verify' : 'Get OTP'}
+          </Button>
           <Button
             onClick={redirectToMail}
             fullWidth
@@ -164,11 +165,11 @@ const redirectToMail = () => {
             sx={{ mt: 3, mb: 2 }}
             disabled={loading}
           >
-            Go to Mail.Gndec.ac.in
+            {loading ? <CircularProgress size={24} color="primary" /> : 'Go to Mail.Gndec.ac.in'}
           </Button>
-          </Box>
         </Box>
-      </Container>
+      </Box>
+    </Container>
   );
 }
 
