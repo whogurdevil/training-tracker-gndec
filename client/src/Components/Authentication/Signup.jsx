@@ -61,7 +61,9 @@ function Signup() {
       if (json.success) {
         toast('Successfully signed up');
         setTimeout(() => {
-          navigate('/verify')
+          console.log(credentials.email)
+          navigate('/verify',{state:{email:credentials.email}})
+
         }, 2000);
       } else {
         toast('🚫 Invalid Credentials');

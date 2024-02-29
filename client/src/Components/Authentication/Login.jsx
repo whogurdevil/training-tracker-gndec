@@ -61,7 +61,7 @@ function Login() {
           // } else {
             setTimeout(() => {
               // Adjust the routing logic as per your requirements
-              navigate('/dashboard')
+              navigate('/dashboard',{state:{urn : credentials.urn}})
             }, 1000);
           // }
 

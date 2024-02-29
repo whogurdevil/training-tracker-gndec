@@ -1,34 +1,29 @@
 const express = require('express');
-const UserInfo = require('../../models/UserInfo').UserInfo;
+const Tr101 = require('../../models/UserInfo').Tr101;
 const SignUpdata = require('../../models/UserInfo').SignUp;
 const router = express.Router();
 
 // Route to create a new user profile
 router.post('/', async (req, res) => {
     try {
-        const { Name, contact, crn, branch, batch, gender, admissionType } = req.body.formData;
-        console.log("name", Name)
+        const { urn, technology, projectName, type,certificate } = req.body;
        
-        const urn = req.body.urn
         const userInfo = await SignUpdata.findOne({ urn: urn });
-
+        
         if (!userInfo) {
             return res.status(404).json({ message: 'UserInfo not found' });
         }
 
         // Create a new user profile object
-        const newsignup = new UserInfo({
-            Name,
-            contact,
-            crn,
-            branch,
-            batch,
-            gender,
-            admissionType
+        const TR101 = new Tr101({
+           technology,
+           projectName,
+           type,
+           certificate
         });
-       
-        userInfo.userInfo = newsignup;
-    
+
+        userInfo.tr101 = TR101;
+
         const savedUserInfo = await userInfo.save();
         console.log(savedUserInfo);
 

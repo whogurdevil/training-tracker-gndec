@@ -66,6 +66,5 @@ const Tr104 = mongoose.model('Tr104', tr104Schema);
 const PlacementData = mongoose.model('PlacementData', placementDataSchema);
 const SignUp = mongoose.model('Signup', SignupSchema);
 
-
-module.exports={SignUp}
+module.exports={SignUp,UserInfo,Tr101,Tr102,Tr103,Tr104,PlacementData}
 
