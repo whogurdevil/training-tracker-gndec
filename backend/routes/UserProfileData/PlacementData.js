@@ -1,15 +1,13 @@
 const express = require('express');
-const UserInfo = require('../../models/UserInfo').UserInfo;
+const placementData = require('../../models/UserInfo').PlacementData;
 const SignUpdata = require('../../models/UserInfo').SignUp;
 const router = express.Router();
 
 // Route to create a new user profile
 router.post('/', async (req, res) => {
     try {
-        const { Name, contact, crn, branch, batch, gender, admissionType } = req.body.formData;
-        console.log("name", Name)
-       
-        const urn = req.body.urn
+        const { urn, company, appointmentDate, appointmentLetter, package } = req.body;
+
         const userInfo = await SignUpdata.findOne({ urn: urn });
 
         if (!userInfo) {
@@ -17,18 +15,15 @@ router.post('/', async (req, res) => {
         }
 
         // Create a new user profile object
-        const newsignup = new UserInfo({
-            Name,
-            contact,
-            crn,
-            branch,
-            batch,
-            gender,
-            admissionType
+        const PlacementData = new placementData({
+            company,
+            appointmentDate,
+            appointmentLetter,
+            package
         });
-       
-        userInfo.userInfo = newsignup;
-    
+
+        userInfo.placementData = PlacementData;
+
         const savedUserInfo = await userInfo.save();
         console.log(savedUserInfo);
 

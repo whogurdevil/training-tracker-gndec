@@ -13,17 +13,25 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useLocation } from 'react-router-dom';
 
 function Verify() {
   const navigate = useNavigate();
   const [credentials, setCredentials] = useState({ email: '', otp: '' });
   const [loading, setLoading] = useState(false);
   const [showOTPField, setShowOTPField] = useState(false);
-
+  const location = useLocation();
+  const email = location.state && location.state.email;
+  
+  if (email) {
+    credentials.email = email
+  }
   const handleGetOTP = async () => {
     setLoading(true);
 
+
     try {
+     
       const response = await fetch('http://localhost:8000/api/validate/sendotp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -80,6 +88,10 @@ navigate('/login')        }, 1000);
   const onChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
+const redirectToMail = () => {
+  window.open('https://mail.gndec.ac.in/', '_blank');
+};
+
 
   const theme = createTheme();
 
@@ -145,6 +157,15 @@ navigate('/login')        }, 1000);
             >
               {loading ? 'Processing...' : showOTPField ? 'Verify' : 'Get OTP'}
             </Button>
+          <Button
+            onClick={redirectToMail}
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+            disabled={loading}
+          >
+            Go to Mail.Gndec.ac.in
+          </Button>
           </Box>
         </Box>
       </Container>
