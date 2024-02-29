@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Signup from './Components/Authentication/Signup';
 import DashBoard from './Components/DashBoard';
+import Home from './Components/Home'
 import Login from './Components/Authentication/Login';
 import Verify from './Components/Authentication/Verify';
 import ForgotPassword from './Components/Authentication/Forgotpassword';
@@ -15,16 +16,17 @@ class App extends Component {
     return (
       <div className="App">
         <BrowserRouter>
-        <Navbar />
+          <Navbar />
 
           <Routes>
             {/* Redirect to the dashboard if user is authenticated */}
-            <Route path="/" element={<Navigate to="/dashboard" />} />
+            <Route path="/" element={<Navigate to="/home" />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/verify" element={<Verify />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/dashboard" element={<ProtectedRoute />} />
-            <Route path="/admin" element={<Admin/>}/>
+            <Route path="/home" element={<ProtectedRoute />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/dashboard" element={<DashBoard />} />
             <Route path="/forgotpassword" element={<ForgotPassword />} />
           </Routes>
         </BrowserRouter>
@@ -35,11 +37,11 @@ class App extends Component {
 
 const ProtectedRoute = () => {
   const isAuthenticated = localStorage.getItem('authtoken');
-  
+
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   } else {
-    return <DashBoard />;
+    return <Home />;
   }
 };
 
