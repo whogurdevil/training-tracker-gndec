@@ -10,6 +10,10 @@ import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import MenuItem from '@mui/material/MenuItem'; // Import MenuItem for dropdown options
 // import CustomizedTimeline from './Home/Timeline';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';  
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+
 
 
 export default function Form() {
@@ -27,7 +31,7 @@ export default function Form() {
   console.log(urn)
 
   const [errors, setErrors] = useState({});
-
+  // const [endDate, setEndDate] = useState(null);
   const handleChange = (e) => {
     const { name, value } = e.target;
     // Automatically format batch input
@@ -101,6 +105,23 @@ export default function Form() {
       toast.error('An error occurred while submitting the form.');
     }
   };
+  const handleBatchChange = (newDate) => {
+    console.log(newDate);
+    if (newDate) {
+      // Extract the year from the newDate object
+      const year = newDate.$y;
+      console.log(year);
+      // Update the form data with the new year
+      // let convDate = {...newDate};
+      // convDate.$y = newDate.$y + 4;
+      // console.log(convDate.$y);
+      // setEndDate(newDate);
+      setFormData({ ...formData, batch: `${year}-${year + 4}` });
+    } else {
+      // If newDate is null or undefined, clear the batch value
+      setFormData({ ...formData, batch: '' });
+    }
+  };
 
   return (
     <Container sx={{paddingTop:10}}>
@@ -171,7 +192,25 @@ export default function Form() {
           <MenuItem value="CE">Civil Engineering</MenuItem>
         </TextField>
         {/* Batch */}
-        <TextField
+        <LocalizationProvider dateAdapter={AdapterDayjs} >
+          <DatePicker
+            label="Start Year"
+            views={['year']}
+            renderInput={(params) => <TextField {...params} helperText="Enter starting year only" />}
+            onChange={handleBatchChange}
+          />
+        </LocalizationProvider>
+        
+        {/* <LocalizationProvider dateAdapter={AdapterDayjs} >
+          <DatePicker
+            disabled
+            label="End Year"
+            views={['year']}
+            renderInput={(params) => <TextField {...params} helperText="Ending year" />}
+            value={endDate}
+          />
+        </LocalizationProvider> */}
+        {/* <TextField
           label="Batch"
           variant="outlined"
           fullWidth
@@ -182,7 +221,7 @@ export default function Form() {
           error={!!errors.batch}
           helperText={errors.batch}
           sx={{ mb: 2 }} // Add vertical spacing
-        />
+        /> */}
         {/* Gender */}
         <TextField
           select // Use select for dropdown
