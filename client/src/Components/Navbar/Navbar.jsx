@@ -21,7 +21,7 @@ function Navbar() {
 
   return (
     <Box sx={{ flexGrow: 1 }} margin={0}>
-      <AppBar position="static">
+      <AppBar position="fixed">
         <Toolbar>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Welcome!
