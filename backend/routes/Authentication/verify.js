@@ -8,7 +8,8 @@ router.use(express.json());
 const storedOTPs = {};
 router.post('/sendotp', body('email').custom((value) => {
     // Check if the email ends with "@gmail.com"
-    if (!value.endsWith('@gndec.ac.in')) {
+    // if (!value.endsWith('@gndec.ac.in')) {
+        if (!value.endsWith('@gmail.com')) {
         throw new Error('Email must end with @gndec.ac.in');
     }
     return true; // Return true if validation passes
@@ -20,6 +21,7 @@ router.post('/sendotp', body('email').custom((value) => {
     }
     try {
         const { email } = req.body;
+        
         // Check if the user with the provided email exists in your database
         const user = await signUp.findOne({ email });
 
@@ -53,6 +55,7 @@ router.post('/verify', async (req, res) => {
         const { otp } = req.body;
         const email = Object.keys(storedOTPs).find((key) => storedOTPs[key] === otp);
         const storedOTP = storedOTPs[email];
+       
         if (!storedOTP || storedOTP !== otp) {
             // OTP is incorrect or not found
             return res.status(400).json({ success: false, message: "Invalid OTP." });

@@ -6,7 +6,7 @@ const userInfoSchema = new mongoose.Schema({
     type: String,
     match: /^[0-9]{10}$/ // Regex for 10-digit numeric contact number
   },
-  crn: { type: Number, unique: true, match: /^[0-9]{7}$/ },
+  crn: { type: Number},
   branch: { type: String, default: 'Computer Science & Enginnering' },
   gender: { type: String },
   batch: { type: String },
@@ -49,6 +49,10 @@ const SignupSchema = new mongoose.Schema({
   urn: { type: Number, required: true, unique: true, match: /^[0-9]{7}$/ },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  role:{
+    type: String,
+    default:'user'
+  },
   isVerified: { type: Boolean, default: false },
   userInfo: { type: userInfoSchema },
   tr101: { type: tr101Schema },

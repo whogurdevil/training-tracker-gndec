@@ -13,7 +13,8 @@ router.post('/signup',
     console.log('.......in regex......')
     // Check if the email ends with "@gndec.ac.in"
     const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-    if (!emailRegex.test(value) || !value.endsWith('@gndec.ac.in')) {
+    // if (!emailRegex.test(value) || !value.endsWith('@gndec.ac.in')) {
+      if (!emailRegex.test(value) ) {
       throw new Error('Invalid email format or not a gndec mail');
     }
     return true; // Return true if validation passes
@@ -52,7 +53,7 @@ router.post('/signup',
           email: email,
           password: hash,
           isVerified: false,
-          userInfo: {},
+          userInfo: {crn:urn},
           tr101: {},
           tr102: {},
           tr103: {},
@@ -60,6 +61,7 @@ router.post('/signup',
           placementData: {},
         });
         await signup.save();
+        console.log(signup)
       } catch (error) {
         console.error('Error creating document:', error);
       }
@@ -94,25 +96,24 @@ router.post('/login', body('password', 'Password should have a minimum length of
 
   const passwordCompare = await bcrypt.compare(password, user.password);
   if (passwordCompare) {
-    // let roleSpecificData;
+    let roleSpecificData;
 
 
-    // if (user.role === 'user') {
-    //   roleSpecificData = {
-    //     id: user.id,
-    //     role: 'user',
-    //     email: email
-    //   };
-    // } else if (user.role === 'admin') {
-    //   roleSpecificData = {
-    //     id: user.id,
-    //     role: 'admin',
-    //     email: email
-    //   };
-    // }
+    if (user.role === 'user') {
+      roleSpecificData = {
+        id: user.id,
+        role: 'user',
+      };
+    } else if (user.role === 'admin') {
+      roleSpecificData = {
+        id: user.id,
+        role: 'admin',
+      };
+    }
 
     const data = {
-      urn: user.urn
+      urn: user.urn,
+      user:roleSpecificData
     };
 
     if (user.isVerified === true) {
