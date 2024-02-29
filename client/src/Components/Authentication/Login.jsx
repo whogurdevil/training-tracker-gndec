@@ -67,11 +67,19 @@ function Login() {
             navigate('/verify');
           }, 2000);
         } else {
-          toast('Successfully logged in');
           localStorage.setItem('authtoken', json.authtoken);
-          setTimeout(() => {
-            navigate('/dashboard', { state: { urn: credentials.urn } });
-          }, 1000);
+          console.log(json.authtoken)
+          if(json.body.user.role==='admin'){
+            toast('Successfully logged in');
+            setTimeout(() => {
+              navigate('/admin', { state: { urn: credentials.urn } });
+            }, 1000);
+          }else{
+            toast('Successfully logged in');
+            setTimeout(() => {
+              navigate('/home', { state: { urn: credentials.urn } });
+            }, 1000);
+          }
         }
       } else {
         toast('🚫 ' + json.message);
