@@ -13,61 +13,66 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import CircularProgress from '@mui/material/CircularProgress'; // Import CircularProgress
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from "react-router-dom";
 
 function Login() {
-  const [credentials, setCredentials] = useState({ urn: null, password: '' });
+  const [credentials, setCredentials] = useState({ urn: '', password: '' });
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({ urn: '', password: '' });
   const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setCredentials((prevCredentials) => ({
+      ...prevCredentials,
+      [name]: value,
+    }));
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: validateField(name, value),
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
+      // Validation
+      const validationErrors = {};
+      for (const key in credentials) {
+        validationErrors[key] = validateField(key, credentials[key]);
+      }
+      setErrors(validationErrors);
+
+      // Check if there are any errors
+      if (Object.values(validationErrors).some((error) => error !== '')) {
+        setLoading(false);
+        return;
+      }
+
       const response = await fetch('http://localhost:8000/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ urn: credentials.urn, password: credentials.password }),
+        body: JSON.stringify(credentials),
       });
-      console.log("urn",credentials.urn)
-      console.log("password",credentials.password)
-
       const json = await response.json();
-      console.log(json)
+      console.log(json);
       if (json.success) {
         if (json.message === "verify") {
           toast('Please verify your account');
           setTimeout(() => {
-            // Adjust the routing logic as per your requirements
-            navigate('/verify')
+            navigate('/verify');
           }, 2000);
-
-        }
-        else {
+        } else {
           toast('Successfully logged in');
           localStorage.setItem('authtoken', json.authtoken);
-          // localStorage.setItem('userId', json.body.user.id);
-          // console.log(json.body.user.id)
-          // // console.log(json.body.user.role)
-          // const role = json.body.user.role
-          setLoading(false);
-          // if (role === "admin") {
-          //   setTimeout(() => {
-          //     // Adjust the routing logic as per your requirements
-          //     navigate('/admin')
-          //   }, 2000);
-          // } else {
-            setTimeout(() => {
-              // Adjust the routing logic as per your requirements
-              navigate('/dashboard',{state:{urn : credentials.urn}})
-            }, 1000);
-          // }
-
+          setTimeout(() => {
+            navigate('/dashboard', { state: { urn: credentials.urn } });
+          }, 1000);
         }
-
-
       } else {
         toast('🚫 ' + json.message);
         setLoading(false);
@@ -79,8 +84,15 @@ function Login() {
     }
   };
 
-  const onChange = (e) => {
-    setCredentials({ ...credentials, [e.target.name]: e.target.value });
+  const validateField = (fieldName, value) => {
+    switch (fieldName) {
+      case 'urn':
+        return /^\d{7}$/.test(value) ? '' : 'Invalid URN: must be a 7-digit number';
+      case 'password':
+        return value.length >= 8 ? '' : 'Password must be at least 8 characters long';
+      default:
+        return '';
+    }
   };
 
   const theme = createTheme();
@@ -109,12 +121,13 @@ function Login() {
             required
             fullWidth
             id="urn"
-            label="Urn"
+            label="URN"
             name="urn"
             value={credentials.urn}
-            autoComplete="urn"
-            onChange={onChange}
+            onChange={handleChange}
             autoFocus
+            error={Boolean(errors.urn)}
+            helperText={errors.urn}
             InputProps={{
               sx: { padding: '8px' }, // Set the padding to 8px
             }}
@@ -127,8 +140,9 @@ function Login() {
             label="Password"
             value={credentials.password}
             type="password"
-            autoComplete="current-password"
-            onChange={onChange}
+            onChange={handleChange}
+            error={Boolean(errors.password)}
+            helperText={errors.password}
             InputProps={{
               sx: { padding: '8px' }, // Set the padding to 8px
             }}
@@ -144,7 +158,7 @@ function Login() {
             sx={{ mt: 3, mb: 2 }}
             disabled={loading}
           >
-            {loading ? 'Signing In...' : 'Sign In'}
+            {loading ? <CircularProgress size={24} /> : 'Sign In'}
           </Button>
           <Grid container>
             <Grid item xs>
