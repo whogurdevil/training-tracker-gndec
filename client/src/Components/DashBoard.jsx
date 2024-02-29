@@ -9,6 +9,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import MenuItem from '@mui/material/MenuItem'; // Import MenuItem for dropdown options
+// import CustomizedTimeline from './Home/Timeline';
+
 
 export default function Form() {
   const [formData, setFormData] = useState({
@@ -22,6 +24,8 @@ export default function Form() {
   });
   const location = useLocation();
   const urn = location.state && location.state.urn;
+  console.log(urn)
+
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
@@ -99,7 +103,7 @@ export default function Form() {
   };
 
   return (
-    <Container>
+    <Container sx={{paddingTop:10}}>
       <Typography variant="h5" gutterBottom>
         Please fill in your information below.
       </Typography>
