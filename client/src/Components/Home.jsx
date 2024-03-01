@@ -1,18 +1,18 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { Button, Grid, Typography } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useNavigate } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
+
 
 const Home = () => {
     const navigate = useNavigate();
-    const location = useLocation();
-    const urn = location.state && location.state.urn;
-    console.log(urn)
+
+    // const urn = location.state && location.state.urn;
     const handleNavigate = (route,number) => {
-        navigate(route, { state: { urn: urn, number: number } });
+        navigate(route, { state: {  number: number } });
     };
+  
+
 
     return (
         <div style={{ padding: '20px' }}>
@@ -28,7 +28,7 @@ const Home = () => {
                         onClick={() => handleNavigate('/dashboard','')}
                         endIcon={<ArrowForwardIcon />}
                     >
-                    {console.log(urn)}
+               
                         Profile Data
                     </Button>
                 </Grid>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -11,9 +11,9 @@ import { useLocation } from 'react-router-dom';
 import MenuItem from '@mui/material/MenuItem'; // Import MenuItem for dropdown options
 import FileBase from 'react-file-base64';
 import Grid from '@mui/material/Grid';
-import { base64toBlob, openBase64NewTab } from '../CommonComponent/base64topdf';
+import { openBase64NewTab } from '../CommonComponent/base64topdf';
 import EditIcon from '@mui/icons-material/Edit';
-
+import { jwtDecode } from "jwt-decode";
 
 
 export default function Form() {
@@ -23,8 +23,22 @@ export default function Form() {
     type: '',
     certificate: null,
   });
-  const location = useLocation();
-  const urn = location.state && location.state.urn;
+  const decodeAuthToken = (token) => {
+    try {
+      const decodedToken = jwtDecode(token);
+      const urn = decodedToken.urn;
+      return urn;
+    } catch (error) {
+      console.error('Error decoding JWT token:', error);
+      return null;
+    }
+  };
+  const technologyStack = [
+    "Android", "Angular", "ASP.NET", "AWS", "Bootstrap", "C#", "C++", "CSS", "Django", "Docker", "Express.js", "Flask", "Git", "Heroku", "HTML", "Java", "JavaScript", "Kubernetes", "Linux", "MongoDB", "MySQL", "Nginx", "Node.js", "PHP", "PostgreSQL", "Python", "React", "Redis", "Ruby on Rails", "SQLite", "Spring Boot", "Swift", "Tailwind CSS", "TensorFlow", "TypeScript", "Unity", "Vue.js"
+  ];
+  const token = localStorage.getItem("authtoken");
+  const urn = decodeAuthToken(token);
+  let location=useLocation()
   const number = location.state && location.state.number
   const [errors, setErrors] = useState({});
   const [certificate, setCertificate] = useState(null);
@@ -34,6 +48,37 @@ export default function Form() {
     setFormData({ ...formData, certificate: files.base64 });
     setCertificate(files.base64);
   };
+  useEffect(() => {
+    // Fetch data from the database when the component mounts or the page is refreshed
+    const fetchData = async () => {
+      try {
+        const url = `http://localhost:8000/tr${number}/${urn}`;
+        const response = await axios.get(url);
+        const userData = response.data.data;
+        console.log(userData);
+
+
+        // Check if all fields are filled in the fetched data
+        if (
+          userData.technology &&
+          userData.projectName &&
+          userData.type &&
+          userData.certificate
+        ) {
+          // If all fields are filled, populate the form data and disable editing
+          setFormData(userData);
+          setIsEditing(false);
+        } else {
+          console.error('Error: Fetched data is incomplete.');
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -96,7 +141,12 @@ export default function Form() {
   };
 
   const handleViewCertificate = () => {
-    openBase64NewTab(certificate);
+    if (certificate) {
+      openBase64NewTab(certificate);
+    } else {
+      openBase64NewTab(formData.certificate);
+    }
+
   };
   return (
     <Container sx={{ paddingTop: 10 }}>
@@ -145,11 +195,11 @@ export default function Form() {
           style={{ marginBottom: '1rem' }}
           disabled={!isEditing || isSubmitting}
         >
-          {/* Dropdown options */}
-          <MenuItem value="React">React</MenuItem>
-          <MenuItem value="Node.js">Node.js</MenuItem>
-          <MenuItem value="Python">Python</MenuItem>
-          {/* Add more options as needed */}
+          {technologyStack.map((tech) => (
+            <MenuItem key={tech} value={tech}>
+              {tech}
+            </MenuItem>
+          ))}
         </TextField>
 
         {/* Certificate */}
