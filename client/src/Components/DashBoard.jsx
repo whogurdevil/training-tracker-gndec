@@ -111,11 +111,7 @@ export default function Form() {
       // Extract the year from the newDate object
       const year = newDate.$y;
       console.log(year);
-      // Update the form data with the new year
-      // let convDate = {...newDate};
-      // convDate.$y = newDate.$y + 4;
-      // console.log(convDate.$y);
-      // setEndDate(newDate);
+     
       setFormData({ ...formData, batch: `${year}-${year + 4}` });
     } else {
       // If newDate is null or undefined, clear the batch value

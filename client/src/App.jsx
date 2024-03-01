@@ -10,9 +10,9 @@ import Admin from "./Components/AdminDashboard/Admin";
 import Navbar from './Components/Navbar/Navbar';
 import PlacementForm from './Components/PlacementInput';
 import Training101 from './Components/Training101'
-import Training102 from './Components/Training102'
-import Training103 from './Components/Training103'
-import Training104 from './Components/Training104'
+// import Training102 from './Components/Training102'
+// import Training103 from './Components/Training103'
+// import Training104 from './Components/Training104'
 
 // import './App.css';
 
@@ -31,10 +31,8 @@ class App extends Component {
             <Route path="/login" element={<Login />} />
             <Route path="/home" element={<ProtectedRoute component={Home} />} />
             <Route path='/placement' element={<ProtectedRoute component={PlacementForm} />} />
-            <Route path='/tr101' element={<ProtectedRoute component={Training101} />} />
-            <Route path='/tr102' element={<ProtectedRoute component={Training102} />} />
-            <Route path='/tr103' element={<ProtectedRoute component={Training103} />} />
-            <Route path='/tr104' element={<ProtectedRoute component={Training104} />} />
+            <Route path='/tr' element={<ProtectedRoute component={Training101} />} />
+       
             <Route path="/admin" element={<ProtectedRoute component={Admin} />} />
             <Route path="/dashboard" element={<ProtectedRoute component={DashBoard} />} />
             <Route path="/forgotpassword" element={<ForgotPassword />} />

@@ -10,8 +10,8 @@ const Home = () => {
     const location = useLocation();
     const urn = location.state && location.state.urn;
     console.log(urn)
-    const handleNavigate = (route) => {
-        navigate(route, { state: { urn: urn } });
+    const handleNavigate = (route,number) => {
+        navigate(route, { state: { urn: urn, number: number } });
     };
 
     return (
@@ -25,7 +25,7 @@ const Home = () => {
                     <Button
                         variant="contained"
                         color="primary"
-                        onClick={() => handleNavigate('/dashboard')}
+                        onClick={() => handleNavigate('/dashboard','')}
                         endIcon={<ArrowForwardIcon />}
                     >
                     {console.log(urn)}
@@ -37,7 +37,7 @@ const Home = () => {
                     <Button
                         variant="contained"
                         color="primary"
-                        onClick={() => handleNavigate('/tr101')}
+                        onClick={() => handleNavigate('/tr','101')}
                         endIcon={<ArrowForwardIcon />}
                     >
                         Training 101
@@ -48,7 +48,7 @@ const Home = () => {
                     <Button
                         variant="contained"
                         color="primary"
-                        onClick={() => handleNavigate('/tr102')}
+                        onClick={() => handleNavigate('/tr','102')}
                         endIcon={<ArrowForwardIcon />}
                     >
                         Training 102
@@ -59,7 +59,7 @@ const Home = () => {
                     <Button
                         variant="contained"
                         color="primary"
-                        onClick={() => handleNavigate('/tr103')}
+                        onClick={() => handleNavigate('/tr','103')}
                         endIcon={<ArrowForwardIcon />}
                     >
                         Training 103
@@ -70,7 +70,7 @@ const Home = () => {
                     <Button
                         variant="contained"
                         color="primary"
-                        onClick={() => handleNavigate('/tr104')}
+                        onClick={() => handleNavigate('/tr','104')}
                         endIcon={<ArrowForwardIcon />}
                     >
                         Training 104
@@ -81,7 +81,7 @@ const Home = () => {
                     <Button
                         variant="contained"
                         color="primary"
-                        onClick={() => handleNavigate('/placement')}
+                        onClick={() => handleNavigate('/placement','')}
                         endIcon={<ArrowForwardIcon />}
                     >
                         Placement Data
