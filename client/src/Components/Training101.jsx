@@ -9,17 +9,31 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import MenuItem from '@mui/material/MenuItem'; // Import MenuItem for dropdown options
+import FileBase from 'react-file-base64';
+import Grid from '@mui/material/Grid';
+import { base64toBlob, openBase64NewTab } from '../CommonComponent/base64topdf';
+import EditIcon from '@mui/icons-material/Edit';
+
+
 
 export default function Form() {
   const [formData, setFormData] = useState({
     technology: [],
     projectName: '', // corrected typo here
-    type: ''
+    type: '',
+    certificate: null,
   });
   const location = useLocation();
   const urn = location.state && location.state.urn;
+  const number = location.state && location.state.number
   const [errors, setErrors] = useState({});
-  const [uploadedFile, setUploadedFile] = useState(null);
+  const [certificate, setCertificate] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isEditing, setIsEditing] = useState(true);
+  const handleFileChange = (files) => {
+    setFormData({ ...formData, certificate: files.base64 });
+    setCertificate(files.base64);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,11 +45,6 @@ export default function Form() {
     }
     // Clear errors when input changes
     setErrors({ ...errors, [name]: '' });
-  };
-
-  const handleCertificateUpload = (e) => {
-    const file = e.target.files[0];
-    setUploadedFile(file);
   };
 
   const handleSubmit = async (e) => {
@@ -52,8 +61,8 @@ export default function Form() {
       if (!formData.type.trim()) {
         formErrors.type = 'Type cannot be blank';
       }
-      if (!uploadedFile) {
-        formErrors.certificate = 'Certificate is required';
+      if (!formData.certificate) {
+        formErrors.certificate = 'Certificate cannot be blank';
       }
 
       if (Object.keys(formErrors).length > 0) {
@@ -62,32 +71,63 @@ export default function Form() {
       }
 
       // Submit form data
-      const response = await axios.post('http://localhost:8000/tr101', { formData, urn });
- 
+      console.log(number)
+      console.log("formData", formData)
+      const url = `http://localhost:8000/tr${number}`
+      const response = await axios.post(url, { formData, urn: urn });
+
+      console.log("response", response)
       if (response.data.success) {
         toast.success('Form submitted successfully!');
-        // Clear form data after successful submission
-        setFormData({
-          technology: [],
-          projectName: '',
-          type: ''
-        });
-        setUploadedFile(null); // Clear uploaded file after submission
+        setIsSubmitting(false);
+        setIsEditing(false);
       } else {
         toast.error('Failed to submit form. Please try again later.');
+        setIsSubmitting(false);
       }
     } catch (error) {
       console.error('Error submitting data:', error);
       toast.error('An error occurred while submitting the form.');
+      setIsSubmitting(false);
     }
   };
+  const handleEdit = () => {
+    setIsEditing((prevEditing) => !prevEditing);
+  };
 
+  const handleViewCertificate = () => {
+    openBase64NewTab(certificate);
+  };
   return (
-    <Container sx={{paddingTop:10}}>
-      <Typography variant="h5" gutterBottom>
-        Fill the Form :
-      </Typography>
+    <Container sx={{ paddingTop: 10 }}>
+      {/* Edit button */}
+      <Button
+        onClick={handleEdit}
+        color="primary"
+        variant="contained"
+        style={{
+          position: 'relative',
+
+          marginLeft: '10px',
+          float: 'right',
+          // Adjust the margin as needed
+        }}
+      >
+        Edit
+        <EditIcon />
+      </Button>
+
+      {/* Fill the form */}
+      <Grid container justifyContent="space-between" alignItems="center">
+        <Typography variant="h5" gutterBottom>
+          Fill the Form :
+        </Typography>
+      </Grid>
+
+      {/* Toast Container */}
       <ToastContainer />
+
+      {/* Form */}
       <form onSubmit={handleSubmit}>
         {/* Technology */}
         <TextField
@@ -103,6 +143,7 @@ export default function Form() {
           error={!!errors.technology}
           helperText={errors.technology}
           style={{ marginBottom: '1rem' }}
+          disabled={!isEditing || isSubmitting}
         >
           {/* Dropdown options */}
           <MenuItem value="React">React</MenuItem>
@@ -110,35 +151,20 @@ export default function Form() {
           <MenuItem value="Python">Python</MenuItem>
           {/* Add more options as needed */}
         </TextField>
+
         {/* Certificate */}
-        <div style={{ border: '1px solid grey', padding: '1rem', marginBottom: '1rem' }}>
-          <Typography variant="subtitle1" gutterBottom>
-            Upload Certificate *
+        <Grid item xs={12} container justifyContent="space-between" alignItems="center">
+          <Typography variant="h6" gutterBottom textAlign="left" marginTop={2}>
+            Upload Certificate
           </Typography>
-          <input
+          <FileBase
             type="file"
-            accept=".pdf"
-            onChange={handleCertificateUpload}
-            style={{ display: 'none' }}
-            id="certificate-upload"
-            required
+            multiple={false}
+            onDone={handleFileChange}
+            disabled={!isEditing || isSubmitting}
           />
-          <label htmlFor="certificate-upload">
-            <Button variant="outlined" component="span">
-              Choose File
-            </Button>
-          </label>
-          {uploadedFile && (
-            <Typography variant="body1" style={{ marginTop: '0.5rem' }}>
-              Uploaded File: {uploadedFile.name}
-            </Typography>
-          )}
-          {errors.certificate && (
-            <Typography variant="body2" style={{ color: 'red' }}>
-              {errors.certificate}
-            </Typography>
-          )}
-        </div>
+        </Grid>
+
         {/* Project Name */}
         <TextField
           label="Project Name"
@@ -151,11 +177,12 @@ export default function Form() {
           error={!!errors.projectName}
           helperText={errors.projectName}
           style={{ marginBottom: '1rem' }}
+          disabled={!isEditing || isSubmitting}
         />
+
         {/* Type */}
-        {/* Branch */}
         <TextField
-          select // Use select for dropdown
+          select
           label="Type"
           variant="outlined"
           fullWidth
@@ -165,24 +192,34 @@ export default function Form() {
           onChange={handleChange}
           error={!!errors.type}
           helperText={errors.type}
-          sx={{ mb: 2 }} // Add vertical spacing
+          sx={{ mb: 2 }}
+          disabled={!isEditing || isSubmitting}
         >
           {/* Dropdown options */}
           <MenuItem value="PaidIntership">Paid Intership</MenuItem>
           <MenuItem value="InternshipWithStipend">Internship With Stipend</MenuItem>
           <MenuItem value="Training">Training</MenuItem>
-          
         </TextField>
 
-        {/* Add more fields as needed */}
-        <Button
-          type="submit"
-          color="primary"
-          variant="contained"
-          endIcon={<KeyboardArrowRightIcon />}
-        >
-          Submit
-        </Button>
+        {/* View Certificate Button */}
+        {!isEditing && (
+          <Button onClick={handleViewCertificate} variant="outlined" color="primary">
+            View Certificate
+          </Button>
+        )}
+
+        {/* Submit Button */}
+        {isEditing && (
+          <Button
+            type="submit"
+            color="primary"
+            variant="contained"
+            endIcon={<KeyboardArrowRightIcon />}
+            disabled={isSubmitting}
+          >
+            Submit
+          </Button>
+        )}
       </form>
     </Container>
   );
