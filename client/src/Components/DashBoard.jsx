@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -7,13 +7,13 @@ import TextField from '@mui/material/TextField';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
 import MenuItem from '@mui/material/MenuItem'; // Import MenuItem for dropdown options
 // import CustomizedTimeline from './Home/Timeline';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';  
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-
+import EditIcon from '@mui/icons-material/Edit';
+import { jwtDecode } from "jwt-decode";
 
 
 export default function Form() {
@@ -26,11 +26,56 @@ export default function Form() {
     gender: '',
     admissionType: ''
   });
-  const location = useLocation();
-  const urn = location.state && location.state.urn;
-  console.log(urn)
-
+  const decodeAuthToken = (token) => {
+    try {
+      const decodedToken = jwtDecode(token);
+      const urn = decodedToken.urn;
+      return urn;
+    } catch (error) {
+      console.error('Error decoding JWT token:', error);
+      return null;
+    }
+  };
+  const token = localStorage.getItem("authtoken");
+  const urn = decodeAuthToken(token);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isEditing, setIsEditing] = useState(true);
   const [errors, setErrors] = useState({});
+  useEffect(() => {
+    // Fetch data from the database when the component mounts or the page is refreshed
+    const fetchData = async () => {
+      try {
+        const url = `http://localhost:8000/userprofiles/${urn}`;
+        const response = await axios.get(url);
+        const userData = response.data.data;
+        console.log(userData);
+
+
+        // Check if all fields are filled in the fetched data
+        if (
+          userData.Name &&
+          userData.contact &&
+          userData.crn &&
+          userData.branch &&
+          userData.batch &&
+          userData.gender &&
+          userData.admissionType
+
+        ) {
+          // If all fields are filled, populate the form data and disable editing
+          setFormData(userData);
+          setIsEditing(false);
+        } else {
+          console.error('Error: Fetched data is incomplete.');
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   // const [endDate, setEndDate] = useState(null);
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -87,23 +132,20 @@ export default function Form() {
       console.log(response);
       if (response.data.success) {
         toast.success('Form submitted successfully!');
-        // Clear form data after successful submission
-        setFormData({
-          Name: '',
-          contact: '',
-          crn: '',
-          branch: '',
-          batch: '',
-          gender: '',
-          admissionType: ''
-        });
+        setIsSubmitting(false);
+        setIsEditing(false);
       } else {
         toast.error('Failed to submit form. Please try again later.');
+        setIsSubmitting(false);
       }
     } catch (error) {
       console.error('Error submitting data:', error);
       toast.error('An error occurred while submitting the form.');
+      setIsSubmitting(false);
     }
+  };
+  const handleEdit = () => {
+    setIsEditing((prevEditing) => !prevEditing);
   };
   const handleBatchChange = (newDate) => {
     console.log(newDate);
@@ -121,6 +163,21 @@ export default function Form() {
 
   return (
     <Container sx={{paddingTop:10}}>
+      <Button
+        onClick={handleEdit}
+        color="primary"
+        variant="contained"
+        style={{
+          position: 'relative',
+
+          marginLeft: '10px',
+          float: 'right',
+          // Adjust the margin as needed
+        }}
+      >
+        Edit
+        <EditIcon />
+      </Button>
       <Typography variant="h5" gutterBottom>
         Please fill in your information below.
       </Typography>
@@ -138,6 +195,7 @@ export default function Form() {
           error={!!errors.Name}
           helperText={errors.Name}
           sx={{ mb: 2 }} // Add vertical spacing
+          disabled={!isEditing || isSubmitting}
         />
         {/* Contact */}
         <TextField
@@ -151,6 +209,7 @@ export default function Form() {
           error={!!errors.contact}
           helperText={errors.contact}
           sx={{ mb: 2 }} // Add vertical spacing
+          disabled={!isEditing || isSubmitting}
         />
         {/* CRN */}
         <TextField
@@ -164,6 +223,7 @@ export default function Form() {
           error={!!errors.crn}
           helperText={errors.crn}
           sx={{ mb: 2 }} // Add vertical spacing
+          disabled={!isEditing || isSubmitting}
         />
         {/* Branch */}
         <TextField
@@ -178,6 +238,7 @@ export default function Form() {
           error={!!errors.branch}
           helperText={errors.branch}
           sx={{ mb: 2 }} // Add vertical spacing
+          disabled={!isEditing || isSubmitting}
         >
           {/* Dropdown options */}
           <MenuItem value="CSE">Computer Science & Engineering</MenuItem>
@@ -194,6 +255,8 @@ export default function Form() {
             views={['year']}
             renderInput={(params) => <TextField {...params} helperText="Enter starting year only" />}
             onChange={handleBatchChange}
+            sx={{ mb: 2 }}
+            disabled={!isEditing || isSubmitting}
           />
         </LocalizationProvider>
         
@@ -231,6 +294,7 @@ export default function Form() {
           error={!!errors.gender}
           helperText={errors.gender}
           sx={{ mb: 2 }} // Add vertical spacing
+          disabled={!isEditing || isSubmitting}
         >
           {/* Dropdown options */}
           <MenuItem value="Male">Male</MenuItem>
@@ -249,6 +313,7 @@ export default function Form() {
           error={!!errors.admissionType}
           helperText={errors.admissionType}
           sx={{ mb: 2 }} // Add vertical spacing
+          disabled={!isEditing || isSubmitting}
         >
           {/* Dropdown options */}
           <MenuItem value="Non LEET">Non LEET</MenuItem>
@@ -260,6 +325,7 @@ export default function Form() {
           color="primary"
           variant="contained"
           endIcon={<KeyboardArrowRightIcon />}
+          disabled={!isEditing || isSubmitting}
         >
           Submit
         </Button>
