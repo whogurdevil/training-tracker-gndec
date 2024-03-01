@@ -62,8 +62,7 @@ export default function Form() {
         if (
           userData.technology &&
           userData.projectName &&
-          userData.type &&
-          userData.certificate
+          userData.type 
         ) {
           // If all fields are filled, populate the form data and disable editing
           setFormData(userData);
@@ -108,6 +107,7 @@ export default function Form() {
       }
       if (!formData.certificate) {
         formErrors.certificate = 'Certificate cannot be blank';
+        toast.error("certificate cannot be blank")
       }
 
       if (Object.keys(formErrors).length > 0) {
