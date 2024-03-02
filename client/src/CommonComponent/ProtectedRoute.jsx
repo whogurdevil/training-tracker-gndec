@@ -5,7 +5,7 @@ import SuperAdmin from '../Components/SuperAdminDashboard/SuperAdmin';
 import Admin from '../Components/AdminDashboard/AdminDashboard';
 import Home from '../Components/Home';
 
-const ProtectedRoute = ({ component: Component, ...rest }) => {
+const ProtectedRoute = ({ component: Component, path, ...rest }) => {
     const authToken = localStorage.getItem('authtoken');
 
     if (!authToken) {
@@ -14,17 +14,22 @@ const ProtectedRoute = ({ component: Component, ...rest }) => {
         try {
             const decodedToken = jwtDecode(authToken);
             const userRole = decodedToken.user.role;
-            console.log(userRole)
 
             // Check if the user is authenticated and has the required role
-            if ( userRole === 'superadmin') {
-                console.log(<SuperAdmin />)
+            if (userRole === 'superadmin') {
+                // Redirect superadmin to home if trying to access admin or superadmin route
+           
                 return <SuperAdmin />;
-            } else if (userRole === 'admin'){
+            } else if (userRole === 'admin') {
+                // Redirect admin to home if trying to access superadmin route
+               
                 return <Admin />;
-            }else {
+            } else {
                 // Redirect to home or another appropriate route if the user doesn't have the required role
-                return <Home/>
+                if (path === '/admin' || path === '/superadmin') {
+                    return <Home/>;
+                }
+                return <Component {...rest} />;
             }
         } catch (error) {
             // If there's an error decoding the token, redirect to login
