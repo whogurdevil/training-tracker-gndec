@@ -1,94 +1,55 @@
 import React from 'react';
-import { Button, Grid, Typography } from '@mui/material';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { useNavigate } from 'react-router-dom';
-
+import { Container } from '@mui/material';
+import ButtonCard from './Cards/ButtonCard';
+import { LooksOneRounded, LooksTwoRounded, Looks3Rounded, Looks4Rounded, Looks5Rounded, Looks6Rounded } from '@mui/icons-material'
 
 const Home = () => {
-    const navigate = useNavigate();
-
-    // const urn = location.state && location.state.urn;
-    const handleNavigate = (route,number) => {
-        navigate(route, { state: {  number: number } });
-    };
-  
-
+    const cardsData = [
+        {
+            text:'Profile Data',
+            path:'/dashboard',
+            param: '',
+            startIcon: LooksOneRounded
+        },
+        {
+            text:'Training 101',
+            path:'/tr',
+            param: '101',
+            startIcon: LooksTwoRounded
+        },
+        {
+            text:'Training 102',
+            path:'/tr',
+            param: '102',
+            startIcon: Looks3Rounded
+        },
+        {
+            text:'Training 103',
+            path:'/tr',
+            param: '103',
+            startIcon: Looks4Rounded
+        },
+        {
+            text:'Training 104',
+            path:'/tr',
+            param: '104',
+            startIcon: Looks5Rounded
+        },
+        {
+            text:'Placement Data',
+            path:'/placement',
+            param: '',
+            startIcon: Looks6Rounded
+        },
+    ];
 
     return (
-        <div style={{ padding: '20px' }}>
-            <Typography variant="h5" gutterBottom>
-                Progress Tracker
-            </Typography>
-            <Grid container spacing={1} style={{ marginTop: '40px' }}>
-                {/* Progress 1: Profile Data */}
-                <Grid item xs={6} sm={2}>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => handleNavigate('/dashboard','')}
-                        endIcon={<ArrowForwardIcon />}
-                    >
-               
-                        Profile Data
-                    </Button>
-                </Grid>
-                {/* Progress 2: Training 101 */}
-                <Grid item xs={6} sm={2}>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => handleNavigate('/tr','101')}
-                        endIcon={<ArrowForwardIcon />}
-                    >
-                        Training 101
-                    </Button>
-                </Grid>
-                {/* Progress 3: Training 102 */}
-                <Grid item xs={6} sm={2}>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => handleNavigate('/tr','102')}
-                        endIcon={<ArrowForwardIcon />}
-                    >
-                        Training 102
-                    </Button>
-                </Grid>
-                {/* Progress 4: Training 103 */}
-                <Grid item xs={6} sm={2}>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => handleNavigate('/tr','103')}
-                        endIcon={<ArrowForwardIcon />}
-                    >
-                        Training 103
-                    </Button>
-                </Grid>
-                {/* Progress 5: Training 104 */}
-                <Grid item xs={6} sm={2}>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => handleNavigate('/tr','104')}
-                        endIcon={<ArrowForwardIcon />}
-                    >
-                        Training 104
-                    </Button>
-                </Grid>
-                {/* Progress 6: Placement Data */}
-                <Grid item xs={6} sm={2}>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => handleNavigate('/placement','')}
-                        endIcon={<ArrowForwardIcon />}
-                    >
-                        Placement Data
-                    </Button>
-                </Grid>
-            </Grid>
-        </div>
+        <Container 
+        sx={{ paddingTop: 10, marginX: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            {cardsData.map((data, index) => (
+                <ButtonCard key={index} {...data} />
+            ))}
+        </Container>
     );
 };
 
