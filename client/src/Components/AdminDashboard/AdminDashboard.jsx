@@ -55,7 +55,10 @@ const AdminForm = () => {
                 { accessorKey: "urn", header: "URN" },
                 { accessorKey: "userInfo.Name", header: "Name" },
                 { accessorKey: "userInfo.crn", header: "CRN" }
+                
             ];
+            console.log(selectedTraining?.lock);
+
 
             if (selectedTraining === 'placementData') {
                 customColumns.push(

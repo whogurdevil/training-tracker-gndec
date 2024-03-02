@@ -54,7 +54,7 @@ export default function Form() {
         const url = `http://localhost:8000/userprofiles/${urn}`;
         const response = await axios.get(url);
         const userData = response.data.data;
-        console.log(userData);
+        // console.log(userData);
 
 
         // Check if all fields are filled in the fetched data

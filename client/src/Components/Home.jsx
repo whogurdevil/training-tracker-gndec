@@ -25,7 +25,8 @@ const Home = () => {
                 });
 
                 const data = response.data.data
-                const difference = 0;
+                console.log(data);
+                var difference = 0;
                 if (data.userInfo.batch) {
                     const batchYear = parseInt(data.userInfo.batch.split('-')[0]);
 

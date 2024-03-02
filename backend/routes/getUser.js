@@ -4,7 +4,7 @@ const userInfo = require('../models/UserInfo').SignUp;
 const fetchuser = require('../middleware/fetchUser');
 const isAdmin = require('../middleware/isAdmin');
 
-router.get('/getuser', fetchuser, async (req, res) => {
+router.get('/getuser/:id', fetchuser, async (req, res) => {
   try {
     const userId = req.user.id;
     console.log(userId)
