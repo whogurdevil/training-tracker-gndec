@@ -17,6 +17,7 @@ export default function ButtonCard(data) {
     <Button
     // startIcon={<data.startIcon />}
     endIcon={<ArrowForwardIos />}
+    disabled={data.disabled}
       onClick={() => handleNaviagte(data.path, data.param)}
       sx={{
         width: '90vw',
