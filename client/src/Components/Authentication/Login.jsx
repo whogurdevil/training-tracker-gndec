@@ -69,12 +69,18 @@ function Login() {
         } else {
           localStorage.setItem('authtoken', json.authtoken);
           console.log(json.authtoken)
-          if(json.body.user.role==='admin'){
+          if(json.body.user.role==='superadmin'){
+            toast('Successfully logged in');
+            setTimeout(() => {
+              navigate('/superadmin');
+            }, 1000);
+          }
+          else if (json.body.user.role === 'admin') {
             toast('Successfully logged in');
             setTimeout(() => {
               navigate('/admin');
             }, 1000);
-          }else{
+          } else{
             toast('Successfully logged in');
             setTimeout(() => {
               navigate('/home');

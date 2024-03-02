@@ -6,52 +6,57 @@ const userInfoSchema = new mongoose.Schema({
     type: String,
     match: /^[0-9]{10}$/ // Regex for 10-digit numeric contact number
   },
-  crn: { type: Number},
+  crn: { type: Number },
   branch: { type: String, default: 'Computer Science & Enginnering' },
   gender: { type: String },
   batch: { type: String },
-  admissionType: {type: String} //leet or non leet
+  admissionType: { type: String } //leet or non leet
 });
 
 const tr101Schema = new mongoose.Schema({
-  technology:{ type: [String] },
+  technology: { type: [String] },
   certificate: String,
   projectName: { type: String },
-  type: { type: String},
+  type: { type: String },
+  lock: { type: Boolean, default: false }
 });
 const tr102Schema = new mongoose.Schema({
-  technology:{ type: [String] },
+  technology: { type: [String] },
   certificate: String,
   projectName: { type: String },
-  type: { type: String},
+  type: { type: String },
+  lock: { type: Boolean, default: false }
 });
 const tr103Schema = new mongoose.Schema({
-  technology:{ type: [String] },
+  technology: { type: [String] },
   certificate: String,
   projectName: { type: String },
-  type: { type: String},
+  type: { type: String },
+  lock: { type: Boolean, default: false }
 });
 const tr104Schema = new mongoose.Schema({
-  technology:{ type: [String] },
+  technology: { type: [String] },
   certificate: String,
   projectName: { type: String },
-  type: { type: String},
+  type: { type: String },
+  lock: { type: Boolean, default: false }
 });
 
 const placementDataSchema = new mongoose.Schema({
-  company : {type: String},
-  appointmentDate : {type: Date},
-  appointmentLetter : String,
-  package : {type: Number}
+  company: { type: String },
+  appointmentDate: { type: Date },
+  appointmentLetter: String,
+  package: { type: Number },
+  lock: { type: Boolean, default: false }
 });
 
 const SignupSchema = new mongoose.Schema({
   urn: { type: Number, required: true, unique: true, match: /^[0-9]{7}$/ },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  role:{
+  role: {
     type: String,
-    default:'user'
+    default: 'user'
   },
   isVerified: { type: Boolean, default: false },
   userInfo: { type: userInfoSchema },
@@ -70,5 +75,4 @@ const Tr104 = mongoose.model('Tr104', tr104Schema);
 const PlacementData = mongoose.model('PlacementData', placementDataSchema);
 const SignUp = mongoose.model('Signup', SignupSchema);
 
-module.exports={SignUp,UserInfo,Tr101,Tr102,Tr103,Tr104,PlacementData}
-
+module.exports = { SignUp, UserInfo, Tr101, Tr102, Tr103, Tr104, PlacementData }

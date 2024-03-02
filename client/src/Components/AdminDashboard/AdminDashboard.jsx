@@ -83,13 +83,13 @@ const AdminForm = () => {
                 const token = localStorage.getItem('authtoken');
                 const response = await axios.get('http://localhost:8000/api/users/getallusers/', {
                     headers: {
-                        "auth-token" : token // Include the authentication token in the request headers
+                        "auth-token": token // Include the authentication token in the request headers
                     }
                 });
                 //   console.log(response.data)
                 const filteredUsers = response.data.data.filter(user => user.role === 'user');
                 setUsers(filteredUsers);
-              
+
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
@@ -100,8 +100,11 @@ const AdminForm = () => {
 
 
     return (
-        <div style={{marginTop:'100px'}}>
-        {console.log(users)}
+        <div style={{ marginTop: '100px' }}>
+        <div>
+    ADMIN
+        </div>
+            {console.log(users)}
             {users.map((user) => (
                 <UserCard key={user._id} user={user} />
             ))}
