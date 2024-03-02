@@ -99,15 +99,21 @@ router.post('/login', body('password', 'Password should have a minimum length of
     let roleSpecificData;
 
 
-    if (user.role === 'user') {
+    if (user.role === 'superadmin') {
       roleSpecificData = {
         id: user.id,
-        role: 'user',
+        role: 'superadmin',
       };
     } else if (user.role === 'admin') {
       roleSpecificData = {
         id: user.id,
         role: 'admin',
+      };
+    }
+    else{
+      roleSpecificData = {
+        id: user.id,
+        role: 'user',
       };
     }
 
