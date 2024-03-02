@@ -6,15 +6,12 @@ import Login from './Components/Authentication/Login';
 import Verify from './Components/Authentication/Verify';
 import ForgotPassword from './Components/Authentication/Forgotpassword';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Admin from "./Components/AdminDashboard/Admin";
+import SuperAdmin from './Components/SuperAdminDashboard/SuperAdmin'
 import Navbar from './Components/Navbar/Navbar';
 import PlacementForm from './Components/PlacementInput';
 import Training101 from './Components/Training101'
-// import Training102 from './Components/Training102'
-// import Training103 from './Components/Training103'
-// import Training104 from './Components/Training104'
-
-// import './App.css';
+import ProtectedRoute from './CommonComponent/ProtectedRoute';
+import Admin from './Components/AdminDashboard/AdminDashboard'
 
 class App extends Component {
   render() {
@@ -22,19 +19,18 @@ class App extends Component {
       <div className="App">
         <BrowserRouter>
           <Navbar />
-
           <Routes>
             {/* Redirect to the dashboard if user is authenticated */}
             <Route path="/" element={<Navigate to="/home" />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/verify" element={<Verify />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/home" element={<ProtectedRoute component={Home} />} />
-            <Route path='/placement' element={<ProtectedRoute component={PlacementForm} />} />
-            <Route path='/tr' element={<ProtectedRoute component={Training101} />} />
-       
-            <Route path="/admin" element={<ProtectedRoute component={Admin} />} />
-            <Route path="/dashboard" element={<ProtectedRoute component={DashBoard} />} />
+            <Route path="/home" element={<ProtectedRoute path="/home" component={Home} />} />
+            <Route path='/placement' element={<ProtectedRoute path="/placement" component={PlacementForm} />} />
+            <Route path='/tr' element={<ProtectedRoute path="/tr" component={Training101} />} />
+            <Route path="/superadmin" element={<ProtectedRoute path="/superadmin" component={SuperAdmin} />} />
+            <Route path="/admin" element={<ProtectedRoute path="/admin" component={Admin} />} />
+            <Route path="/dashboard" element={<ProtectedRoute path="/dashboard" component={DashBoard} />} />
             <Route path="/forgotpassword" element={<ForgotPassword />} />
           </Routes>
         </BrowserRouter>
@@ -42,15 +38,5 @@ class App extends Component {
     );
   }
 }
-
-const ProtectedRoute = ({ component: Component, ...rest }) => {
-  const isAuthenticated = localStorage.getItem('authtoken');
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  } else {
-    return <Component {...rest} />;
-  }
-};
 
 export default App;
