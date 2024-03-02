@@ -12,6 +12,9 @@ import FileBase from 'react-file-base64';
 import Grid from '@mui/material/Grid';
 import EditIcon from '@mui/icons-material/Edit';
 import { jwtDecode } from "jwt-decode";
+import { useLocation } from 'react-router-dom';
+import { base64toBlob, openBase64NewTab } from '../CommonComponent/base64topdf';
+
 
 export default function Form() {
   const [formData, setFormData] = useState({
@@ -24,12 +27,16 @@ export default function Form() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditing, setIsEditing] = useState(true);
+  const [certificate, setCertificate] = useState(null);
+  let location = useLocation();
+  const number=location.state &&location.state.number
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem("authtoken");
         const urn = decodeAuthToken(token);
+        console.log(urn)
         const response = await axios.get(`http://localhost:8000/tr${number}/${urn}`);
         const userData = response.data.data;
 
@@ -120,12 +127,21 @@ export default function Form() {
     }
   };
 
+  const handleViewCertificate = () => {
+    if (certificate) {
+      openBase64NewTab(certificate);
+    }
+    else {
+      openBase64NewTab(formData.certificate);
+    }
+  };
   const handleEdit = () => {
     setIsEditing((prevEditing) => !prevEditing);
   };
 
   const handleFileChange = (files) => {
     setFormData({ ...formData, certificate: files.base64 });
+    setCertificate(files.base64);
   };
 
   return (
@@ -156,6 +172,14 @@ export default function Form() {
             }}
           >
             Submit
+          </Button>
+        )}
+        {!isEditing && (
+          <Button onClick={handleViewCertificate} variant="outlined" color="primary" style={{
+            position: 'relative',
+            float: 'right',
+          }}>
+            View Certificate
           </Button>
         )}
       </Container>
