@@ -40,6 +40,7 @@ export default function PlacementForm() {
   const [appointmentLetter, setAppointmentLetter] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditing, setIsEditing] = useState(true);
+  const [isLock, setIsLock] = useState(false);
 
   useEffect(() => {
     // Fetch data from the database when the component mounts or the page is refreshed
@@ -63,6 +64,12 @@ export default function PlacementForm() {
           setFormData(userData);
           console.log(userData.appointmentDate);
           setIsEditing(false);
+          if (userData.lock) {
+            setIsLock(true)
+            console.log("hello")
+          } else {
+            setIsLock(false)
+          }
         } else {
           console.error('Error: Fetched data is incomplete.');
         }
@@ -173,6 +180,7 @@ export default function PlacementForm() {
 
   return (
     <Container sx={{ paddingTop: 10 }}>
+      {!isLock && (
       <Button
         onClick={handleEdit}
         color="primary"
@@ -188,6 +196,7 @@ export default function PlacementForm() {
         Edit
         <EditIcon />
       </Button>
+      )}
       <Typography variant="h5" gutterBottom>
         Please fill in your placement details below.
       </Typography>
@@ -268,7 +277,7 @@ export default function PlacementForm() {
           </Button>
         )}
 
-        {isEditing && (
+        {isEditing && !isLock && (
           <Button
             type="submit"
             color="primary"

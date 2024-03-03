@@ -27,6 +27,7 @@ export default function Form() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditing, setIsEditing] = useState(true);
+  const [isLock, setIsLock] = useState(false);
   const [certificate, setCertificate] = useState(null);
   let location = useLocation();
   const number=location.state &&location.state.number
@@ -47,6 +48,11 @@ export default function Form() {
         ) {
           setFormData(userData);
           setIsEditing(false);
+          if(userData.lock){
+            setIsLock(true)
+          }else{
+            setIsLock(false)
+          }
         } else {
           console.error('Error: Fetched data is incomplete.');
         }
@@ -147,6 +153,7 @@ export default function Form() {
   return (
     <Container sx={{ paddingTop: 10 }}>
       <Container style={{ paddingInline: 0, paddingBottom: 50 }} >
+      {!isLock && (
         <Button
           onClick={handleEdit}
           color="primary"
@@ -156,9 +163,11 @@ export default function Form() {
             float: 'left',
           }}
         >
+        
           <EditIcon />
         </Button>
-        {isEditing && (
+        )}
+        {isEditing && !isLock && (
           <Button
             type="submit"
             onClick={handleSubmit}

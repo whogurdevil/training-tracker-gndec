@@ -26,17 +26,17 @@ const Home = () => {
 
                 const data = response.data.data
                 console.log(data);
-                var difference = 0;
-                if (data.userInfo.batch) {
-                    const batchYear = parseInt(data.userInfo.batch.split('-')[0]);
+                var difference = 4;
+                // if (data.userInfo.batch) {
+                //     const batchYear = parseInt(data.userInfo.batch.split('-')[0]);
 
-                    const currentYear = new Date().getFullYear();
-                    difference = currentYear - batchYear;
-                }
-                else {
+                //     const currentYear = new Date().getFullYear();
+                //     difference = currentYear - batchYear;
+                // }
+                // else {
 
-                    difference = 0;
-                }
+                //     difference = 0;
+                // }
 
 
 

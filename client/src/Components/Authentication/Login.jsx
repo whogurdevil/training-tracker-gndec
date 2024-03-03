@@ -78,7 +78,7 @@ function Login() {
           else if (json.body.user.role === 'admin') {
             toast('Successfully logged in');
             setTimeout(() => {
-              navigate('/admin');
+              navigate('/admin',{state:{urn:credentials.urn}});
             }, 1000);
           } else{
             toast('Successfully logged in');
