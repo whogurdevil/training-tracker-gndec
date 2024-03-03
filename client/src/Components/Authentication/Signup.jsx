@@ -15,6 +15,9 @@ import CircularProgress from '@mui/material/CircularProgress'; // Import Circula
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 
+const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
+
+
 function Signup() {
   const navigate = useNavigate();
   const [credentials, setCredentials] = useState({
@@ -76,7 +79,7 @@ function Signup() {
       }
 
       // Post request
-      const response = await fetch('http://localhost:8000/api/auth/signup', {
+      const response = await fetch(`${API_URL}api/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials),

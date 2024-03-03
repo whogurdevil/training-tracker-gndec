@@ -5,6 +5,8 @@ import { LooksOneRounded, LooksTwoRounded, Looks3Rounded, Looks4Rounded, Looks5R
 import { jwtDecode } from "jwt-decode";
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
+
 
 const Home = () => {
     const [batchYear, setBatchYear] = useState(null);
@@ -17,7 +19,7 @@ const Home = () => {
                 // console.log(token)
                 const urn = decodeAuthToken(token);
                 // console.log(urn)
-                const url = `http://localhost:8000/api/users/getuser/${urn}`
+                const url = `${API_URL}api/users/getuser/${urn}`
                 const response = await axios.get(url, {
                     headers: {
                         "auth-token": token // Include the authentication token in the request headers

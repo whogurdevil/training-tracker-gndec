@@ -8,6 +8,8 @@ import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import { base64toBlob, openBase64NewTab } from '../../CommonComponent/base64topdf';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
+
 
 const SuperAdminForm = () => {
     const [users, setUsers] = useState([]);
@@ -20,7 +22,7 @@ const SuperAdminForm = () => {
         const fetchUsers = async () => {
             try {
                 const token = localStorage.getItem('authtoken');
-                const response = await axios.get('http://localhost:8000/api/users/getallusers/', {
+                const response = await axios.get(`${API_URL}api/users/getallusers/`, {
                     headers: {
                         "auth-token": token // Include the authentication token in the request headers
                     }
@@ -165,7 +167,7 @@ const SuperAdminForm = () => {
             // Determine the endpoint URL and data based on whether it's for training or placement data
             if (isPlacement) {
 
-                url = 'http://localhost:8000/placement/updatelock';
+                url = `${API_URL}placement/updatelock`;
                 data = {
                     urn: urn,
                     lock: !lockStatus // Toggle the lock status
@@ -174,7 +176,7 @@ const SuperAdminForm = () => {
             } else {
                 // Use the appropriate training number in the URL
                 const trainingNumber = selectedTraining.substring(2);
-                url = `http://localhost:8000/tr${trainingNumber}/updatelock`;
+                url = `${API_URL}tr${trainingNumber}/updatelock`;
                 data = {
                     urn: urn,
                     lock: !lockStatus // Toggle the lock status

@@ -17,6 +17,9 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { jwtDecode } from "jwt-decode";
 
+const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
+
+
 export default function PlacementForm() {
   const [formData, setFormData] = useState({
     company: '',
@@ -46,7 +49,7 @@ export default function PlacementForm() {
     // Fetch data from the database when the component mounts or the page is refreshed
     const fetchData = async () => {
       try {
-        const url = `http://localhost:8000/placement/${urn}`;
+        const url = `${API_URL}placement/${urn}`;
         const response = await axios.get(url);
         const userData = response.data.data;
         console.log(userData);
@@ -140,7 +143,7 @@ export default function PlacementForm() {
       }
 
       // Submit form data
-      const response = await axios.post('http://localhost:8000/placement', {
+      const response = await axios.post(`${API_URL}placement`, {
         formData,
         urn: urn,
       });

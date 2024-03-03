@@ -15,6 +15,8 @@ import Container from '@mui/material/Container';
 import CircularProgress from '@mui/material/CircularProgress'; // Import CircularProgress
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useLocation } from 'react-router-dom';
+const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
+
 
 function Verify() {
   const navigate = useNavigate();
@@ -32,7 +34,7 @@ function Verify() {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8000/api/validate/sendotp', {
+      const response = await fetch(`${API_URL}api/validate/sendotp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: credentials.email }),
@@ -59,7 +61,7 @@ function Verify() {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8000/api/validate/verify', {
+      const response = await fetch(`${API_URL}api/validate/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ otp: credentials.otp }),

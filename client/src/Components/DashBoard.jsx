@@ -19,6 +19,8 @@ import { Grid } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useMediaQuery } from '@mui/material';
 
+const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
+
 
 export default function Form() {
   const theme = useTheme();
@@ -51,7 +53,7 @@ export default function Form() {
     // Fetch data from the database when the component mounts or the page is refreshed
     const fetchData = async () => {
       try {
-        const url = `http://localhost:8000/userprofiles/${urn}`;
+        const url = `${API_URL}userprofiles/${urn}`;
         const response = await axios.get(url);
         const userData = response.data.data;
         // console.log(userData);
@@ -134,7 +136,7 @@ export default function Form() {
       }
 
       // Submit form data
-      const response = await axios.post('http://localhost:8000/userprofiles', { formData, urn: urn });
+      const response = await axios.post(`${API_URL}userprofiles`, { formData, urn: urn });
       console.log(response);
       if (response.data.success) {
         toast.success('Form submitted successfully!');

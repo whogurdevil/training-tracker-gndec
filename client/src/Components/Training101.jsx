@@ -15,6 +15,8 @@ import { jwtDecode } from "jwt-decode";
 import { useLocation } from 'react-router-dom';
 import { base64toBlob, openBase64NewTab } from '../CommonComponent/base64topdf';
 
+const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
+
 
 export default function Form() {
   const [formData, setFormData] = useState({
@@ -38,7 +40,7 @@ export default function Form() {
         const token = localStorage.getItem("authtoken");
         const urn = decodeAuthToken(token);
         console.log(urn)
-        const response = await axios.get(`http://localhost:8000/tr${number}/${urn}`);
+        const response = await axios.get(`${API_URL}tr${number}/${urn}`);
         const userData = response.data.data;
 
         if (
@@ -115,7 +117,7 @@ export default function Form() {
 
       const token = localStorage.getItem("authtoken");
       const urn = decodeAuthToken(token);
-      const url = `http://localhost:8000/tr${number}`
+      const url = `${API_URL}tr${number}`
       const response = await axios.post(url, { formData, urn: urn });
 
       if (response.data.success) {

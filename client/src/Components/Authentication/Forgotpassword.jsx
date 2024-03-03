@@ -15,6 +15,8 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
+const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
+
 function Login() {
   const [credentials, setCredentials] = useState({ email: '', otp: '', newPassword: '' });
   const [loading, setLoading] = useState(false);
@@ -24,7 +26,7 @@ function Login() {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8000/api/password/forgotpassword', {
+      const response = await fetch(`${API_URL}api/password/forgotpassword`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: credentials.email }),
@@ -50,7 +52,7 @@ function Login() {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8000/api/password/resetpassword', {
+      const response = await fetch(`${API_URL}api/password/resetpassword`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
