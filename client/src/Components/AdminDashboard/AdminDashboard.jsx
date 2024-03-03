@@ -2,7 +2,9 @@ import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { Card, Modal, Box, Typography, Grid, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
-import EditIcon from '@mui/icons-material/Edit';    
+import EditIcon from '@mui/icons-material/Edit'; 
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'; 
+import { base64toBlob, openBase64NewTab } from '../../CommonComponent/base64topdf';
 
 const AdminForm = () => {
     const [users, setUsers] = useState([]);
@@ -49,6 +51,14 @@ const AdminForm = () => {
     
         return filteredData;
     }, [users, selectedBatch, selectedBranch, selectedTraining]);
+
+    const handleViewCertificate = () => {
+       //logic to be made
+      };
+
+    const handleViewAppletter = () => {
+        //logic to be made
+    };
     
     const columns = useMemo(
         () => {
@@ -61,7 +71,6 @@ const AdminForm = () => {
             if (selectedTraining === 'placementData') {
                 customColumns.push(
                     { accessorKey: "placementData.package", header: "Package" },
-                    { accessorKey: "placementData.appointmentLetter", header: "Appointment Letter" },
                     { accessorKey: "placementData.appointmentDate", header: "Appointment Date" },
                     { accessorKey: "placementData.company", header: "Company" },
                     
@@ -76,7 +85,6 @@ const AdminForm = () => {
             } else if (selectedTraining) {
                 customColumns.push(
                     { accessorKey: `${selectedTraining}.technology`, header: "Technology" },
-                    { accessorKey: `${selectedTraining}.certificate`, header: "Certificate" },
                     { accessorKey: `${selectedTraining}.projectName`, header: "Project Name" },
                     { accessorKey: `${selectedTraining}.type`, header: "Type" },
                     
@@ -88,7 +96,7 @@ const AdminForm = () => {
                     Cell: ({ row }) => (row[`${selectedTraining}.lock`] ? "Yes" : "No"),
                   });
             }
-
+            if(selectedTraining){
             // Add the edit icon column
             customColumns.push({
                 accessorKey: "edit",
@@ -99,7 +107,31 @@ const AdminForm = () => {
                         style={{ cursor: 'pointer' }}
                     />
                 ),
-            });
+            });}
+            if(selectedTraining === 'placementData'){
+                customColumns.push({
+                    accessorKey: "placementData.appointmentLetter",
+                    header: "Appointment Letter",
+                    Cell: ({ row }) => (
+                        <PictureAsPdfIcon
+                            onClick={() => handleViewAppletter(row)}
+                            style={{ cursor: 'pointer' }}
+                        />
+                    ),
+                });}
+
+            if(selectedTraining && selectedTraining != 'placementData'){
+                customColumns.push({
+                    accessorKey: `${selectedTraining}.certificate`,
+                    header: "Certificate",
+                    Cell: ({ row }) => (
+                        <PictureAsPdfIcon
+                            onClick={() => handleViewCertificate(row)}
+                            style={{ cursor: 'pointer' }}
+                        />
+                    ),
+                });}
+
 
             return customColumns;
         },
