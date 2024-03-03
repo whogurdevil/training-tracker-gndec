@@ -34,6 +34,27 @@ router.post('/', async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 });
+router.post('/updatelock', async (req, res) => {
+    try {
+        const { urn, lock } = req.body;
+        const trainingField = "tr103.lock";
+        console.log(req.body)
+        userData = await SignUpdata.findOneAndUpdate(
+            { urn: urn },
+            { [trainingField]: lock },
+            { new: true }
+        );
+
+        if (!userData) {
+            return res.status(404).json({ message: 'User data not found' });
+        }
+
+        // Respond with the updated user data
+        res.status(200).json({ success: true, data: userData });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
 router.get('/:urn', async (req, res) => {
     try {
         const urn = req.params.urn;
