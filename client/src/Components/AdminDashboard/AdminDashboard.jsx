@@ -52,13 +52,30 @@ const AdminForm = () => {
         return filteredData;
     }, [users, selectedBatch, selectedBranch, selectedTraining]);
 
-    const handleViewCertificate = () => {
-       //logic to be made
-      };
-
-    const handleViewAppletter = () => {
-        //logic to be made
+    const handleViewCertificate = (row) => {
+        
+        if (selectedTraining === 'placementData') {
+            if (row.original.placementData && row.original.placementData.appointmentLetter) {
+                // Use the base64toBlob function to convert the base64 data to a Blob object
+                const blob = base64toBlob(row.original.placementData.appointmentLetter);
+                // Use the URL.createObjectURL method to create a temporary URL for the Blob object
+                const url = URL.createObjectURL(blob);
+                openBase64NewTab(url);
+            } else {
+                console.error("Appointment Letter not found for this user in placement data.");
+            }
+        } else if (selectedTraining && row.original[selectedTraining] && row.original[selectedTraining].certificate) {
+            // Follow the same process as above to handle certificates in other training data
+            const blob = base64toBlob(row.original[selectedTraining].certificate);
+            const url = URL.createObjectURL(blob);
+            console.log(url);
+            console.log(row.original)
+            openBase64NewTab(url);
+        } else {
+            console.error("Certificate not found for this user or training data is missing.");
+        }
     };
+     
     
     const columns = useMemo(
         () => {
@@ -87,8 +104,7 @@ const AdminForm = () => {
                     { accessorKey: `${selectedTraining}.technology`, header: "Technology" },
                     { accessorKey: `${selectedTraining}.projectName`, header: "Project Name" },
                     { accessorKey: `${selectedTraining}.type`, header: "Type" },
-                    
-                );
+                    );
                 customColumns.push({
                     accessorKey: `${selectedTraining}.lock`,
                     header: "Verified",
@@ -110,15 +126,16 @@ const AdminForm = () => {
             });}
             if(selectedTraining === 'placementData'){
                 customColumns.push({
-                    accessorKey: "placementData.appointmentLetter",
-                    header: "Appointment Letter",
+                    accessorKey: `${selectedTraining}.certificate`,
+                    header: "Certificate",
                     Cell: ({ row }) => (
                         <PictureAsPdfIcon
-                            onClick={() => handleViewAppletter(row)}
+                            onClick={() => handleViewCertificate(row)}
                             style={{ cursor: 'pointer' }}
                         />
                     ),
-                });}
+                }
+                );}
 
             if(selectedTraining && selectedTraining != 'placementData'){
                 customColumns.push({
@@ -129,8 +146,9 @@ const AdminForm = () => {
                             onClick={() => handleViewCertificate(row)}
                             style={{ cursor: 'pointer' }}
                         />
-                    ),
-                });}
+                    ),  
+                });
+                }
 
 
             return customColumns;
@@ -140,12 +158,6 @@ const AdminForm = () => {
 
     const handleEdit = (row) => {
         console.log("Eh krna hle")
-        // Update the 'Verified' value to 'Yes' for the clicked row
-        // You need to implement the logic to update the 'lock' value in the user object
-        // For example:
-        // const updatedUser = { ...row, [`${selectedTraining}.lock`]: true };
-        // Then update the users state with the updated user
-        // setUsers(users.map(user => user.id === row.id ? updatedUser : user));
     };
 
     const table = useMaterialReactTable({
