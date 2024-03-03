@@ -4,11 +4,13 @@ const userInfo = require('../models/UserInfo').SignUp;
 const fetchuser = require('../middleware/fetchUser');
 const isAdmin = require('../middleware/isAdmin');
 
-router.get('/getuser/:id', fetchuser, async (req, res) => {
+
+router.get('/getuser/:urn',fetchuser,  async (req, res) => {
   try {
-    const userId = req.user.id;
-    console.log(userId)
-      const user = await userInfo.findById({_id:userId}).select('-password');
+    const urn = req.params.urn;
+    console.log(urn)
+    const user = await userInfo.findOne({ urn: urn })
+    console.log(user)
       if (!user) {
         return res.status(404).json({ success: false, message: 'User not found' });
       }
