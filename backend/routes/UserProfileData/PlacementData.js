@@ -36,13 +36,14 @@ router.post('/', async (req, res) => {
 router.post('/updatelock', async (req, res) => {
     try {
         const { urn, lock } = req.body;
-        const trainingField = "placement.lock";
-        console.log(req.body)
+        const trainingField = "placementData.lock";
+        
         userData = await SignUpdata.findOneAndUpdate(
             { urn: urn },
             { [trainingField]: lock },
             { new: true }
         );
+        console.log(userData)
 
         if (!userData) {
             return res.status(404).json({ message: 'User data not found' });

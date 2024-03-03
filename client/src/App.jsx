@@ -6,7 +6,7 @@ import Login from './Components/Authentication/Login';
 import Verify from './Components/Authentication/Verify';
 import ForgotPassword from './Components/Authentication/Forgotpassword';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import SuperAdmin from './Components/SuperAdminDashboard/SuperAdmin'
+import SuperAdminForm from './Components/SuperAdminDashboard/SuperAdmin';
 import Navbar from './Components/Navbar/Navbar';
 import PlacementForm from './Components/PlacementInput';
 import Training101 from './Components/Training101'
@@ -28,7 +28,7 @@ class App extends Component {
             <Route path="/home" element={<ProtectedRoute path="/home" component={Home} />} />
             <Route path='/placement' element={<ProtectedRoute path="/placement" component={PlacementForm} />} />
             <Route path='/tr' element={<ProtectedRoute path="/tr" component={Training101} />} />
-            <Route path="/superadmin" element={<ProtectedRoute path="/superadmin" component={SuperAdmin} />} />
+            <Route path="/superadmin" element={<ProtectedRoute path="/superadmin" component={SuperAdminForm} />} />
             <Route path="/admin" element={<ProtectedRoute path="/admin" component={Admin} />} />
             <Route path="/dashboard" element={<ProtectedRoute path="/dashboard" component={DashBoard} />} />
             <Route path="/forgotpassword" element={<ForgotPassword />} />
