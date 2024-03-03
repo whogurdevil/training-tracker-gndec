@@ -12,8 +12,12 @@ router.post('/', async (req, res) => {
         const userInfo = await SignUpdata.findOne({ urn: urn });
         console.log(userInfo)
         
+        
         if (!userInfo) {
             return res.status(404).json({ message: 'UserInfo not found' });
+        }
+        if (userInfo.tr101.lock) {
+            return res.status(404).json({ message: 'You are already locked not play with me buddy' });
         }
 
         // Create a new user profile object

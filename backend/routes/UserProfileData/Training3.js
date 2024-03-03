@@ -48,6 +48,10 @@ router.post('/updatelock', async (req, res) => {
         if (!userData) {
             return res.status(404).json({ message: 'User data not found' });
         }
+        if (userInfo.tr103.lock) {
+            return res.status(404).json({ message: 'You are already locked not play with me buddy' });
+        }
+
 
         // Respond with the updated user data
         res.status(200).json({ success: true, data: userData });
