@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
-import { Card, Button, Modal, Box, Typography, Grid, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
+import { Card, Modal, Box, Typography, Grid, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
+import EditIcon from '@mui/icons-material/Edit'; 
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'; 
+import { base64toBlob, openBase64NewTab } from '../../CommonComponent/base64topdf';
 
 const AdminForm = () => {
     const [users, setUsers] = useState([]);
@@ -19,36 +22,44 @@ const AdminForm = () => {
                     }
                 });
                 const filteredUsers = response.data.data
-                    .filter(user => user.role === 'user')
-                    .sort((a, b) => a.urn - b.urn);
+                .filter(user => user.role === 'user')
+                .sort((a, b) => a.urn - b.urn);
                 setUsers(filteredUsers);
-               
+                
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
         };
-
+        
         fetchUsers();
     }, []);
-
+    
     const filteredUsers = useMemo(() => {
         let filteredData = [...users];
-
+        
         if (selectedBatch) {
-            filteredData = filteredData.filter(user => user.userInfo.batch === selectedBatch);
+            filteredData = filteredData.filter(user => user.userInfo && user.userInfo.batch === selectedBatch);
         }
-
+    
         if (selectedBranch) {
-            filteredData = filteredData.filter(user => user.userInfo.branch === selectedBranch);
+            filteredData = filteredData.filter(user => user.userInfo && user.userInfo.branch === selectedBranch);
         }
-
+    
         if (selectedTraining) {
             filteredData = filteredData.filter(user => user[selectedTraining]);
         }
-
+    
         return filteredData;
     }, [users, selectedBatch, selectedBranch, selectedTraining]);
 
+    const handleViewCertificate = () => {
+       //logic to be made
+      };
+
+    const handleViewAppletter = () => {
+        //logic to be made
+    };
+    
     const columns = useMemo(
         () => {
             let customColumns = [
@@ -56,43 +67,86 @@ const AdminForm = () => {
                 { accessorKey: "userInfo.Name", header: "Name" },
                 { accessorKey: "userInfo.crn", header: "CRN" }
             ];
-
+    
             if (selectedTraining === 'placementData') {
                 customColumns.push(
                     { accessorKey: "placementData.package", header: "Package" },
-                    { accessorKey: "placementData.appointmentLetter", header: "Appointment Letter" },
                     { accessorKey: "placementData.appointmentDate", header: "Appointment Date" },
                     { accessorKey: "placementData.company", header: "Company" },
-                    { accessorKey: `${selectedTraining}.lock`, header: "Verified" }
+                    
                 );
+                customColumns.push({
+                    accessorKey: `${selectedTraining}.lock`,
+                    header: "Verified",
+                    // Add a conditional expression to convert boolean to string
+                    Cell: ({ row }) => (row[`${selectedTraining}.lock`] ? "Yes" : "No"),
+                  });
+                  
             } else if (selectedTraining) {
                 customColumns.push(
-                    { accessorKey: selectedTraining + ".technology", header: "Technology" },
-                    { accessorKey: selectedTraining + ".certificate", header: "Certificate" },
-                    { accessorKey: selectedTraining + ".projectName", header: "Project Name" },
-                    { accessorKey: selectedTraining + ".type", header: "Type" }
+                    { accessorKey: `${selectedTraining}.technology`, header: "Technology" },
+                    { accessorKey: `${selectedTraining}.projectName`, header: "Project Name" },
+                    { accessorKey: `${selectedTraining}.type`, header: "Type" },
+                    
                 );
+                customColumns.push({
+                    accessorKey: `${selectedTraining}.lock`,
+                    header: "Verified",
+                    // Add a conditional expression to convert boolean to string
+                    Cell: ({ row }) => (row[`${selectedTraining}.lock`] ? "Yes" : "No"),
+                  });
             }
-
-            
+            if(selectedTraining){
+            // Add the edit icon column
             customColumns.push({
-                accessorKey: `${selectedTraining}.lock`,
-                header: "Verified",
-                renderCell: ({ row }) => (
-                    <Typography>
-                        {console.log(row.original)}
-                        {row.original[selectedTraining] && row.original[selectedTraining].lock ? 'True' : 'False'}
-                   
-                    </Typography>
-                )
-            }
-);
-            
+                accessorKey: "edit",
+                header: "Mark Verification",
+                Cell: ({ row }) => (
+                    <EditIcon
+                        onClick={() => handleEdit(row)}
+                        style={{ cursor: 'pointer' }}
+                    />
+                ),
+            });}
+            if(selectedTraining === 'placementData'){
+                customColumns.push({
+                    accessorKey: "placementData.appointmentLetter",
+                    header: "Appointment Letter",
+                    Cell: ({ row }) => (
+                        <PictureAsPdfIcon
+                            onClick={() => handleViewAppletter(row)}
+                            style={{ cursor: 'pointer' }}
+                        />
+                    ),
+                });}
+
+            if(selectedTraining && selectedTraining != 'placementData'){
+                customColumns.push({
+                    accessorKey: `${selectedTraining}.certificate`,
+                    header: "Certificate",
+                    Cell: ({ row }) => (
+                        <PictureAsPdfIcon
+                            onClick={() => handleViewCertificate(row)}
+                            style={{ cursor: 'pointer' }}
+                        />
+                    ),
+                });}
+
 
             return customColumns;
         },
         [selectedTraining]
     );
+
+    const handleEdit = (row) => {
+        console.log("Eh krna hle")
+        // Update the 'Verified' value to 'Yes' for the clicked row
+        // You need to implement the logic to update the 'lock' value in the user object
+        // For example:
+        // const updatedUser = { ...row, [`${selectedTraining}.lock`]: true };
+        // Then update the users state with the updated user
+        // setUsers(users.map(user => user.id === row.id ? updatedUser : user));
+    };
 
     const table = useMaterialReactTable({
         data: filteredUsers,

@@ -4,6 +4,7 @@ const userInfo = require('../models/UserInfo').SignUp;
 const fetchuser = require('../middleware/fetchUser');
 const isAdmin = require('../middleware/isAdmin');
 
+
 router.get('/getuser/:urn',fetchuser,  async (req, res) => {
   try {
     const urn = req.params.urn;
