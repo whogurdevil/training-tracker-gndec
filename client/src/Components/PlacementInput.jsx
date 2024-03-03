@@ -10,7 +10,7 @@ import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import FileBase from 'react-file-base64';
 import Grid from '@mui/material/Grid';
-import { base64toBlob, openBase64NewTab } from '../CommonComponent/base64topdf';
+import {  openBase64NewTab } from '../CommonComponent/base64topdf';
 import EditIcon from '@mui/icons-material/Edit';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';  
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
