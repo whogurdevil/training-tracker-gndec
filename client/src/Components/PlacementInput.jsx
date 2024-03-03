@@ -122,8 +122,10 @@ export default function PlacementForm() {
     // Format the date string
     const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
   
-    console.log(formattedDate);
+    // Update the formData state with the selected date
+    setFormData({ ...formData, appointmentDate: formattedDate });
   };
+  
   
 
   const handleSubmit = async (e) => {
