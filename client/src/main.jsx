@@ -30,7 +30,7 @@ const Main = () => {
     palette: {
       mode:'light',
       primary: {
-        main: '#3fb589',
+        main: '#dc3545',
       },
       secondary: {
         main: '#f50057',
