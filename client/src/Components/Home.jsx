@@ -111,7 +111,7 @@ const Home = () => {
 
     return (
         <Container
-            sx={{ paddingTop: 10, marginX: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            sx={{ marginX: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             {cardsData.map((data, index) => (
 
                 <ButtonCard key={index}  {...data} />

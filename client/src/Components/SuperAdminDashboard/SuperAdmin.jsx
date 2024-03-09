@@ -253,7 +253,7 @@ const SuperAdminForm = () => {
     };
 
     return (
-        <div style={{ marginTop: '100px', padding: '0 20px' }}>
+        <div style={{ padding: '0 20px' }}>
             <Grid container spacing={2} justifyContent="space-around">
                 <Grid item style={{ marginBottom: 20 }}>
                     <FormControl style={{ width: 200 }}>

@@ -22,7 +22,7 @@ export default function ButtonCard(data) {
       sx={{
         width: '90vw',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between' ,
-        color:'whitesmoke', backgroundColor:'#272727',
+        color:'black', backgroundColor:'#f5f5f5',
         marginY: 1, padding: 2,
         '&:hover': {
           // color: '#3fb589',
