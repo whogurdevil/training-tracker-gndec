@@ -77,7 +77,11 @@ const SuperAdminForm = () => {
         let customColumns = [
             { accessorKey: "urn", header: "URN" },
             { accessorKey: "userInfo.Name", header: "Name" },
-            { accessorKey: "userInfo.crn", header: "CRN" }
+            { accessorKey: "userInfo.crn", header: "CRN" },
+            { accessorKey: "userInfo.mentor", header: "Mentor" },
+            { accessorKey: "userInfo.batch", header: "Batch" },
+            { accessorKey: "userInfo.section", header: "Section" },
+            { accessorKey: "userInfo.contact", header: "Contact" }
         ];
 
         if (selectedTraining === 'placementData') {
@@ -88,13 +92,20 @@ const SuperAdminForm = () => {
                     )
                 },
                 { accessorKey: "placementData.package", header: "Package" },
-                { accessorKey: "placementData.appointmentDate", header: "Appointment Date" },
-                { accessorKey: "placementData.company", header: "Company" }
+                { accessorKey: "placementData.appointmentNo", header: "Appointment Number" },
+                { accessorKey: "placementData.company", header: "Company" },
+                { accessorKey: "placementData.highStudy", header: "Higher Studies" },
+                
             );
             customColumns.push({
                 accessorKey: `${selectedTraining}.lock`,
                 header: "Verified",
                 Cell: ({ row }) => (row.original[selectedTraining].lock ? "Yes" : "No"),
+            });
+            customColumns.push({
+                accessorKey: `${selectedTraining}.isPlaced`,
+                header: "Placement Status",
+                Cell: ({ row }) => (row.original[selectedTraining].isPlaced ? "Yes" : "No"),
             });
         } else if (selectedTraining && selectedTraining !== '') {
             customColumns.push(
@@ -104,6 +115,7 @@ const SuperAdminForm = () => {
                     )
                 },
                 { accessorKey: `${selectedTraining}.technology`, header: "Technology" },
+                {accessorKey: `${selectedTraining}.organization`, header: "Organization" },
                 { accessorKey: `${selectedTraining}.projectName`, header: "Project Name" },
                 { accessorKey: `${selectedTraining}.type`, header: "Type" }
             );
