@@ -58,7 +58,7 @@ export default function Form() {
       try {
         const url = `${API_URL}userprofiles/${urn}`;
         const response = await axios.get(url);
-        const userData = response.data.data; 
+        const userData = response.data.data;
 
         // Check if all fields are filled in the fetched data
         if (
@@ -161,7 +161,7 @@ export default function Form() {
   const setMentor = (value) => {
     setFormData({ ...formData, mentor: value });
   };
-  
+
   const handleEdit = () => {
     setIsEditing((prevEditing) => !prevEditing);
   };
@@ -183,13 +183,13 @@ export default function Form() {
     <Container sx={{ paddingTop: 10 }}>
       <ToastContainer />
       <form onSubmit={handleSubmit}>
-        <Container style={{ paddingTop:4}}>
+        <Container style={{ paddingTop: 4 }}>
           <Button
             onClick={handleEdit}
             color="primary"
             variant="contained"
             style={{ position: 'relative' }}
-            // endIcon={<EditIcon />}
+          // endIcon={<EditIcon />}
           >
             {/* Edit */}
             <EditIcon />
@@ -205,22 +205,22 @@ export default function Form() {
             Submit
           </Button>
         </Container>
-        <Container sx={{margin:0, padding:0}}>
+        <Container sx={{ margin: 0, padding: 0 }}>
           <Grid container spacing={isSmallScreen ? 2 : 4}>
             <Grid item xs={12} md={6} sx={{ textAlign: isSmallScreen ? 'left' : 'right' }}>
-                <TextField
-                  label="Name"
-                  variant="outlined"
-                  fullWidth
-                  required
-                  name="Name"
-                  value={formData.Name}
-                  onChange={handleChange}
-                  error={!!errors.Name}
-                  helperText={errors.Name}
-                  sx={{ mb: 2 }}
-                  disabled={!isEditing || isSubmitting}
-                />
+              <TextField
+                label="Name"
+                variant="outlined"
+                fullWidth
+                required
+                name="Name"
+                value={formData.Name}
+                onChange={handleChange}
+                error={!!errors.Name}
+                helperText={errors.Name}
+                sx={{ mb: 2 }}
+                disabled={!isEditing || isSubmitting}
+              />
               <TextField
                 label="Contact"
                 variant="outlined"
@@ -247,7 +247,7 @@ export default function Form() {
                 sx={{ mb: 2 }}
                 disabled={!isEditing || isSubmitting}
               />
-               <TextField
+              <TextField
                 select
                 label="Section"
                 variant="outlined"
@@ -256,10 +256,13 @@ export default function Form() {
                 name="section"
                 value={formData.section}
                 onChange={(e) => setSection(e.target.value)}
-                sx={{ mb: 2 }}
                 disabled={!isEditing || isSubmitting}
+                sx={{
+                  mb: 2,
+                  '& .MuiSelect-select': { textAlign: 'left' } // Aligns the selected value to the left
+                }}
               >
-                <MenuItem value="A1">A1</MenuItem>
+                <MenuItem value="A1" >A1</MenuItem>
                 <MenuItem value="A2">A2</MenuItem>
                 <MenuItem value="B1">B1</MenuItem>
                 <MenuItem value="B2">B2</MenuItem>

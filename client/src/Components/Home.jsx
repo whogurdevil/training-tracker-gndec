@@ -10,6 +10,7 @@ const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE
 
 const Home = () => {
     const [batchYear, setBatchYear] = useState(null);
+    const [isLeet,setIsLeet ] = useState(false);
 
     useEffect(() => {
         const fetchBatchYear = async () => {
@@ -27,8 +28,9 @@ const Home = () => {
                 });
 
                 const data = response.data.data
-                console.log(data);
+               
                 var difference = 0;
+                console.log(data.userInfo.admissionType)
                 if (data.userInfo.batch) {
                     const batchYear = parseInt(data.userInfo.batch.split('-')[0]);
 
@@ -39,7 +41,9 @@ const Home = () => {
 
                     difference = 0;
                 }
-
+                if (data.userInfo.admissionType === "Non LEET"){
+                    setIsLeet(true);
+                }
 
 
                 setBatchYear(difference);
@@ -73,7 +77,7 @@ const Home = () => {
             path: '/tr',
             param: '101',
             startIcon: LooksTwoRounded,
-            disabled: !(batchYear > 0)
+            disabled: (!(batchYear > 0) || !isLeet)
         },
         {
             text: 'Training 102',
