@@ -232,6 +232,7 @@ export default function PlacementForm() {
           onChange={handleIsPlacedChange}
           sx={{ mb: 2 }}
           disabled={!isEditing || isSubmitting}
+<<<<<<< Updated upstream
         >
           <MenuItem value="true">Yes</MenuItem>
           <MenuItem value="false">No</MenuItem>
@@ -269,6 +270,17 @@ export default function PlacementForm() {
             helperText={errors.company}
             sx={{ mb: 2 }}
             disabled={!isEditing || isSubmitting}
+=======
+        />
+        {/* Appointment Date */}
+        <LocalizationProvider dateAdapter={AdapterDayjs} >
+          <DatePicker
+            label="Appointment Date"
+            views={['year', 'month', 'day']}
+            disabled={!isEditing || isSubmitting}
+            renderInput={(params) => <TextField {...params} helperText="Enter starting year only" />}
+            onChange={handleDateChange}
+>>>>>>> Stashed changes
           />
 
           <TextField
