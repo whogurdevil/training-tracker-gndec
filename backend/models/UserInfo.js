@@ -8,12 +8,15 @@ const userInfoSchema = new mongoose.Schema({
   },
   crn: { type: Number },
   branch: { type: String, default: 'Computer Science & Enginnering' },
+  section: { type: String }, //section
+  mentor: { type: String }, //mentor
   gender: { type: String },
   batch: { type: String },
   admissionType: { type: String } //leet or non leet
 });
 
 const tr101Schema = new mongoose.Schema({
+  organization: { type: String }, //to save org name
   technology: { type: [String] },
   certificate: String,
   projectName: { type: String },
@@ -21,6 +24,7 @@ const tr101Schema = new mongoose.Schema({
   lock: { type: Boolean, default: false }
 });
 const tr102Schema = new mongoose.Schema({
+  organization: { type: String }, //to save org name
   technology: { type: [String] },
   certificate: String,
   projectName: { type: String },
@@ -28,6 +32,7 @@ const tr102Schema = new mongoose.Schema({
   lock: { type: Boolean, default: false }
 });
 const tr103Schema = new mongoose.Schema({
+  organization: { type: String }, //to save org name
   technology: { type: [String] },
   certificate: String,
   projectName: { type: String },
@@ -35,6 +40,7 @@ const tr103Schema = new mongoose.Schema({
   lock: { type: Boolean, default: false }
 });
 const tr104Schema = new mongoose.Schema({
+  organization: { type: String }, //to save org name
   technology: { type: [String] },
   certificate: String,
   projectName: { type: String },
@@ -43,10 +49,13 @@ const tr104Schema = new mongoose.Schema({
 });
 
 const placementDataSchema = new mongoose.Schema({
+  isPlaced:{ type: Boolean, default: false },//to open placement data if isPlaced
   company: { type: String },
-  appointmentDate: { type: Date },
+  placementType: { type: String }, //oncampus, offcampus
+  appointmentNo: { type: Number },
   appointmentLetter: String,
   package: { type: Number },
+  highStudy: { type: String }, //yes no enterprenuership
   lock: { type: Boolean, default: false }
 });
 

@@ -3,55 +3,64 @@ const placementData = require('../../models/UserInfo').PlacementData;
 const SignUpdata = require('../../models/UserInfo').SignUp;
 const router = express.Router();
 
-// Route to create a new user profile
+// Route to create or update a user's placement data
 router.post('/', async (req, res) => {
     try {
-        const { company, appointmentDate, appointmentLetter, package } = req.body.formData;
-        const urn=req.body.urn
-        const userInfo = await SignUpdata.findOne({ urn: urn });
+        const { company, placementType, highStudy, appointmentNo, appointmentLetter, package, isPlaced } = req.body.formData;
+        const urn = req.body.urn;
+        let userInfo = await SignUpdata.findOne({ urn: urn });
 
         if (!userInfo) {
             return res.status(404).json({ message: 'UserInfo not found' });
         }
 
-        // Create a new user profile object
-        const PlacementData = new placementData({
-            company,
-            appointmentDate,
-            appointmentLetter,
-            package
-        });
+        // Update or create placement data based on existence
+        if (userInfo.placementData) {
+            // Update existing placement data
+            userInfo.placementData.company = company;
+            userInfo.placementData.placementType = placementType;
+            userInfo.placementData.highStudy = highStudy;
+            userInfo.placementData.appointmentNo = appointmentNo;
+            userInfo.placementData.appointmentLetter = appointmentLetter;
+            userInfo.placementData.package = package;
+            userInfo.placementData.isPlaced = isPlaced;
+        } else {
+            // Create new placement data
+            userInfo.placementData = new placementData({
+                company,
+                placementType,
+                highStudy,
+                appointmentNo,
+                appointmentLetter,
+                package,
+                isPlaced
+            });
+        }
 
-        userInfo.placementData = PlacementData;
-
+        // Save the updated user info
         const savedUserInfo = await userInfo.save();
-        console.log(savedUserInfo);
 
         // Respond with the saved userInfo
-        res.status(201).json({ success: true, data: savedUserInfo });;
+        res.status(201).json({ success: true, data: savedUserInfo });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 });
+
+// Route to update lock status
 router.post('/updatelock', async (req, res) => {
     try {
         const { urn, lock } = req.body;
-        const trainingField = "placementData.lock";
-        
-        userData = await SignUpdata.findOneAndUpdate(
+
+        const userData = await SignUpdata.findOneAndUpdate(
             { urn: urn },
-            { [trainingField]: lock },
+            { 'placementData.lock': lock },
             { new: true }
         );
-        console.log(userData)
 
         if (!userData) {
             return res.status(404).json({ message: 'User data not found' });
         }
-        if (userInfo.placementData.lock) {
-            return res.status(404).json({ message: 'You are already locked not play with me buddy' });
-        }
-
 
         // Respond with the updated user data
         res.status(200).json({ success: true, data: userData });
@@ -59,6 +68,9 @@ router.post('/updatelock', async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 });
+
+// Route to get user's placement data
+// Route to get user's placement data
 router.get('/:urn', async (req, res) => {
     try {
         const urn = req.params.urn;
@@ -68,8 +80,22 @@ router.get('/:urn', async (req, res) => {
             return res.status(404).json({ message: 'UserInfo not found' });
         }
 
-        // Respond with the user information
-        res.status(200).json({ success: true, data: userInfo.placementData });
+        // Prepare placement data to ensure all required fields are present
+        let placementData = userInfo.placementData || {};
+        if (!placementData) {
+            placementData = {
+                company: null,
+                placementType: null,
+                highStudy: '', // Ensure highStudy field exists
+                appointmentNo: null,
+                appointmentLetter: null,
+                package: null,
+                isPlaced: false
+            };
+        }
+
+        // Respond with the user's placement data
+        res.status(200).json({ success: true, data: placementData });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }

@@ -20,6 +20,7 @@ const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE
 
 export default function Form() {
   const [formData, setFormData] = useState({
+    organization: '',
     technology: [],
     projectName: '',
     type: '',
@@ -44,6 +45,7 @@ export default function Form() {
         const userData = response.data.data;
 
         if (
+          userData.organization &&
           userData.technology &&
           userData.projectName &&
           userData.type
@@ -96,6 +98,9 @@ export default function Form() {
     e.preventDefault();
     try {
       const formErrors = {};
+      if (formData.organization.length === 0) {
+        formErrors.organization = 'Organization cannot be blank';
+      }
       if (formData.technology.length === 0) {
         formErrors.technology = 'Technology cannot be blank';
       }
@@ -197,6 +202,19 @@ export default function Form() {
 
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
+        <TextField
+            label="Organization Name"
+            variant="outlined"
+            fullWidth
+            required
+            name="organization"
+            value={formData.organization}
+            onChange={handleChange}
+            error={!!errors.organization}
+            helperText={errors.organization}
+            style={{ marginBottom: '1rem' }}
+            disabled={!isEditing || isSubmitting}
+          />
           <TextField
             label="Project Name"
             variant="outlined"
@@ -226,9 +244,9 @@ export default function Form() {
             sx={{ mb: 2 }}
             disabled={!isEditing || isSubmitting}
           >
-            <MenuItem value="PaidIntership">Paid Intership</MenuItem>
-            <MenuItem value="InternshipWithStipend">Internship With Stipend</MenuItem>
-            <MenuItem value="Training">Training</MenuItem>
+            <MenuItem value="Training / Internship Without Stipend">Training / Internship Without Stipend</MenuItem>
+            <MenuItem value="Internship With Stipend">Internship With Stipend</MenuItem>
+            <MenuItem value="Paid Internship">Paid Internship</MenuItem>
           </TextField>
         </Grid>
       </Grid>
