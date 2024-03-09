@@ -5,9 +5,10 @@ import { MaterialReactTable, useMaterialReactTable } from 'material-react-table'
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
-import { base64toBlob, openBase64NewTab } from '../../CommonComponent/base64topdf';
+import { base64toBlob, openBase64NewTab } from '../../utils/base64topdf';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ExportComponent from '../../utils/ExportData';
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
 
 
@@ -95,7 +96,7 @@ const SuperAdminForm = () => {
                 { accessorKey: "placementData.appointmentNo", header: "Appointment Number" },
                 { accessorKey: "placementData.company", header: "Company" },
                 { accessorKey: "placementData.highStudy", header: "Higher Studies" },
-                
+
             );
             customColumns.push({
                 accessorKey: `${selectedTraining}.lock`,
@@ -115,7 +116,7 @@ const SuperAdminForm = () => {
                     )
                 },
                 { accessorKey: `${selectedTraining}.technology`, header: "Technology" },
-                {accessorKey: `${selectedTraining}.organization`, header: "Organization" },
+                { accessorKey: `${selectedTraining}.organization`, header: "Organization" },
                 { accessorKey: `${selectedTraining}.projectName`, header: "Project Name" },
                 { accessorKey: `${selectedTraining}.type`, header: "Type" }
             );
@@ -301,6 +302,7 @@ const SuperAdminForm = () => {
                 </Grid>
             </Grid>
             <Card variant="outlined" style={{ marginBottom: '50px' }}>
+                <ExportComponent data={filteredUsers} columns={columns} selectedTraining={selectedTraining} /> {/* Use the ExportComponent */}
                 <MaterialReactTable table={table} />
             </Card>
 

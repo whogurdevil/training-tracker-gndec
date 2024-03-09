@@ -51,7 +51,7 @@ const ExportComponent = ({ data, selectedTraining }) => {
                     // Convert appointment letter to data URL
                     if (trainingData.appointmentLetter) {
                         const appointmentLetterBlob = base64toBlob(trainingData.appointmentLetter);
-                        filteredRow['Appointment Letter'] = `<a href="${URL.createObjectURL(appointmentLetterBlob)}" target="_blank">Download</a>`;
+                        filteredRow['Appointment Letter'] = URL.createObjectURL(appointmentLetterBlob);
 
                     } else {
                         filteredRow['Appointment Letter'] = '';

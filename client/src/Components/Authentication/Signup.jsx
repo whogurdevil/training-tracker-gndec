@@ -85,11 +85,11 @@ function Signup() {
         body: JSON.stringify(credentials),
       });
       const json = await response.json();
-      console.log(json);
+      // console.log(json);
       if (json.success) {
         toast('Successfully signed up');
         setTimeout(() => {
-          console.log(credentials.email);
+          // console.log(credentials.email);
           navigate('/verify', { state: { email: credentials.email } });
         }, 2000);
       } else {

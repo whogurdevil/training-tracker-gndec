@@ -11,7 +11,7 @@ import { useLocation } from 'react-router-dom';
 import MenuItem from '@mui/material/MenuItem';
 import FileBase from 'react-file-base64';
 import Grid from '@mui/material/Grid';
-import { openBase64NewTab } from '../CommonComponent/base64topdf';
+import { openBase64NewTab } from '../utils/base64topdf';
 import EditIcon from '@mui/icons-material/Edit';
 import { jwtDecode } from "jwt-decode";
 
@@ -52,15 +52,12 @@ export default function PlacementForm() {
         const url = `${API_URL}placement/${urn}`;
         const response = await axios.get(url);
         const userData = response.data.data;
-        console.log(userData)
 
         // Check if all fields are filled in the fetched data
-        if ( userData.isPlaced !== null && userData.highStudy !== null) {
+        if (userData.isPlaced !== null && userData.highStudy !== null) {
           // If all required fields are present, populate the form data
           setFormData(userData);
           setIsEditing(false);
-          console.log(1);
-          console.log(isEditing);
           setIsPlaced(userData.isPlaced);
           setHighstudy(userData.highStudy);
           if (userData.lock) {
@@ -121,11 +118,10 @@ export default function PlacementForm() {
       if (!formData.company.trim()) {
         formErrors.company = 'Company name cannot be blank';
       }
-    
+
 
       // Prepare form data to be submitted
       let submitData = {};
-      console.log(formData)
       if (isPlaced) {
         // Include form data as is if isPlaced is true
         submitData = { ...formData, isPlaced: true };
@@ -133,7 +129,7 @@ export default function PlacementForm() {
         // Include isPlaced as false and set other fields to null if isPlaced is false
         submitData = { company: null, placementType: null, highStudy: formData.highStudy, appointmentNo: null, appointmentLetter: null, package: null, isPlaced: false };
       }
-      console.log(submitData)
+      // console.log(submitData)
       // Submit form data
       const response = await axios.post(`${API_URL}placement`, {
         formData: submitData,
@@ -170,14 +166,14 @@ export default function PlacementForm() {
   const handleIsPlacedChange = (e) => {
     const { name, value } = e.target;
     setIsPlaced(value === "true");
-    console.log(name,value)
+    // console.log(name, value)
     setFormData({ ...formData, [name]: value });
   };
   const handleIsHighChange = (e) => {
-    console.log(e.target)
+    // console.log(e.target)
     const { name, value } = e.target;
     setHighstudy(value === "Yes");
-  
+
     setFormData({ ...formData, [name]: value });
   };
 
@@ -219,7 +215,7 @@ export default function PlacementForm() {
       <Typography variant="h5" gutterBottom>
         Please fill in your placement details below.
       </Typography>
-      
+
       <Grid item xs={12} md={6}>
         <TextField
           select
@@ -232,7 +228,6 @@ export default function PlacementForm() {
           onChange={handleIsPlacedChange}
           sx={{ mb: 2 }}
           disabled={!isEditing || isSubmitting}
-<<<<<<< Updated upstream
         >
           <MenuItem value="true">Yes</MenuItem>
           <MenuItem value="false">No</MenuItem>
@@ -270,17 +265,6 @@ export default function PlacementForm() {
             helperText={errors.company}
             sx={{ mb: 2 }}
             disabled={!isEditing || isSubmitting}
-=======
-        />
-        {/* Appointment Date */}
-        <LocalizationProvider dateAdapter={AdapterDayjs} >
-          <DatePicker
-            label="Appointment Date"
-            views={['year', 'month', 'day']}
-            disabled={!isEditing || isSubmitting}
-            renderInput={(params) => <TextField {...params} helperText="Enter starting year only" />}
-            onChange={handleDateChange}
->>>>>>> Stashed changes
           />
 
           <TextField

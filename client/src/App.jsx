@@ -10,7 +10,7 @@ import SuperAdminForm from './Components/SuperAdminDashboard/SuperAdmin';
 import Navbar from './Components/Navbar/Navbar';
 import PlacementForm from './Components/PlacementInput';
 import Training101 from './Components/Training101'
-import ProtectedRoute from './CommonComponent/ProtectedRoute';
+import ProtectedRoute from './utils/ProtectedRoute';
 import Admin from './Components/AdminDashboard/AdminDashboard'
 
 class App extends Component {

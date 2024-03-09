@@ -6,13 +6,11 @@ const router = express.Router();
 // Route to create a new user profile
 router.post('/', async (req, res) => {
     try {
-        const { organization, technology, projectName, type,certificate } = req.body.formData;
-       const urn=req.body.urn
-       console.log(urn)
+        const { organization, technology, projectName, type, certificate } = req.body.formData;
+        const urn = req.body.urn
         const userInfo = await SignUpdata.findOne({ urn: urn });
-        console.log(userInfo)
-        
-        
+
+
         if (!userInfo) {
             return res.status(404).json({ message: 'UserInfo not found' });
         }
@@ -22,17 +20,16 @@ router.post('/', async (req, res) => {
 
         // Create a new user profile object
         const TR101 = new Tr101({
-           organization,
-           technology,
-           projectName,
-           type,
-           certificate
+            organization,
+            technology,
+            projectName,
+            type,
+            certificate
         });
 
         userInfo.tr101 = TR101;
 
         const savedUserInfo = await userInfo.save();
-        console.log(savedUserInfo);
 
         // Respond with the saved userInfo
         res.status(201).json({ success: true, data: savedUserInfo });;
@@ -42,9 +39,8 @@ router.post('/', async (req, res) => {
 });
 router.post('/updatelock', async (req, res) => {
     try {
-        const { urn, lock} = req.body;
+        const { urn, lock } = req.body;
         const trainingField = "tr101.lock";
-        console.log(req.body)
         userData = await SignUpdata.findOneAndUpdate(
             { urn: urn },
             { [trainingField]: lock },

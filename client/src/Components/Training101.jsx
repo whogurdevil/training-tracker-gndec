@@ -13,7 +13,7 @@ import Grid from '@mui/material/Grid';
 import EditIcon from '@mui/icons-material/Edit';
 import { jwtDecode } from "jwt-decode";
 import { useLocation } from 'react-router-dom';
-import { base64toBlob, openBase64NewTab } from '../CommonComponent/base64topdf';
+import { base64toBlob, openBase64NewTab } from '../utils/base64topdf';
 
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
 
@@ -33,14 +33,14 @@ export default function Form() {
   const [isLock, setIsLock] = useState(false);
   const [certificate, setCertificate] = useState(null);
   let location = useLocation();
-  const number=location.state &&location.state.number
+  const number = location.state && location.state.number
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem("authtoken");
         const urn = decodeAuthToken(token);
-        console.log(urn)
+        // console.log(urn)
         const response = await axios.get(`${API_URL}tr${number}/${urn}`);
         const userData = response.data.data;
 
@@ -52,9 +52,9 @@ export default function Form() {
         ) {
           setFormData(userData);
           setIsEditing(false);
-          if(userData.lock){
+          if (userData.lock) {
             setIsLock(true)
-          }else{
+          } else {
             setIsLock(false)
           }
         } else {
@@ -160,19 +160,19 @@ export default function Form() {
   return (
     <Container>
       <Container style={{ paddingInline: 0, paddingBottom: 50 }} >
-      {!isLock && (
-        <Button
-          onClick={handleEdit}
-          color="primary"
-          variant="contained"
-          style={{
-            position: 'relative',
-            float: 'left',
-          }}
-        >
-        
-          <EditIcon />
-        </Button>
+        {!isLock && (
+          <Button
+            onClick={handleEdit}
+            color="primary"
+            variant="contained"
+            style={{
+              position: 'relative',
+              float: 'left',
+            }}
+          >
+
+            <EditIcon />
+          </Button>
         )}
         {isEditing && !isLock && (
           <Button
@@ -202,7 +202,7 @@ export default function Form() {
 
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
-        <TextField
+          <TextField
             label="Organization Name"
             variant="outlined"
             fullWidth
@@ -251,31 +251,31 @@ export default function Form() {
         </Grid>
       </Grid>
       <TextField
-            select
-            label="Technology"
-            variant="outlined"
-            fullWidth
-            required
-            name="technology"
-            value={formData.technology}
-            onChange={handleChange}
-            SelectProps={{ multiple: true }}
-            error={!!errors.technology}
-            helperText={errors.technology}
-            style={{ marginBottom: '1rem' }}
-            disabled={!isEditing || isSubmitting}
-          >
-            {technologyStack.map((tech) => (
-              <MenuItem key={tech} value={tech}>
-                {tech}
-              </MenuItem>
-            ))}
-          </TextField>
+        select
+        label="Technology"
+        variant="outlined"
+        fullWidth
+        required
+        name="technology"
+        value={formData.technology}
+        onChange={handleChange}
+        SelectProps={{ multiple: true }}
+        error={!!errors.technology}
+        helperText={errors.technology}
+        style={{ marginBottom: '1rem' }}
+        disabled={!isEditing || isSubmitting}
+      >
+        {technologyStack.map((tech) => (
+          <MenuItem key={tech} value={tech}>
+            {tech}
+          </MenuItem>
+        ))}
+      </TextField>
 
       <Typography variant="h6" gutterBottom textAlign="left" marginTop={2}>
         Upload Certificate
       </Typography>
-      
+
       <FileBase
         type="file"
         multiple={false}

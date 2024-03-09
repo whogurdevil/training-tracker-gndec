@@ -28,35 +28,22 @@ const Home = () => {
                 });
 
                 const data = response.data.data
-<<<<<<< Updated upstream
                
                 var difference = 0;
                 console.log(data.userInfo.admissionType)
                 if (data.userInfo.batch) {
                     const batchYear = parseInt(data.userInfo.batch.split('-')[0]);
-=======
-                console.log(data);
-                var difference = 4;
-                // if (data.userInfo.batch) {
-                //     const batchYear = parseInt(data.userInfo.batch.split('-')[0]);
->>>>>>> Stashed changes
 
-                //     const currentYear = new Date().getFullYear();
-                //     difference = currentYear - batchYear;
-                // }
-                // else {
+                    const currentYear = new Date().getFullYear();
+                    difference = currentYear - batchYear;
+                }
+                else {
 
-<<<<<<< Updated upstream
                     difference = 0;
                 }
                 if (data.userInfo.admissionType === "Non LEET"){
                     setIsLeet(true);
                 }
-=======
-                //     difference = 0;
-                // }
-
->>>>>>> Stashed changes
 
 
                 setBatchYear(difference);
