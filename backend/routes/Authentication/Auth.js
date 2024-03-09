@@ -10,11 +10,10 @@ router.use(express.json());
 router.post('/signup',
   body('password', 'password should have a minimum length of 5').isLength({ min: 5 }),
   body('email').custom((value) => {
-    console.log('.......in regex......')
     // Check if the email ends with "@gndec.ac.in"
     const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
     // if (!emailRegex.test(value) || !value.endsWith('@gndec.ac.in')) {
-      if (!emailRegex.test(value) ) {
+    if (!emailRegex.test(value)) {
       throw new Error('Invalid email format or not a gndec mail');
     }
     return true; // Return true if validation passes
@@ -27,8 +26,6 @@ router.post('/signup',
     return true; // Return true if validation passes
   }),
   async (req, res) => {
-    console.log('.......in q......')
-    console.log(req.body)
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ success: false, message: "Invalid Credentials", errors: errors.array() });
@@ -53,7 +50,7 @@ router.post('/signup',
           email: email,
           password: hash,
           isVerified: false,
-          userInfo: {crn:urn},
+          userInfo: { crn: urn },
           tr101: {},
           tr102: {},
           tr103: {},
@@ -61,7 +58,6 @@ router.post('/signup',
           placementData: {},
         });
         await signup.save();
-        console.log(signup)
       } catch (error) {
         console.error('Error creating document:', error);
       }
@@ -77,7 +73,6 @@ router.post('/signup',
 
 router.post('/login', body('password', 'Password should have a minimum length of 5').isLength({ min: 5 }), body('urn').custom((value) => {
   if (!/^\d{7}$/.test(value)) {
-    console.log('....err in urn')
     throw new Error('Invalid urn. It should be exactly 7 digits and should not start with "0"');
   }
   return true; // Return true if validation passes
@@ -110,7 +105,7 @@ router.post('/login', body('password', 'Password should have a minimum length of
         role: 'admin',
       };
     }
-    else{
+    else {
       roleSpecificData = {
         id: user.id,
         role: 'user',
@@ -119,7 +114,7 @@ router.post('/login', body('password', 'Password should have a minimum length of
 
     const data = {
       urn: user.urn,
-      user:roleSpecificData
+      user: roleSpecificData
     };
 
     if (user.isVerified === true) {

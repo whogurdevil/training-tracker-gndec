@@ -27,7 +27,6 @@ router.post('/', async (req, res) => {
         userInfo.tr104 = TR104;
 
         const savedUserInfo = await userInfo.save();
-        console.log(savedUserInfo);
 
         // Respond with the saved userInfo
         res.status(201).json({ success: true, data: savedUserInfo });;
@@ -39,7 +38,6 @@ router.post('/updatelock', async (req, res) => {
     try {
         const { urn, lock } = req.body;
         const trainingField = "tr104.lock";
-        console.log(req.body)
         userData = await SignUpdata.findOneAndUpdate(
             { urn: urn },
             { [trainingField]: lock },

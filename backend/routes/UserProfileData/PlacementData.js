@@ -8,7 +8,6 @@ router.post('/', async (req, res) => {
     try {
         const { company, placementType, highStudy, appointmentNo, appointmentLetter, package, isPlaced } = req.body.formData;
         const urn = req.body.urn;
-        console.log(highStudy)
         let userInfo = await SignUpdata.findOne({ urn: urn });
 
         if (!userInfo) {
@@ -37,11 +36,11 @@ router.post('/', async (req, res) => {
                 isPlaced
             });
         }
-        
+
 
         // Save the updated user info
         const savedUserInfo = await userInfo.save();
-        
+
 
         // Respond with the saved userInfo
         res.status(201).json({ success: true, data: savedUserInfo });

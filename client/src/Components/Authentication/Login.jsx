@@ -60,7 +60,7 @@ function Login() {
         body: JSON.stringify(credentials),
       });
       const json = await response.json();
-      console.log(json);
+      // console.log(json);
       if (json.success) {
         if (json.message === "verify") {
           toast('Please verify your account');
@@ -69,8 +69,8 @@ function Login() {
           }, 2000);
         } else {
           localStorage.setItem('authtoken', json.authtoken);
-          console.log(json.authtoken)
-          if(json.body.user.role==='superadmin'){
+          // console.log(json.authtoken)
+          if (json.body.user.role === 'superadmin') {
             toast('Successfully logged in');
             setTimeout(() => {
               navigate('/superadmin');
@@ -79,9 +79,9 @@ function Login() {
           else if (json.body.user.role === 'admin') {
             toast('Successfully logged in');
             setTimeout(() => {
-              navigate('/admin',{state:{urn:credentials.urn}});
+              navigate('/admin', { state: { urn: credentials.urn } });
             }, 1000);
-          } else{
+          } else {
             toast('Successfully logged in');
             setTimeout(() => {
               navigate('/home');

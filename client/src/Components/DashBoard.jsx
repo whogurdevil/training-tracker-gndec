@@ -140,7 +140,7 @@ export default function Form() {
 
       // Submit form data
       const response = await axios.post(`${API_URL}userprofiles`, { formData, urn: urn });
-      console.log(response);
+      // console.log(response);
       if (response.data.success) {
         toast.success('Form submitted successfully!');
         setIsSubmitting(false);
@@ -166,11 +166,11 @@ export default function Form() {
     setIsEditing((prevEditing) => !prevEditing);
   };
   const handleBatchChange = (newDate) => {
-    console.log(newDate);
+    // console.log(newDate);
     if (newDate) {
       // Extract the year from the newDate object
       const year = newDate.$y;
-      console.log(year);
+      // console.log(year);
 
       setFormData({ ...formData, batch: `${year}-${year + 4}` });
     } else {

@@ -32,7 +32,7 @@ function Login() {
         body: JSON.stringify({ email: credentials.email }),
       });
       const json = await response.json();
-      console.log(json);
+      // console.log(json);
       if (json.success) {
         toast('OTP sent successfully');
         setLoading(false);

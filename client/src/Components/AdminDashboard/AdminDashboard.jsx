@@ -5,7 +5,7 @@ import { MaterialReactTable, useMaterialReactTable } from 'material-react-table'
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
-import { base64toBlob, openBase64NewTab } from '../../CommonComponent/base64topdf';
+import { base64toBlob, openBase64NewTab } from '../../utils/base64topdf';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useLocation } from 'react-router-dom';

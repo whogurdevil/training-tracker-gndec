@@ -7,10 +7,8 @@ const router = express.Router();
 router.post('/', async (req, res) => {
     try {
         const { Name, contact, crn, branch, batch, gender, admissionType, section, mentor } = req.body.formData;
-        console.log("name", Name)
-       
+
         const urn = req.body.urn
-        console.log(urn)
         const userInfo = await SignUpdata.findOne({ urn: urn });
 
         if (!userInfo) {
@@ -29,11 +27,10 @@ router.post('/', async (req, res) => {
             gender,
             admissionType
         });
-       
+
         userInfo.userInfo = newsignup;
-    
+
         const savedUserInfo = await userInfo.save();
-        console.log(savedUserInfo);
 
         // Respond with the saved userInfo
         res.status(201).json({ success: true, data: savedUserInfo });;
