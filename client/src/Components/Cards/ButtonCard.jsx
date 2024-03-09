@@ -26,7 +26,7 @@ export default function ButtonCard(data) {
         marginY: 1, padding: 2,
         '&:hover': {
           // color: '#3fb589',
-          backgroundColor: '#3fb589',
+          backgroundColor: '#dc3545',
         },
       }}>
       <div style={{justifyContent: 'left'}}>
