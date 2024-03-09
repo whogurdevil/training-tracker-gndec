@@ -30,6 +30,8 @@ export default function Form() {
     contact: '',
     crn: '',
     branch: '',
+    section: '',
+    mentor: '',
     batch: '',
     gender: '',
     admissionType: ''
@@ -52,12 +54,11 @@ export default function Form() {
   useEffect(() => {
     // Fetch data from the database when the component mounts or the page is refreshed
     const fetchData = async () => {
+
       try {
         const url = `${API_URL}userprofiles/${urn}`;
         const response = await axios.get(url);
-        const userData = response.data.data;
-        // console.log(userData);
-
+        const userData = response.data.data; 
 
         // Check if all fields are filled in the fetched data
         if (
@@ -65,6 +66,8 @@ export default function Form() {
           userData.contact &&
           userData.crn &&
           userData.branch &&
+          userData.section &&
+          userData.mentor &&
           userData.batch &&
           userData.gender &&
           userData.admissionType
@@ -152,6 +155,13 @@ export default function Form() {
       setIsSubmitting(false);
     }
   };
+  const setSection = (value) => {
+    setFormData({ ...formData, section: value });
+  };
+  const setMentor = (value) => {
+    setFormData({ ...formData, mentor: value });
+  };
+  
   const handleEdit = () => {
     setIsEditing((prevEditing) => !prevEditing);
   };
@@ -198,19 +208,19 @@ export default function Form() {
         <Container sx={{margin:0, padding:0}}>
           <Grid container spacing={isSmallScreen ? 2 : 4}>
             <Grid item xs={12} md={6} sx={{ textAlign: isSmallScreen ? 'left' : 'right' }}>
-              <TextField
-                label="Name"
-                variant="outlined"
-                fullWidth
-                required
-                name="Name"
-                value={formData.Name}
-                onChange={handleChange}
-                error={!!errors.Name}
-                helperText={errors.Name}
-                sx={{ mb: 2 }}
-                disabled={!isEditing || isSubmitting}
-              />
+                <TextField
+                  label="Name"
+                  variant="outlined"
+                  fullWidth
+                  required
+                  name="Name"
+                  value={formData.Name}
+                  onChange={handleChange}
+                  error={!!errors.Name}
+                  helperText={errors.Name}
+                  sx={{ mb: 2 }}
+                  disabled={!isEditing || isSubmitting}
+                />
               <TextField
                 label="Contact"
                 variant="outlined"
@@ -237,6 +247,41 @@ export default function Form() {
                 sx={{ mb: 2 }}
                 disabled={!isEditing || isSubmitting}
               />
+               <TextField
+                select
+                label="Section"
+                variant="outlined"
+                fullWidth
+                required
+                name="section"
+                value={formData.section}
+                onChange={(e) => setSection(e.target.value)}
+                sx={{ mb: 2 }}
+                disabled={!isEditing || isSubmitting}
+              >
+                <MenuItem value="A1">A1</MenuItem>
+                <MenuItem value="A2">A2</MenuItem>
+                <MenuItem value="B1">B1</MenuItem>
+                <MenuItem value="B2">B2</MenuItem>
+                <MenuItem value="C1">C1</MenuItem>
+                <MenuItem value="C2">C2</MenuItem>
+                <MenuItem value="D1">D1</MenuItem>
+                <MenuItem value="D2">D2</MenuItem>
+              </TextField>
+              <TextField
+                label="Mentor's Name"
+                variant="outlined"
+                fullWidth
+                required
+                name="mentor"
+                value={formData.mentor}
+                onChange={(e) => setMentor(e.target.value)}
+                error={!!errors.mentor}
+                helperText={errors.mentor}
+                sx={{ mb: 2 }}
+                disabled={!isEditing || isSubmitting}
+              />
+
             </Grid>
             <Grid item xs={12} md={6} >
               <TextField
@@ -254,7 +299,6 @@ export default function Form() {
                 disabled={!isEditing || isSubmitting}
               >
                 <MenuItem value="CSE">Computer Science & Engineering</MenuItem>
-                <MenuItem value="IT">Information Technology</MenuItem>
               </TextField>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker

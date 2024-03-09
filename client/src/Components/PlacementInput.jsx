@@ -8,25 +8,25 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
+import MenuItem from '@mui/material/MenuItem';
 import FileBase from 'react-file-base64';
 import Grid from '@mui/material/Grid';
-import {  openBase64NewTab } from '../CommonComponent/base64topdf';
+import { openBase64NewTab } from '../CommonComponent/base64topdf';
 import EditIcon from '@mui/icons-material/Edit';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';  
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { jwtDecode } from "jwt-decode";
 
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
 
-
 export default function PlacementForm() {
   const [formData, setFormData] = useState({
     company: '',
-    appointmentDate: '',
+    placementType: '',
+    highStudy: '',
+    appointmentNo: '',
     appointmentLetter: null,
     package: '',
   });
+  const [isPlaced, setIsPlaced] = useState(false);
   const decodeAuthToken = (token) => {
     try {
       const decodedToken = jwtDecode(token);
@@ -46,32 +46,22 @@ export default function PlacementForm() {
   const [isLock, setIsLock] = useState(false);
 
   useEffect(() => {
-    // Fetch data from the database when the component mounts or the page is refreshed
     const fetchData = async () => {
       try {
         const url = `${API_URL}placement/${urn}`;
         const response = await axios.get(url);
         const userData = response.data.data;
-        console.log(userData);
-
-       
-
+  
         // Check if all fields are filled in the fetched data
-        if (
-          userData.company &&
-          userData.appointmentDate &&
-          userData.appointmentLetter &&
-          userData.package
-        ) {
-          // If all fields are filled, populate the form data and disable editing
+        if (userData.company !== null && userData.placementType !== null && userData.highStudy !== null) {
+          // If all required fields are present, populate the form data
           setFormData(userData);
-          console.log(userData.appointmentDate);
           setIsEditing(false);
+          setIsPlaced(userData.isPlaced);
           if (userData.lock) {
-            setIsLock(true)
-            console.log("hello")
+            setIsLock(true);
           } else {
-            setIsLock(false)
+            setIsLock(false);
           }
         } else {
           console.error('Error: Fetched data is incomplete.');
@@ -80,15 +70,16 @@ export default function PlacementForm() {
         console.error('Error fetching data:', error);
       }
     };
-
+  
     fetchData();
   }, []);
-
+  
 
   const handleFileChange = (files) => {
     setFormData({ ...formData, appointmentLetter: files.base64 });
     setAppointmentLetter(files.base64);
   };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -116,21 +107,6 @@ export default function PlacementForm() {
     }
   };
 
-  const handleDateChange = (newDate) => {
-    // Extract year, month, and day from the selected date
-    const year = newDate.$y;
-    const month = newDate.$M + 1; // Months start from 0, so add 1
-    const day = newDate.$D;
-  
-    // Format the date string
-    const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-  
-    // Update the formData state with the selected date
-    setFormData({ ...formData, appointmentDate: formattedDate });
-  };
-  
-  
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -143,22 +119,25 @@ export default function PlacementForm() {
         setErrors(formErrors);
         return;
       }
-
+  
+      // Prepare form data to be submitted
+      let submitData = {};
+      if (isPlaced) {
+        // Include form data as is if isPlaced is true
+        submitData = { ...formData, isPlaced: true };
+      } else {
+        // Include isPlaced as false and set other fields to null if isPlaced is false
+        submitData = { company: null, placementType: null, highStudy: formData.highStudy, appointmentNo: null, appointmentLetter: null, package: null, isPlaced: false };
+      }
+  
       // Submit form data
       const response = await axios.post(`${API_URL}placement`, {
-        formData,
+        formData: submitData,
         urn: urn,
       });
-      console.log("response", response);
+  
       if (response.data.success) {
         toast.success('Placement details submitted successfully!');
-        // //Clear form data after successful submission
-        // setFormData({
-        //   company: '',
-        //   appointmentDate: '',
-        //   appointmentLetter: '',
-        //   package: '',
-        // });
         setIsSubmitting(false);
         setIsEditing(false);
       } else {
@@ -171,115 +150,161 @@ export default function PlacementForm() {
       setIsSubmitting(false);
     }
   };
+  
+
   const handleEdit = () => {
     setIsEditing((prevEditing) => !prevEditing);
   };
 
   const handleViewCertificate = () => {
     if(appointmentLetter){
-      openBase64NewTab(appointmentLetter);}
-    else{
+      openBase64NewTab(appointmentLetter);
+    } else {
       openBase64NewTab(formData.appointmentLetter);
     }
+  };
+
+  const handleIsPlacedChange = (e) => {
+    const { value } = e.target;
+    setIsPlaced(value === "true");
   };
 
   return (
     <Container sx={{ paddingTop: 10 }}>
       {!isLock && (
-      <Button
-        onClick={handleEdit}
-        color="primary"
-        variant="contained"
-        style={{
-          position: 'relative',
-
-          marginLeft: '10px',
-          float: 'right',
-          // Adjust the margin as needed
-        }}
-      >
-        Edit
-        <EditIcon />
-      </Button>
+        <Button
+          onClick={handleEdit}
+          color="primary"
+          variant="contained"
+          style={{
+            position: 'relative',
+            marginLeft: '10px',
+            float: 'right',
+          }}
+        >
+          Edit
+          <EditIcon />
+        </Button>
       )}
       <Typography variant="h5" gutterBottom>
         Please fill in your placement details below.
       </Typography>
       <ToastContainer />
       <form onSubmit={handleSubmit}>
-        {/* Company */}
-        <TextField
-          label="Company"
-          variant="outlined"
-          fullWidth
-          required
-          name="company"
-          value={formData.company}
-          onChange={handleChange}
-          error={!!errors.company}
-          helperText={errors.company}
-          sx={{ mb: 2 }}
-          disabled={!isEditing || isSubmitting}
-        />
-        {/* Appointment Date */}
-        <LocalizationProvider dateAdapter={AdapterDayjs} >
-          <DatePicker
-            label="Appointment Date"
-            views={['year', 'month', 'day']}
-            renderInput={(params) => <TextField {...params} helperText="Enter starting year only" />}
-            onChange={handleDateChange}
-          />
-        </LocalizationProvider>
-          {/* <TextField
-            label="Appointment Date"
+        <Grid item xs={12} md={6}>
+          <TextField
+            select
+            label="Have you been placed?"
             variant="outlined"
             fullWidth
             required
-            name="appointmentDate"
-            value={formData.appointmentDate}
-            onChange={handleChange}
-            error={!!errors.appointmentDate}
-            helperText={errors.appointmentDate}
+            name="isPlaced"
+            value={isPlaced ? "true" : "false"}
+            onChange={handleIsPlacedChange}
             sx={{ mb: 2 }}
             disabled={!isEditing || isSubmitting}
-          /> */}
-        {/* Appointment Letter */}
+          >
+            <MenuItem value="true">Yes</MenuItem>
+            <MenuItem value="false">No</MenuItem>
+          </TextField>
 
-        
-
-      <Grid item xs={12} container justifyContent="space-between" alignItems="center">
-          <Typography variant="h6" gutterBottom textAlign="left" marginTop={2}>
-            Upload Appointment Letter
-          </Typography>
-          <FileBase
-            type="file"
-            multiple={false}
-            onDone={handleFileChange}
+          <TextField
+            select
+            label="Will you pursue higher studies?"
+            variant="outlined"
+            fullWidth
+            required
+            name="highStudy"
+            value={formData.highStudy}
+            onChange={handleChange}
+            sx={{ mb: 2 }}
             disabled={!isEditing || isSubmitting}
-          />
+          >
+            <MenuItem value="Yes">Yes</MenuItem>
+            <MenuItem value="No">No</MenuItem>
+          </TextField>
+
         </Grid>
 
+        {isPlaced && (
+          <>
+            <TextField
+              label="Company"
+              variant="outlined"
+              fullWidth
+              required
+              name="company"
+              value={formData.company}
+              onChange={handleChange}
+              error={!!errors.company}
+              helperText={errors.company}
+              sx={{ mb: 2 }}
+              disabled={!isEditing || isSubmitting}
+            />
 
-        {/* Package */}
-        <TextField
-          label="Package"
-          variant="outlined"
-          fullWidth
-          required
-          name="package"
-          value={formData.package}
-          onChange={handleChange}
-          error={!!errors.package}
-          helperText={errors.package}
-          sx={{ mb: 2 }}
-          disabled={!isEditing || isSubmitting}
-        />
+            <TextField
+              label="Appointment Number"
+              variant="outlined"
+              fullWidth
+              required
+              name="appointmentNo"
+              type="number"
+              value={formData.appointmentNo}
+              onChange={handleChange}
+              error={!!errors.appointmentNo}
+              helperText={errors.appointmentNo}
+              sx={{ mb: 2 }}
+              disabled={!isEditing || isSubmitting}
+            />
 
-        {/* View Certificate Button */}
-        {!isEditing && (
-          <Button onClick={handleViewCertificate} variant="outlined" color="primary">
-            View Appointment Letter
-          </Button>
+            <Grid item xs={12} container justifyContent="space-between" alignItems="center">
+              <Typography variant="h6" gutterBottom textAlign="left" marginTop={2}>
+                Upload Appointment Letter
+              </Typography>
+              <FileBase
+                type="file"
+                multiple={false}
+                onDone={handleFileChange}
+                disabled={!isEditing || isSubmitting}
+              />
+            </Grid>
+
+            <TextField
+              label="Package"
+              variant="outlined"
+              fullWidth
+              required
+              name="package"
+              value={formData.package}
+              onChange={handleChange}
+              error={!!errors.package}
+              helperText={errors.package}
+              sx={{ mb: 2 }}
+              disabled={!isEditing || isSubmitting}
+            />
+
+            <TextField
+            select
+            label="Placement Type"
+            variant="outlined"
+            fullWidth
+            required
+            name="placementType"
+            value={formData.placementType}
+            onChange={handleChange}
+            sx={{ mb: 2 }}
+            disabled={!isEditing || isSubmitting}
+          >
+            <MenuItem value="On Campus">On Campus</MenuItem>
+            <MenuItem value="Off Campus">Off Campus</MenuItem>
+          </TextField>
+
+            {!isEditing && (
+              <Button onClick={handleViewCertificate} variant="outlined" color="primary">
+                View Appointment Letter
+              </Button>
+            )}
+          </>
         )}
 
         {isEditing && !isLock && (
@@ -293,7 +318,7 @@ export default function PlacementForm() {
             Submit Placement Details
           </Button>
         )}
-        
+
       </form>
     </Container>
   );

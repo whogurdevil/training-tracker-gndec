@@ -6,7 +6,7 @@ const router = express.Router();
 // Route to create a new user profile
 router.post('/', async (req, res) => {
     try {
-        const { Name, contact, crn, branch, batch, gender, admissionType } = req.body.formData;
+        const { Name, contact, crn, branch, batch, gender, admissionType, section, mentor } = req.body.formData;
         console.log("name", Name)
        
         const urn = req.body.urn
@@ -22,6 +22,8 @@ router.post('/', async (req, res) => {
             Name,
             contact,
             crn,
+            section,
+            mentor,
             branch,
             batch,
             gender,
