@@ -15,6 +15,13 @@ const ProtectedRoute = ({ component: Component, path, ...rest }) => {
             const decodedToken = jwtDecode(authToken);
             const userRole = decodedToken.user.role;
 
+            if (path === '/' && userRole) {
+                return <Navigate to="/" replace />;
+            }
+
+            if (path === '/login' && userRole) {
+                return <Navigate to="/home" replace />;
+            }
             // Check if the user is authenticated and has the required role
             if (userRole === 'superadmin') {
                 // Redirect superadmin to home if trying to access admin or superadmin route
