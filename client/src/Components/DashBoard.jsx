@@ -180,7 +180,7 @@ export default function Form() {
   };
 
   return (
-    <Container sx={{ paddingTop: 10 }}>
+    <Container>
       <ToastContainer />
       <form onSubmit={handleSubmit}>
         <Container style={{ paddingTop: 4 }}>

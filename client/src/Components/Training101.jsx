@@ -158,7 +158,7 @@ export default function Form() {
   };
 
   return (
-    <Container sx={{ paddingTop: 10 }}>
+    <Container>
       <Container style={{ paddingInline: 0, paddingBottom: 50 }} >
       {!isLock && (
         <Button

@@ -28,7 +28,7 @@ const Main = () => {
   // Create theme based on user preference
   const darkTheme = createTheme({
     palette: {
-      mode: prefersDarkMode ? 'dark' : 'light',
+      mode:'light',
       primary: {
         main: '#3fb589',
       },

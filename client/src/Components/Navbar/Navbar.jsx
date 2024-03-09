@@ -8,6 +8,7 @@ import Button from '@mui/material/Button';
 import { toast } from 'react-toastify';
 import gndecLogo from '../../assets/gndec-logo.png'
 import { Container } from "@mui/material";
+import navbarimg from "../../assets/navbarimg.png"
 
 function Navbar() {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ function Navbar() {
   }
 
   return (
+    <div>
     <Box sx={{ flexGrow: 1 }} margin={0}>
       <AppBar position="fixed">
         <Toolbar>
@@ -38,6 +40,10 @@ function Navbar() {
         </Toolbar>
       </AppBar>
     </Box>
+    <Box sx={{ marginTop: '60px', textAlign: 'center' }}>
+      <img src={navbarimg}></img>
+      </Box>
+    </div>
   );
 }
 
