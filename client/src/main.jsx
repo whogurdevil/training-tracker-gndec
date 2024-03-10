@@ -30,7 +30,7 @@ const Main = () => {
     palette: {
       mode:'light',
       primary: {
-        main: '#dc3545',
+        main: '#900000',
       },
       secondary: {
         main: '#f50057',
@@ -38,6 +38,13 @@ const Main = () => {
       success: {
         main: '#00ff0d',
       },
+      error: {
+        main: '#ee2400'
+      },
+      background:{
+        default: '#FFF7F1'
+      },
+      
     },
   });
 

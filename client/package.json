@@ -20,6 +20,7 @@
     "@tabuckner/material-dayjs-adapter": "^2.0.0",
     "axios": "^1.6.7",
     "dayjs": "^1.11.10",
+    "export-to-csv": "^1.2.4",
     "jwt-decode": "^4.0.0",
     "material-react-table": "^2.12.1",
     "mui-chips-input": "^2.1.4",

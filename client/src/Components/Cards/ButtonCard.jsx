@@ -9,24 +9,28 @@ import {Button} from '@mui/material';
 
 
 export default function ButtonCard(data) {
-  const handleNaviagte = (route, number) => {
+  const handleNavigate = (route, number) => {
     navigate(route, { state: { number: number } })
   }
   const navigate = useNavigate();
   return (
     <Button
-    // startIcon={<data.startIcon />}
-    endIcon={<ArrowForwardIos />}
-    disabled={data.disabled}
-      onClick={() => handleNaviagte(data.path, data.param)}
+      endIcon={<ArrowForwardIos />}
+      disabled={data.disabled}
+      onClick={() => handleNavigate(data.path, data.param)}
       sx={{
         width: '90vw',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between' ,
-        color:'black', backgroundColor:'#f5f5f5',
-        marginY: 1, padding: 2,
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'space-between' ,
+        color:'black', 
+        backgroundColor:'#f5f5f5',
+        marginY: 1, 
+        padding: 2,
+        boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.25)', // Add shadow here
         '&:hover': {
-          // color: '#3fb589',
-          backgroundColor: '#dc3545',
+          backgroundColor: '#900000',
+          color:'white'
         },
       }}>
       <div style={{justifyContent: 'left'}}>

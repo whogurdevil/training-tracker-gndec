@@ -23,25 +23,26 @@ function Navbar() {
 
   return (
     <div>
-    <Box sx={{ flexGrow: 1 }} margin={0}>
-      <AppBar position="fixed">
-        <Toolbar>
-          <Container sx={{ display: 'flex', alignItems: 'center', paddingLeft:0, marginLeft:0}}>
-            <img
+      <Box sx={{ flexGrow: 1}} margin={0}>
+        <AppBar position="relative" sx={{backgroundColor:'#FFF5E0'}}>
+          <Toolbar sx={{boxShadow:'none'}}>
+            <Container sx={{ display: 'flex', alignItems: 'center', paddingLeft: 0, marginLeft: 0 }}>
+              {/* <img
               style={{ height: '50px', marginRight: '10px' }}
               src={gndecLogo}
               alt="GNDEC Logo"
-            />
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              Training Data Tracker
-            </Typography>
-          </Container>
-          <Button color="inherit" onClick={handleLogout}>Logout</Button>
-        </Toolbar>
-      </AppBar>
-    </Box>
-    <Box sx={{ marginTop: '60px', textAlign: 'center' }}>
-      <img src={navbarimg}></img>
+            /> */}
+              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                {/* Training Data Tracker */}
+                <Box sx={{textAlign: 'center', width:'90vw' }}>
+                  <img src={navbarimg} style={{ width:'60vw', backgroundColor:'white' }}></img>
+
+                </Box>
+              </Typography>
+            </Container>
+            <Button variant="text" style={{position:'absolute', right:5}} onClick={handleLogout}>Logout</Button>
+          </Toolbar>
+        </AppBar>
       </Box>
     </div>
   );
