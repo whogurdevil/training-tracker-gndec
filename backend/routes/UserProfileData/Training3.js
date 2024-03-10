@@ -2,6 +2,8 @@ const express = require('express');
 const Tr103 = require('../../models/UserInfo').Tr103;
 const SignUpdata = require('../../models/UserInfo').SignUp;
 const router = express.Router();
+const fetchuser = require('../../middleware/fetchUser');
+const isAdmin = require('../../middleware/isAdmin');
 
 // Route to create a new user profile
 router.post('/', async (req, res) => {
@@ -34,7 +36,7 @@ router.post('/', async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 });
-router.post('/updatelock', async (req, res) => {
+router.post('/updatelock', fetchuser, isAdmin, async (req, res) => {
     try {
         const { urn, lock } = req.body;
         const trainingField = "tr103.lock";
@@ -47,10 +49,7 @@ router.post('/updatelock', async (req, res) => {
         if (!userData) {
             return res.status(404).json({ message: 'User data not found' });
         }
-        if (userInfo.tr103.lock) {
-            return res.status(404).json({ message: 'You are already locked not play with me buddy' });
-        }
-
+  
 
         // Respond with the updated user data
         res.status(200).json({ success: true, data: userData });
@@ -69,6 +68,50 @@ router.get('/:urn', async (req, res) => {
 
         // Respond with the user information
         res.status(200).json({ success: true, data: userInfo.tr103 });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+router.post('/verifyall', fetchuser, isAdmin, async (req, res) => {
+    try {
+        // Get all users with the role "user"
+        const usersToUpdate = await SignUpdata.find({ role: 'user' });
+
+        if (!usersToUpdate) {
+            return res.status(404).json({ message: 'No users found' });
+        }
+
+        // Update the lock status for all users
+        const updatedUsers = await Promise.all(usersToUpdate.map(async (user) => {
+            user.tr103.lock = true; // Set lock status to true (or whatever your logic is)
+            return await user.save();
+        }));
+
+        // Respond with the updated user data
+        res.status(200).json({ success: true, data: updatedUsers });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+router.post('/unverifyall', fetchuser, isAdmin, async (req, res) => {
+    try {
+        // Get all users with the role "user"
+        const usersToUpdate = await SignUpdata.find({ role: 'user' });
+
+        if (!usersToUpdate) {
+            return res.status(404).json({ message: 'No users found' });
+        }
+
+        // Update the lock status for all users
+        const updatedUsers = await Promise.all(usersToUpdate.map(async (user) => {
+            user.tr103.lock = false; // Set lock status to true (or whatever your logic is)
+            return await user.save();
+        }));
+
+        // Respond with the updated user data
+        res.status(200).json({ success: true, data: updatedUsers });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }

@@ -2,6 +2,8 @@ const express = require('express');
 const placementData = require('../../models/UserInfo').PlacementData;
 const SignUpdata = require('../../models/UserInfo').SignUp;
 const router = express.Router();
+const fetchuser = require('../../middleware/fetchUser');
+const isAdmin = require('../../middleware/isAdmin');
 
 // Route to create or update a user's placement data
 router.post('/', async (req, res) => {
@@ -50,7 +52,7 @@ router.post('/', async (req, res) => {
 });
 
 // Route to update lock status
-router.post('/updatelock', async (req, res) => {
+router.post('/updatelock', fetchuser, isAdmin, async (req, res) => {
     try {
         const { urn, lock } = req.body;
 
@@ -71,6 +73,48 @@ router.post('/updatelock', async (req, res) => {
     }
 });
 
+router.post('/verifyall', fetchuser, isAdmin, async (req, res) => {
+    try {
+        // Get all users with the role "user"
+        const usersToUpdate = await SignUpdata.find({ role: 'user' });
+
+        if (!usersToUpdate) {
+            return res.status(404).json({ message: 'No users found' });
+        }
+
+        // Update the lock status for all users
+        const updatedUsers = await Promise.all(usersToUpdate.map(async (user) => {
+            user.placementData.lock = true; // Set lock status to true (or whatever your logic is)
+            return await user.save();
+        }));
+
+        // Respond with the updated user data
+        res.status(200).json({ success: true, data: updatedUsers });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+router.post('/unverifyall', fetchuser, isAdmin, async (req, res) => {
+    try {
+        // Get all users with the role "user"
+        const usersToUpdate = await SignUpdata.find({ role: 'user' });
+
+        if (!usersToUpdate) {
+            return res.status(404).json({ message: 'No users found' });
+        }
+
+        // Update the lock status for all users
+        const updatedUsers = await Promise.all(usersToUpdate.map(async (user) => {
+            user.placementData.lock = false; // Set lock status to true (or whatever your logic is)
+            return await user.save();
+        }));
+
+        // Respond with the updated user data
+        res.status(200).json({ success: true, data: updatedUsers });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
 // Route to get user's placement data
 // Route to get user's placement data
 router.get('/:urn', async (req, res) => {
