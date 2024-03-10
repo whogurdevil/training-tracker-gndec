@@ -9,7 +9,8 @@ import { base64toBlob, openBase64NewTab } from '../../utils/base64topdf';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useLocation } from 'react-router-dom';
-
+import VerifyAllComponent from '../../utils/VerifyAll'; 
+import ExportComponent from '../../utils/ExportData';
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
 
 const AdminForm = () => {
@@ -18,6 +19,7 @@ const AdminForm = () => {
     const [selectedBranch, setSelectedBranch] = useState('');
     const [selectedTraining, setSelectedTraining] = useState('');
     const [editStatus, setEditStatus] = useState({});
+    const [refresh, setRefresh] = useState(false); // Refresh state
     const Location=useLocation()
     const urn=Location.state && Location.state.urn
     const admintype= urn && urn.length >= 3 ? urn.slice(-3) : urn;
@@ -45,7 +47,7 @@ const AdminForm = () => {
         };
 
         fetchUsers();
-    }, []);
+    }, [refresh]);
 
     const filteredUsers = useMemo(() => {
         let filteredData = [...users];
@@ -201,34 +203,15 @@ const AdminForm = () => {
             }
 
             // Send a POST request to the backend API endpoint
-            const response = await axios.post(url, data);
+            const response = await axios.post(url, data, {
+                headers: {
+                    'auth-token': token
+                }
+            });
 
             if (response.data.success) {
                 toast.success('Verification Status Change successfully!');
-                const updatedUsers = users.map(user => {
-                    if (user.urn === urn) {
-                        if (isPlacement) {
-                            return {
-                                ...user,
-                                placementData: {
-                                    ...user.placementData,
-                                    lock: !lockStatus
-                                }
-                            };
-                        } else {
-                            return {
-                                ...user,
-                                [selectedTraining]: {
-                                    ...user[selectedTraining],
-                                    lock: !lockStatus
-                                }
-                            };
-                        }
-                    } else {
-                        return user;
-                    }
-                });
-                setUsers(updatedUsers);
+                setRefresh(prevRefresh => !prevRefresh);
             } else {
                 toast.error('Failed to update verified status.');
                 console.error('Failed to update verified status.');
@@ -337,6 +320,14 @@ const AdminForm = () => {
                 </Grid>
             </Grid>
             <Card variant="outlined" style={{ marginBottom: '50px' }}>
+                <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between' }}>
+                    <div>
+                        <ExportComponent data={filteredUsers} columns={columns} selectedTraining={selectedTraining} />
+                    </div>
+                    <div style={{ marginTop: '10px', marginRight: '10px' }}>
+                        <VerifyAllComponent selectedTraining={selectedTraining} />
+                    </div>
+                </div>
                 <MaterialReactTable table={table} />
             </Card>
 

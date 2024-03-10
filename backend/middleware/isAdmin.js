@@ -11,7 +11,7 @@ function isAdmin(req, res, next) {
       // Verify the token and decode its payload
       const decodedToken = jwt.verify(token, JWT_Token);
     //   console.log(decodedToken);
-    console.log(decodedToken);
+    // console.log(decodedToken);
       // Check if the user role is "admin"
       if (decodedToken.user.role === 'user') {
         return res.status(403).json({ message: 'You are not authorized to access this resource' });

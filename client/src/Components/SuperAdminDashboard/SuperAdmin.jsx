@@ -10,7 +10,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ExportComponent from '../../utils/ExportData';
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
-
+import VerifyAllComponent from '../../utils/VerifyAll';
+import UnVerifyAllComponent from '../../utils/UnVerifyAll';
 
 const SuperAdminForm = () => {
     const [users, setUsers] = useState([]);
@@ -18,6 +19,7 @@ const SuperAdminForm = () => {
     const [selectedBranch, setSelectedBranch] = useState('');
     const [selectedTraining, setSelectedTraining] = useState('');
     const [editStatus, setEditStatus] = useState({});
+    const [refresh, setRefresh] = useState(false); // Refresh state
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -40,7 +42,7 @@ const SuperAdminForm = () => {
         };
 
         fetchUsers();
-    }, []);
+    }, [refresh]);
 
     const filteredUsers = useMemo(() => {
         let filteredData = [...users];
@@ -197,34 +199,16 @@ const SuperAdminForm = () => {
             }
 
             // Send a POST request to the backend API endpoint
-            const response = await axios.post(url, data);
+            const response = await axios.post(url, data, {
+                headers: {
+                    'auth-token': token
+                }
+            });
 
             if (response.data.success) {
                 toast.success('Verification Status Change successfully!');
-                const updatedUsers = users.map(user => {
-                    if (user.urn === urn) {
-                        if (isPlacement) {
-                            return {
-                                ...user,
-                                placementData: {
-                                    ...user.placementData,
-                                    lock: !lockStatus
-                                }
-                            };
-                        } else {
-                            return {
-                                ...user,
-                                [selectedTraining]: {
-                                    ...user[selectedTraining],
-                                    lock: !lockStatus
-                                }
-                            };
-                        }
-                    } else {
-                        return user;
-                    }
-                });
-                setUsers(updatedUsers);
+                setRefresh(prevRefresh => !prevRefresh);
+              
             } else {
                 toast.error('Failed to update verified status.');
                 console.error('Failed to update verified status.');
@@ -247,6 +231,10 @@ const SuperAdminForm = () => {
     const handleModalOpen = (content) => {
         setModalContent(content);
         setOpen(true);
+    };
+    // Function to handle refreshing data after verification status change
+    const handleRefresh = () => {
+        setRefresh(prevRefresh => !prevRefresh);
     };
 
     const handleModalClose = () => {
@@ -302,9 +290,19 @@ const SuperAdminForm = () => {
                 </Grid>
             </Grid>
             <Card variant="outlined" style={{ marginBottom: '50px' }}>
-                <ExportComponent data={filteredUsers} columns={columns} selectedTraining={selectedTraining} /> {/* Use the ExportComponent */}
+                <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between' }}>
+                    <div>
+                        <ExportComponent data={filteredUsers} columns={columns} selectedTraining={selectedTraining} />
+                    </div>
+                    <div style={{ marginTop: '10px', marginRight: '10px', display: 'flex', justifyContent: 'space-between' ,gap:'10px'}}>
+                        <VerifyAllComponent selectedTraining={selectedTraining} refresh={refresh} onRefresh={handleRefresh} />
+                        <UnVerifyAllComponent selectedTraining={selectedTraining} refresh={refresh} onRefresh={handleRefresh} />
+                    </div>
+                </div>
                 <MaterialReactTable table={table} />
             </Card>
+
+
 
             <Modal open={open} onClose={handleModalClose}>
                 <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', boxShadow: 24, p: 4 }}>
