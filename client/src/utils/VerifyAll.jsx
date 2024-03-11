@@ -30,7 +30,7 @@ const VerifyAllComponent = ({ selectedTraining, refresh, onRefresh }) => {
             }
 
             // Send a POST request to the backend API endpoint
-            const response = await axios.post(url, {}, {
+            const response = await axios.post(url,{}, {
                 headers: {
                     'auth-token': token
                 }
@@ -59,7 +59,7 @@ const VerifyAllComponent = ({ selectedTraining, refresh, onRefresh }) => {
             <Button onClick={handleVerifyAll} variant="contained" color="primary">
                 Verify All
             </Button>
-            <ToastContainer />
+           
 
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle>Confirmation</DialogTitle>
@@ -77,6 +77,7 @@ const VerifyAllComponent = ({ selectedTraining, refresh, onRefresh }) => {
                     </Button>
                 </DialogActions>
             </Dialog>
+         
         </>
     );
 };

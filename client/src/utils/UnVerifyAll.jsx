@@ -60,7 +60,6 @@ const UnVerifyAllComponent = ({ selectedTraining , onRefresh, refresh}) => {
             <Button onClick={handleUnVerifyAll} variant="contained" color="primary">
                 UnVerify All
             </Button>
-            <ToastContainer />
 
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle>Confirmation</DialogTitle>

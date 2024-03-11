@@ -36,6 +36,7 @@ const SuperAdminForm = () => {
                     .sort((a, b) => a.urn - b.urn);
 
                 setUsers(filteredUsers);
+                console.log(filteredUsers)
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
@@ -254,7 +255,7 @@ const SuperAdminForm = () => {
     };
 
     return (
-        <div style={{ padding: '0 20px' }}>
+        <div style={{ padding: '0 20px' , marginTop:'20px' }}>
             <Grid container spacing={2} justifyContent="space-around">
                 <Grid item style={{ marginBottom: 20 }}>
                     <FormControl style={{ width: 200 }}>
