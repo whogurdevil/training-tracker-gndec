@@ -59,7 +59,7 @@ export default function Form() {
         const url = `${API_URL}userprofiles/${urn}`;
         const response = await axios.get(url);
         const userData = response.data.data;
-
+console.log(userData)
         // Check if all fields are filled in the fetched data
         if (
           userData.Name &&
@@ -69,12 +69,13 @@ export default function Form() {
           userData.section &&
           userData.mentor &&
           userData.batch &&
-          userData.gender &&
-          userData.admissionType
+          userData.gender 
 
         ) {
           // If all fields are filled, populate the form data and disable editing
-          setFormData(userData);
+          const datePickerBatch = convertBatchToDate(userData.batch);
+          setFormData({ ...userData, batch: datePickerBatch });
+         
           setIsEditing(false);
         } else {
           console.error('Error: Fetched data is incomplete.');
@@ -86,6 +87,14 @@ export default function Form() {
 
     fetchData();
   }, []);
+  const convertBatchToDate = (batchValue) => {
+    if (!batchValue) return null;
+
+    const startYear = parseInt(batchValue);
+    const endYear = startYear + 4;
+    return { $y: startYear, $M: 0, $D: 1, $H: 0, $m: 0, $s: 0, $ms: 0, $W: 1, $L: 0, $Ls: 0, $Wc: 0, $T: 0, $U: 0, $x: 0, $off: 0, $df: 0, $l: 'en', $c: 0, $d: 0, $tz: undefined, $tzm: 0, $tzo: 0, $lts: '', $ltz: '', $total: 0, $ttotal: 0, $tzoName: 'GMT', $tzoShort: 'GMT', $dow: 0, $dto: 0, $dtz: undefined, $dtzm: 0, $dtzo: 0, $ordinal: 0, $twoDigitYear: startYear % 100, $i: 0, $t: 0, $ts: 0, $i18n: {} };
+  };
+
 
   // const [endDate, setEndDate] = useState(null);
   const handleChange = (e) => {
@@ -166,6 +175,7 @@ export default function Form() {
     setIsEditing((prevEditing) => !prevEditing);
   };
   const handleBatchChange = (newDate) => {
+    console.log(newDate)
     // console.log(newDate);
     if (newDate) {
       // Extract the year from the newDate object
