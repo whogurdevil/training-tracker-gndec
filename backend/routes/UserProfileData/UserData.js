@@ -6,7 +6,7 @@ const router = express.Router();
 // Route to create a new user profile
 router.post('/', async (req, res) => {
     try {
-        const { Name, contact, crn, branch, batch, gender, admissionType, section, mentor } = req.body.formData;
+        const { Name, contact, crn, branch, batch, gender, admissionType, section, mentor , mother,father,personalMail } = req.body.formData;
 
         const urn = req.body.urn
         const userInfo = await SignUpdata.findOne({ urn: urn });
@@ -25,7 +25,10 @@ router.post('/', async (req, res) => {
             branch,
             batch,
             gender,
-            admissionType
+            admissionType,
+            mother,
+            father,
+            personalMail
         });
 
         userInfo.userInfo = newsignup;

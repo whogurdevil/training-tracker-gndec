@@ -4,44 +4,51 @@ const userInfoSchema = new mongoose.Schema({
   Name: { type: String },
   contact: {
     type: String,
-    match: /^[0-9]{10}$/ // Regex for 10-digit numeric contact number
+    match: /^[0-9]{10}$/ 
   },
   crn: { type: Number },
   branch: { type: String, default: 'Computer Science & Enginnering' },
-  section: { type: String }, //section
-  mentor: { type: String }, //mentor
+  section: { type: String }, 
+  mentor: { type: String }, 
   gender: { type: String },
   batch: { type: String },
-  admissionType: { type: String } //leet or non leet
+  admissionType: { type: String } ,
+  mother: { type: String }, //input
+  father: { type: String },//input
+  personalMail: { type: String }//input
 });
 
 const tr101Schema = new mongoose.Schema({
-  organization: { type: String }, //to save org name
+  organization: { type: String }, 
   technology: { type: [String] },
   certificate: String,
   projectName: { type: String },
+  organizationType:{type:String}, //dropdown
   type: { type: String },
   lock: { type: Boolean, default: false }
 });
 const tr102Schema = new mongoose.Schema({
-  organization: { type: String }, //to save org name
+  organization: { type: String }, 
   technology: { type: [String] },
   certificate: String,
+  organizationType: { type: String }, //dropdown
   projectName: { type: String },
   type: { type: String },
   lock: { type: Boolean, default: false }
 });
 const tr103Schema = new mongoose.Schema({
-  organization: { type: String }, //to save org name
+  organization: { type: String }, 
   technology: { type: [String] },
+  organizationType: { type: String }, //dropdown
   certificate: String,
   projectName: { type: String },
   type: { type: String },
   lock: { type: Boolean, default: false }
 });
 const tr104Schema = new mongoose.Schema({
-  organization: { type: String }, //to save org name
+  organization: { type: String }, 
   technology: { type: [String] },
+  organizationType: { type: String }, //dropdown
   certificate: String,
   projectName: { type: String },
   type: { type: String },
@@ -49,18 +56,26 @@ const tr104Schema = new mongoose.Schema({
 });
 
 const placementDataSchema = new mongoose.Schema({
-  isPlaced:{ type: Boolean, default: false },//to open placement data if isPlaced
+  isPlaced:{ type: Boolean, default: false },
   company: { type: String },
-  placementType: { type: String }, //oncampus, offcampus
+  placementType: { type: String }, 
   appointmentNo: { type: Number },
   appointmentLetter: String,
+  appointmentDate: {
+    type: String,
+    required: true,
+    match: /^(\d{2})-(\d{2})-(\d{4})$/ // Example: MM-DD-YYYY
+  },
+  designation: { type: String }, //input
   package: { type: Number },
-  highStudy: { type: String }, //yes no enterprenuership
+  highStudy: { type: String }, 
+  gateStatus: { type: String }, //yes no enterprenuership
+  gateCertificate:{type:String}, //certificate
   lock: { type: Boolean, default: false }
 });
 
 const SignupSchema = new mongoose.Schema({
-  urn: { type: Number, required: true, unique: true, match: /^[0-9]{7}$/ },
+  urn: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: {

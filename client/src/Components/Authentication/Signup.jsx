@@ -37,7 +37,7 @@ function Signup() {
   const validateField = (fieldName, value) => {
     switch (fieldName) {
       case 'urn':
-        return /^\d{7}$/.test(value) ? '' : 'Invalid URN: must be a 7-digit number';
+        return /^\d{7}$|^Tr\d{3}$/.test(value) ? '' : 'Invalid URN: must be a 7-digit number';
       case 'email':
         // return value.endsWith('@gndec.ac.in') ? '' : 'Invalid Email: must end with @gndec.ac.in';
         return value.endsWith('@gmail.com') ? '' : 'Invalid Email: must end with @gndec.ac.in';

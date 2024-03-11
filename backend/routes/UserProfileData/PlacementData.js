@@ -8,7 +8,7 @@ const isAdmin = require('../../middleware/isAdmin');
 // Route to create or update a user's placement data
 router.post('/', async (req, res) => {
     try {
-        const { company, placementType, highStudy, appointmentNo, appointmentLetter, package, isPlaced } = req.body.formData;
+        const { company, placementType, highStudy, appointmentNo, appointmentLetter, package, isPlaced , gateStatus,gateCertificate,designation,appointmentDate } = req.body.formData;
         const urn = req.body.urn;
         let userInfo = await SignUpdata.findOne({ urn: urn });
 
@@ -35,7 +35,11 @@ router.post('/', async (req, res) => {
                 appointmentNo,
                 appointmentLetter,
                 package,
-                isPlaced
+                isPlaced,
+                gateStatus,
+                gateCertificate,
+                appointmentDate,
+                designation
             });
         }
 

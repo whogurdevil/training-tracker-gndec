@@ -19,12 +19,13 @@ router.post('/signup',
     return true; // Return true if validation passes
   }),
   body('urn').custom((value) => {
-    // Check if the phone number is exactly 10 digits and doesn't start with "0"  
-    if (!/^\d{7}$/.test(value)) {
-      throw new Error('Invalid urn. It should be exactly 7 digits and should not start with "0"');
+    // Check if the urn is exactly 7 digits or in the format "Tr-xxx"
+    if (!/^\d{7}$|^Tr\d{3}$/.test(value)) {
+      throw new Error('Invalid urn. It should be exactly 7 digits or in the format "Tr-xxx"');
     }
     return true; // Return true if validation passes
   }),
+
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -72,7 +73,7 @@ router.post('/signup',
 );
 
 router.post('/login', body('password', 'Password should have a minimum length of 5').isLength({ min: 5 }), body('urn').custom((value) => {
-  if (!/^\d{7}$/.test(value)) {
+  if (!/^\d{7}$|^Tr\d{3}$/.test(value)) {
     throw new Error('Invalid urn. It should be exactly 7 digits and should not start with "0"');
   }
   return true; // Return true if validation passes

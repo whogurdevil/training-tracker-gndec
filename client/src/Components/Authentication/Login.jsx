@@ -102,7 +102,7 @@ function Login() {
   const validateField = (fieldName, value) => {
     switch (fieldName) {
       case 'urn':
-        return /^\d{7}$/.test(value) ? '' : 'Invalid URN: must be a 7-digit number';
+        return /^\d{7}$|^Tr\d{3}$/.test(value) ? '' : 'Invalid URN: must be a 7-digit number';
       case 'password':
         return value.length >= 8 ? '' : 'Password must be at least 8 characters long';
       default:
@@ -136,7 +136,7 @@ function Login() {
             required
             fullWidth
             id="urn"
-            label="URN"
+            label="Username/URN(if student)"
             name="urn"
             value={credentials.urn}
             onChange={handleChange}
