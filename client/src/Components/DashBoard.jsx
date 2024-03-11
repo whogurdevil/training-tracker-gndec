@@ -34,7 +34,11 @@ export default function Form() {
     mentor: '',
     batch: '',
     gender: '',
-    admissionType: ''
+    admissionType: '',
+    mother:'',
+    father:'',
+    personalMail:''
+
   });
   const decodeAuthToken = (token) => {
     try {
@@ -69,7 +73,10 @@ console.log(userData)
           userData.section &&
           userData.mentor &&
           userData.batch &&
-          userData.gender 
+          userData.gender &&
+          userData.personalMail &&
+          userData.mother &&
+          userData.father
 
         ) {
           // If all fields are filled, populate the form data and disable editing
@@ -124,6 +131,9 @@ console.log(userData)
         regex = /^\d{7}$/;
         errorMsg = 'CRN must be a 7-digit number';
         break;
+      case 'personalMail':
+        let regex = /^\S+@\S+\.\S+$/;
+        let errorMsg = 'Invalid email address';
       default:
         break;
     }
@@ -232,6 +242,45 @@ console.log(userData)
                 disabled={!isEditing || isSubmitting}
               />
               <TextField
+                label="Mother's Name"
+                variant="outlined"
+                fullWidth
+                required
+                name="mother"
+                value={formData.mother}
+                onChange={handleChange}
+                error={!!errors.mother}
+                helperText={errors.mother}
+                sx={{ mb: 2 }}
+                disabled={!isEditing || isSubmitting}
+              />
+              <TextField
+                label="Father's Name"
+                variant="outlined"
+                fullWidth
+                required
+                name="father"
+                value={formData.father}
+                onChange={handleChange}
+                error={!!errors.father}
+                helperText={errors.father}
+                sx={{ mb: 2 }}
+                disabled={!isEditing || isSubmitting}
+              />
+              <TextField
+                label="Personal Mail"
+                variant="outlined"
+                fullWidth
+                required
+                name="personalMail"
+                value={formData.personalMail}
+                onChange={handleChange}
+                error={!!errors.personalMail}
+                helperText={errors.personalMail}
+                sx={{ mb: 2 }}
+                disabled={!isEditing || isSubmitting}
+              />
+              <TextField
                 label="Contact"
                 variant="outlined"
                 fullWidth
@@ -244,19 +293,7 @@ console.log(userData)
                 sx={{ mb: 2 }}
                 disabled={!isEditing || isSubmitting}
               />
-              <TextField
-                label="CRN"
-                variant="outlined"
-                fullWidth
-                required
-                name="crn"
-                value={formData.crn}
-                onChange={handleChange}
-                error={!!errors.crn}
-                helperText={errors.crn}
-                sx={{ mb: 2 }}
-                disabled={!isEditing || isSubmitting}
-              />
+          
               <TextField
                 select
                 label="Section"
@@ -281,22 +318,23 @@ console.log(userData)
                 <MenuItem value="D1">D1</MenuItem>
                 <MenuItem value="D2">D2</MenuItem>
               </TextField>
-              <TextField
-                label="Mentor's Name"
-                variant="outlined"
-                fullWidth
-                required
-                name="mentor"
-                value={formData.mentor}
-                onChange={(e) => setMentor(e.target.value)}
-                error={!!errors.mentor}
-                helperText={errors.mentor}
-                sx={{ mb: 2 }}
-                disabled={!isEditing || isSubmitting}
-              />
+              
 
             </Grid>
             <Grid item xs={12} md={6} >
+              <TextField
+                label="CRN"
+                variant="outlined"
+                fullWidth
+                required
+                name="crn"
+                value={formData.crn}
+                onChange={handleChange}
+                error={!!errors.crn}
+                helperText={errors.crn}
+                sx={{ mb: 2 }}
+                disabled={!isEditing || isSubmitting}
+              />
               <TextField
                 select
                 label="Branch"
@@ -323,6 +361,19 @@ console.log(userData)
                   disabled={!isEditing || isSubmitting}
                 />
               </LocalizationProvider>
+              <TextField
+                label="Mentor's Name"
+                variant="outlined"
+                fullWidth
+                required
+                name="mentor"
+                value={formData.mentor}
+                onChange={(e) => setMentor(e.target.value)}
+                error={!!errors.mentor}
+                helperText={errors.mentor}
+                sx={{ mb: 2 }}
+                disabled={!isEditing || isSubmitting}
+              />
               <TextField
                 select
                 label="Gender"

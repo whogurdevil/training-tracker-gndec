@@ -14,6 +14,9 @@ import Grid from '@mui/material/Grid';
 import { openBase64NewTab } from '../utils/base64topdf';
 import EditIcon from '@mui/icons-material/Edit';
 import { jwtDecode } from "jwt-decode";
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
 
@@ -25,9 +28,15 @@ export default function PlacementForm() {
     appointmentNo: '',
     appointmentLetter: null,
     package: '',
+    designation:'',
+    gateStatus:'',
+    gateCertificate:'',
+    appointmentDate:''
   });
   const [isPlaced, setIsPlaced] = useState(false);
   const [isHighstudy, setHighstudy] = useState(false);
+  const [gateStatus, setgateStatus] = useState(false);
+
   const decodeAuthToken = (token) => {
     try {
       const decodedToken = jwtDecode(token);
@@ -42,6 +51,7 @@ export default function PlacementForm() {
   const urn = decodeAuthToken(token);
   const [errors, setErrors] = useState({});
   const [appointmentLetter, setAppointmentLetter] = useState(null);
+  const [GateCertificate, setGateCertificate] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditing, setIsEditing] = useState(true);
   const [isLock, setIsLock] = useState(false);
@@ -54,12 +64,19 @@ export default function PlacementForm() {
         const userData = response.data.data;
 
         // Check if all fields are filled in the fetched data
-        if (userData.isPlaced !== null && userData.highStudy !== null) {
+        if (userData.isPlaced !== null && userData.highStudy !== null && userData.gateStatus !== null) {
           // If all required fields are present, populate the form data
-          setFormData(userData);
+          setFormData({
+            ...userData,
+            // Convert the appointment date to date picker format
+            appointmentDate: convertBackendDateToPickerFormat(userData.appointmentDate)
+          });
           setIsEditing(false);
           setIsPlaced(userData.isPlaced);
           setHighstudy(userData.highStudy);
+          console.log(userData)
+          setgateStatus(userData.gateStatus)
+          console.log("getstatus",gateStatus)
           if (userData.lock) {
             setIsLock(true);
           } else {
@@ -75,11 +92,28 @@ export default function PlacementForm() {
 
     fetchData();
   }, []);
+  const handleDateChange = (newDate) => {
+    console.log(newDate)
+    // Extract year, month, and day from the selected date
+    const year = newDate.$y;
+    const month = newDate.$M + 1; // Months start from 0, so add 1
+    const day = newDate.$D;
 
+    // Format the date string
+    const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+
+
+
+    setFormData({ ...formData,appointmentDate:formattedDate});
+  };
 
   const handleFileChange = (files) => {
     setFormData({ ...formData, appointmentLetter: files.base64 });
     setAppointmentLetter(files.base64);
+  };
+  const handleGateFileChange = (files) => {
+    setFormData({ ...formData, gateCertificate: files.base64 });
+    setGateCertificate(files.base64);
   };
 
   const handleChange = (e) => {
@@ -119,20 +153,10 @@ export default function PlacementForm() {
         formErrors.company = 'Company name cannot be blank';
       }
 
-
-      // Prepare form data to be submitted
-      let submitData = {};
-      if (isPlaced) {
-        // Include form data as is if isPlaced is true
-        submitData = { ...formData, isPlaced: true };
-      } else {
-        // Include isPlaced as false and set other fields to null if isPlaced is false
-        submitData = { company: null, placementType: null, highStudy: formData.highStudy, appointmentNo: null, appointmentLetter: null, package: null, isPlaced: false };
-      }
-      // console.log(submitData)
+      console.log(formData)
       // Submit form data
       const response = await axios.post(`${API_URL}placement`, {
-        formData: submitData,
+        formData: formData,
         urn: urn,
       });
 
@@ -155,11 +179,28 @@ export default function PlacementForm() {
     setIsEditing((prevEditing) => !prevEditing);
   };
 
+  const convertBackendDateToPickerFormat = (backendDate) => {
+    if (!backendDate) return null;
+
+    // Split the backend date string into year, month, and day parts
+    const [year, month, day] = backendDate.split('-');
+
+    // Create a new object with the extracted year, month, and day
+    return { year: parseInt(year), month: parseInt(month) - 1, day: parseInt(day) };
+  };
+
   const handleViewCertificate = () => {
     if (appointmentLetter) {
       openBase64NewTab(appointmentLetter);
     } else {
       openBase64NewTab(formData.appointmentLetter);
+    }
+  };
+  const handleGateViewCertificate = () => {
+    if (GateCertificate) {
+      openBase64NewTab(GateCertificate);
+    } else {
+      openBase64NewTab(formData.gateCertificate);
     }
   };
 
@@ -176,11 +217,19 @@ export default function PlacementForm() {
 
     setFormData({ ...formData, [name]: value });
   };
+  const handleIsGateStatusChange = (e) => {
+    // console.log(e.target)
+    const { name, value } = e.target;
+    console.log(name, value);
+    setgateStatus(value === "Yes");
+
+    setFormData({ ...formData, [name]: value });
+  };
 
   return (
     <Container>
 
-      <Container style={{ paddingInline: 0, paddingBottom: 50 }} >
+      <Container style={{ paddingInline: 0, paddingBottom: 50 , marginTop:'10px' }} >
         {!isLock && (
           <Button
             onClick={handleEdit}
@@ -233,21 +282,7 @@ export default function PlacementForm() {
           <MenuItem value="false">No</MenuItem>
         </TextField>
 
-        <TextField
-          select
-          label="Will you pursue higher studies?"
-          variant="outlined"
-          fullWidth
-          required
-          name="highStudy"
-          value={isHighstudy ? "Yes" : "No"}
-          onChange={handleIsHighChange}
-          sx={{ mb: 2 }}
-          disabled={!isEditing || isSubmitting}
-        >
-          <MenuItem value="Yes">Yes</MenuItem>
-          <MenuItem value="No">No</MenuItem>
-        </TextField>
+       
 
       </Grid>
 
@@ -266,6 +301,19 @@ export default function PlacementForm() {
             sx={{ mb: 2 }}
             disabled={!isEditing || isSubmitting}
           />
+          <TextField
+            label="Designation"
+            variant="outlined"
+            fullWidth
+            required
+            name="designation"
+            value={formData.designation}
+            onChange={handleChange}
+            error={!!errors.designation}
+            helperText={errors.designation}
+            sx={{ mb: 2 }}
+            disabled={!isEditing || isSubmitting}
+          />
 
           <TextField
             label="Appointment Number"
@@ -281,8 +329,19 @@ export default function PlacementForm() {
             sx={{ mb: 2 }}
             disabled={!isEditing || isSubmitting}
           />
+          <LocalizationProvider dateAdapter={AdapterDayjs} >
+            <DatePicker
+              label="Appointment Date"
+              views={['year', 'month', 'day']}
+              renderInput={(params) => <TextField {...params} helperText="Enter starting year only" />}
+              onChange={handleDateChange}
 
+              disabled={!isEditing || isSubmitting}
+            />
+          </LocalizationProvider>
+          {isEditing && (
           <Grid item xs={12} container justifyContent="space-between" alignItems="center">
+           
             <Typography variant="h6" gutterBottom textAlign="left" marginTop={2}>
               Upload Appointment Letter
             </Typography>
@@ -292,7 +351,9 @@ export default function PlacementForm() {
               onDone={handleFileChange}
               disabled={!isEditing || isSubmitting}
             />
-          </Grid>
+           
+            </Grid>)}
+         
 
           <TextField
             label="Package"
@@ -300,6 +361,7 @@ export default function PlacementForm() {
             fullWidth
             required
             name="package"
+            style={{marginTop: '10px'}}
             value={formData.package}
             onChange={handleChange}
             error={!!errors.package}
@@ -330,6 +392,59 @@ export default function PlacementForm() {
             </Button>
           )}
         </>
+      )}
+      <Grid item xs={12} mt={3}>
+      <TextField
+        select
+        label="Will you pursue higher studies?"
+        variant="outlined"
+        fullWidth
+        required
+        name="highStudy"
+        value={isHighstudy ? "Yes" : "No"}
+        onChange={handleIsHighChange}
+        sx={{ mb: 2 }}
+        disabled={!isEditing || isSubmitting}
+      >
+        <MenuItem value="Yes">Yes</MenuItem>
+        <MenuItem value="No">No</MenuItem>
+      </TextField>
+      </Grid>
+      <Grid item xs={12} mt={3}>
+        <TextField
+          select
+          label="Have you appeared in Gate Exam?"
+          variant="outlined"
+          fullWidth
+          required
+          name="gateStatus"
+          value={gateStatus ? "Yes" : "No"}
+          onChange={handleIsGateStatusChange}
+          sx={{ mb: 2 }}
+          disabled={!isEditing || isSubmitting}
+        >
+          <MenuItem value="Yes">Yes</MenuItem>
+          <MenuItem value="No">No</MenuItem>
+        </TextField>
+      </Grid>
+      {gateStatus && isEditing && (
+        <Grid item xs={12} container justifyContent="space-between" alignItems="center">
+          <Typography variant="h6" gutterBottom textAlign="left" marginTop={2}>
+            Upload Gate Admit Card
+          </Typography>
+          <FileBase
+            type="file"
+            multiple={false}
+            onDone={handleGateFileChange}
+            disabled={!isEditing || isSubmitting}
+          />
+        </Grid>
+       
+      )}
+      {gateStatus && !isEditing && (
+        <Button onClick={handleGateViewCertificate} variant="outlined" color="primary">
+          View Gate Admit Card
+        </Button>
       )}
 
 

@@ -14,6 +14,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { jwtDecode } from "jwt-decode";
 import { useLocation } from 'react-router-dom';
 import { base64toBlob, openBase64NewTab } from '../utils/base64topdf';
+import { technologyStack } from '../utils/technology';
 
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
 
@@ -25,6 +26,7 @@ export default function Form() {
     projectName: '',
     type: '',
     certificate: null,
+    organizationType:''
   });
 
   const [errors, setErrors] = useState({});
@@ -48,7 +50,8 @@ export default function Form() {
           userData.organization &&
           userData.technology &&
           userData.projectName &&
-          userData.type
+          userData.type &&
+          userData.organizationType
         ) {
           setFormData(userData);
           setIsEditing(false);
@@ -79,9 +82,6 @@ export default function Form() {
     }
   };
 
-  const technologyStack = [
-    "Android", "Angular", "ASP.NET", "AWS", "Bootstrap", "C#", "C++", "CSS", "Django", "Docker", "Express.js", "Flask", "Git", "Heroku", "HTML", "Java", "JavaScript", "Kubernetes", "Linux", "MongoDB", "MySQL", "Nginx", "Node.js", "PHP", "PostgreSQL", "Python", "React", "Redis", "Ruby on Rails", "SQLite", "Spring Boot", "Swift", "Tailwind CSS", "TensorFlow", "TypeScript", "Unity", "Vue.js"
-  ];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -113,6 +113,10 @@ export default function Form() {
       if (!formData.certificate) {
         formErrors.certificate = 'Certificate cannot be blank';
         toast.error("certificate cannot be blank")
+      }
+      if (!formData.organizationType) {
+        formErrors.organizationType = 'Organization-Type cannot be blank';
+        toast.error("Organization-Type cannot be blank")
       }
 
       if (Object.keys(formErrors).length > 0) {
@@ -216,7 +220,7 @@ export default function Form() {
             disabled={!isEditing || isSubmitting}
           />
           <TextField
-            label="Project Name"
+            label="Project Title"
             variant="outlined"
             fullWidth
             required
@@ -232,6 +236,24 @@ export default function Form() {
         <Grid item xs={12} md={6}>
           <TextField
             select
+            label="Organization Type"
+            variant="outlined"
+            fullWidth
+            required
+            name="organizationType"
+            value={formData.organizationType}
+            onChange={handleChange}
+            error={!!errors.organizationType}
+            helperText={errors.organizationType}
+            sx={{ mb: 2 }}
+            disabled={!isEditing || isSubmitting}
+          >
+            <MenuItem value="industry">Industrial</MenuItem>
+            <MenuItem value="gndec">Institutional ( Guru Nanak Dev Engineering College , Ludhiana) </MenuItem>
+            <MenuItem value="other">Other Institutional</MenuItem>
+          </TextField>
+          <TextField
+            select
             label="Type"
             variant="outlined"
             fullWidth
@@ -244,11 +266,12 @@ export default function Form() {
             sx={{ mb: 2 }}
             disabled={!isEditing || isSubmitting}
           >
-            <MenuItem value="Training / Internship Without Stipend">Training / Internship Without Stipend</MenuItem>
-            <MenuItem value="Internship With Stipend">Internship With Stipend</MenuItem>
-            <MenuItem value="Paid Internship">Paid Internship</MenuItem>
+            <MenuItem value="Training">Training / Internship Without Stipend</MenuItem>
+            <MenuItem value="InternshipWithStipend">Internship With Stipend</MenuItem>
+            <MenuItem value="PaidTraining">Paid Training</MenuItem>
           </TextField>
         </Grid>
+      
       </Grid>
       <TextField
         select

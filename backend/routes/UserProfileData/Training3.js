@@ -8,7 +8,7 @@ const isAdmin = require('../../middleware/isAdmin');
 // Route to create a new user profile
 router.post('/', async (req, res) => {
     try {
-        const { organization, technology, projectName, type, certificate } = req.body.formData;
+        const { organization, technology, projectName, type, certificate, organizationType } = req.body.formData;
         const urn = req.body.urn
 
         const userInfo = await SignUpdata.findOne({ urn: urn });
@@ -23,7 +23,8 @@ router.post('/', async (req, res) => {
             technology,
             projectName,
             type,
-            certificate
+            certificate,
+            organizationType
         });
 
         userInfo.tr103 = TR103;
