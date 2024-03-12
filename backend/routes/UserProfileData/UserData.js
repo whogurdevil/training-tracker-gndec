@@ -30,9 +30,7 @@ router.post('/', async (req, res) => {
             father,
             personalMail
         });
-
         userInfo.userInfo = newsignup;
-
         const savedUserInfo = await userInfo.save();
 
         // Respond with the saved userInfo

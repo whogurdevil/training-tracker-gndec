@@ -62,9 +62,7 @@ const placementDataSchema = new mongoose.Schema({
   appointmentNo: { type: Number },
   appointmentLetter: String,
   appointmentDate: {
-    type: String,
-    required: true,
-    match: /^(\d{2})-(\d{2})-(\d{4})$/ // Example: MM-DD-YYYY
+    type: String,// Example: MM-DD-YYYY
   },
   designation: { type: String }, //input
   package: { type: Number },

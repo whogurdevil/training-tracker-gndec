@@ -12,7 +12,7 @@ import ExportComponent from '../../utils/ExportData';
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
 import VerifyAllComponent from '../../utils/VerifyAll';
 import UnVerifyAllComponent from '../../utils/UnVerifyAll';
-// import GeneratePlacementGraphComponent from '../../utils/PlacementGraph';
+import GeneratePlacementGraphComponent from '../../utils/PlacementGraph';
 
 const SuperAdminForm = () => {
     const [users, setUsers] = useState([]);
@@ -292,12 +292,16 @@ const SuperAdminForm = () => {
                 </Grid>
             </Grid>
             <Card variant="outlined" style={{ marginBottom: '50px' }}>
-                <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between' }}>
-                    <div>
+                <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between' , }}>
+                    <div style={{ display: 'flex',  gap: '10px', flexDirection: 'row' }}>
                         <ExportComponent data={filteredUsers} columns={columns} selectedTraining={selectedTraining} />
+                        <div style={{marginTop:'10px'}}>
+                            <GeneratePlacementGraphComponent selectedTraining={selectedTraining} />
+                        </div>
                     </div>
-                    <div>
-                    </div>
+                    
+                   
+                    
                     <div style={{ marginTop: '10px', marginRight: '10px', display: 'flex', justifyContent: 'space-between' ,gap:'10px'}}>
                         <VerifyAllComponent selectedTraining={selectedTraining} refresh={refresh} onRefresh={handleRefresh} />
                         <UnVerifyAllComponent selectedTraining={selectedTraining} refresh={refresh} onRefresh={handleRefresh} />

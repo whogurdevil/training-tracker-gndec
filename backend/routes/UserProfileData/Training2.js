@@ -61,7 +61,7 @@ console.log(hello)
 router.get('/:urn', async (req, res) => {
     try {
         const urn = req.params.urn;
-        const userInfo = await SignUpdata.findOne({ urn: urn }).populate('tr101');
+        const userInfo = await SignUpdata.findOne({ urn: urn }).populate('tr102');
 
         if (!userInfo) {
             return res.status(404).json({ message: 'UserInfo not found' });

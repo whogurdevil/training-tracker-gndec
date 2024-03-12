@@ -86,7 +86,6 @@ function Login() {
   const theme = createTheme();
 
   return (
-    <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <ToastContainer />
@@ -95,11 +94,10 @@ function Login() {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
+            marginTop:5
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
-          </Avatar>
+        
           <Typography component="h1" variant="h5">
             Forgot Password
           </Typography>
@@ -111,13 +109,12 @@ function Login() {
               id="email"
               label="Email Address"
               name="email"
+              placeholder='nameCrn@gndec.ac.in'
               value={credentials.email}
               autoComplete="email"
               onChange={onChange}
               autoFocus
-              InputProps={{
-                sx: { padding: '8px' },
-              }}
+            
             />
             {showOtpField && (
               <TextField
@@ -171,7 +168,6 @@ function Login() {
           </Box>
         </Box>
       </Container>
-    </ThemeProvider>
   );
 }
 

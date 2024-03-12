@@ -10,6 +10,7 @@ router.post('/', async (req, res) => {
     try {
         const { company, placementType, highStudy, appointmentNo, appointmentLetter, package, isPlaced , gateStatus,gateCertificate,designation,appointmentDate } = req.body.formData;
         const urn = req.body.urn;
+        console.log(gateStatus)
         let userInfo = await SignUpdata.findOne({ urn: urn });
 
         if (!userInfo) {
@@ -26,6 +27,10 @@ router.post('/', async (req, res) => {
             userInfo.placementData.appointmentLetter = appointmentLetter;
             userInfo.placementData.package = package;
             userInfo.placementData.isPlaced = isPlaced;
+            userInfo.placementData.gateStatus = gateStatus;
+            userInfo.placementData.gateCertificate = gateCertificate;
+            userInfo.placementData.appointmentDate = appointmentDate;
+            userInfo.placementData.designation = designation;
         } else {
             // Create new placement data
             userInfo.placementData = new placementData({
@@ -43,10 +48,12 @@ router.post('/', async (req, res) => {
             });
         }
 
-
+console.log("hello")
+console.log(userInfo.save())
         // Save the updated user info
         const savedUserInfo = await userInfo.save();
-
+    
+console.log("hello")
 
         // Respond with the saved userInfo
         res.status(201).json({ success: true, data: savedUserInfo });
@@ -124,8 +131,7 @@ router.post('/unverifyall', fetchuser, isAdmin, async (req, res) => {
 router.get('/:urn', async (req, res) => {
     try {
         const urn = req.params.urn;
-        const userInfo = await SignUpdata.findOne({ urn: urn }).populate('tr101');
-
+        const userInfo = await SignUpdata.findOne({ urn: urn });
         if (!userInfo) {
             return res.status(404).json({ message: 'UserInfo not found' });
         }
@@ -140,7 +146,8 @@ router.get('/:urn', async (req, res) => {
                 appointmentNo: null,
                 appointmentLetter: null,
                 package: null,
-                isPlaced: false
+                isPlaced: false,
+               
             };
         }
 
