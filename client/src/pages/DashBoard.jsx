@@ -18,6 +18,7 @@ import { jwtDecode } from "jwt-decode";
 import { Grid } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useMediaQuery } from '@mui/material';
+import { convertBatchToDate } from '../utils/DateConvertToFrontend';
 
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
 
@@ -60,10 +61,11 @@ export default function Form() {
     const fetchData = async () => {
 
       try {
+        console.log("hello")
         const url = `${API_URL}userprofiles/${urn}`;
         const response = await axios.get(url);
         const userData = response.data.data;
-        console.log(userData)
+        // console.log(userData)
         // Check if all fields are filled in the fetched data
         if (
           userData.Name &&
@@ -82,7 +84,7 @@ export default function Form() {
           // If all fields are filled, populate the form data and disable editing
           console.log(userData.batch);
           const datePickerBatch = convertBatchToDate(userData.batch);
-          console.log(datePickerBatch)
+          // console.log(datePickerBatch)
           setFormData({ ...userData, batch: datePickerBatch });
 
           setIsEditing(false);
@@ -96,54 +98,6 @@ export default function Form() {
 
     fetchData();
   }, []);
-  const convertBatchToDate = (batchValue) => {
-    if (!batchValue) return null;
-
-    const startYear = parseInt(batchValue);
-    const endYear = startYear + 4;
-    return {
-      $y: startYear,
-      $M: 0,
-      $D: 1,
-      $H: 0,
-      $m: 0,
-      $s: 0,
-      $ms: 0,
-      $W: 1,
-      $L: 'en', // Corrected to specify English locale
-      $Ls: 0,
-      $Wc: 0,
-      $T: 0,
-      $U: 0,
-      $x: 0,
-      $off: 0,
-      $df: 0,
-      $l: 'en', // Corrected to specify English locale
-      $c: 0,
-      $d: 0,
-      $tz: undefined,
-      $tzm: 0,
-      $tzo: 0,
-      $lts: '',
-      $ltz: '',
-      $total: 0,
-      $ttotal: 0,
-      $tzoName: 'GMT',
-      $tzoShort: 'GMT',
-      $dow: 0,
-      $dto: 0,
-      $dtz: undefined,
-      $dtzm: 0,
-      $dtzo: 0,
-      $ordinal: 0,
-      $twoDigitYear: startYear % 100,
-      $i: 0,
-      $t: 0,
-      $ts: 0,
-      $i18n: {}
-    };
-  };
-
 
 
   // const [endDate, setEndDate] = useState(null);
@@ -192,47 +146,47 @@ export default function Form() {
     try {
       // Form validation
       const formErrors = {};
-      if (!formData.Name.trim()) {
+      if (!formData.Name) {
         formErrors.Name = 'Name cannot be blank';
         toast.error(formErrors.Name)
-      } 
-      else if (!formData.admissionType.trim()) {
+      }
+      else if (!formData.admissionType) {
         formErrors.admissionType = "Admission Type cannot be blank"
         toast.error(formErrors.admissionType)
-      } 
-      else if (!formData.batch.trim()) {
+      }
+      else if (!formData.batch) {
         formErrors.batch = "Batch cannot be blank"
         toast.error(formErrors.batch)
       }
-      else if (!formData.branch.trim()) {
+      else if (!formData.branch) {
         formErrors.branch = "Branch cannot be blank"
         toast.error(formErrors.branch)
       }
-      else if (!formData.contact.trim()) {
+      else if (!formData.contact) {
         formErrors.contact = "Contact cannot be blank"
         toast.error(formErrors.contact)
       }
-      else if (!formData.crn.trim()) {
+      else if (!formData.crn) {
         formErrors.crn = "College Roll number cannot be blank"
         toast.error(formErrors.crn)
-      } 
-      else if (!formData.father.trim()) {
+      }
+      else if (!formData.father) {
         formErrors.father = "Father's Name cannot be blank"
         toast.error(formErrors.father)
-      } 
+      }
       else if (!formData.gender) {
         formErrors.gender = "Gender cannot be blank"
         toast.error(formErrors.gender)
-      } 
+      }
       else if (!formData.mentor.trim()) {
         formErrors.mentor = "Mentor cannot be blank"
         toast.error(formErrors.mentor)
-      } 
+      }
       else if (!formData.mother.trim()) {
         formErrors.mother = "Mother's Name cannot be blank"
         toast.error(formErrors.mother)
       }
-       else if (!formData.personalMail.trim()) {
+      else if (!formData.personalMail.trim()) {
         formErrors.personalMail = "Personal Mail cannot be blank"
         toast.error(formErrors.personalMail)
       }
@@ -246,6 +200,7 @@ export default function Form() {
       }
 
       // Submit form data
+      // console.log(formData)
       const response = await axios.post(`${API_URL}userprofiles`, { formData, urn: urn });
       // console.log(response);
       if (response.data.success) {
@@ -278,7 +233,7 @@ export default function Form() {
     if (newDate) {
       // Extract the year from the newDate object
       const year = newDate.$y;
-      // console.log(year);
+      console.log(year);
 
       setFormData({ ...formData, batch: `${year}-${year + 4}` });
     } else {
@@ -448,6 +403,7 @@ export default function Form() {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   label="Admission Year"
+                  
                   views={['year']}
                   renderInput={(params) => <TextField {...params} helperText="Enter starting year only" />}
                   onChange={handleBatchChange}

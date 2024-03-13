@@ -8,24 +8,28 @@ import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import { base64toBlob, openBase64NewTab } from '../../utils/base64topdf';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import ExportComponent from '../../utils/ExportData';
+import { useLocation } from 'react-router-dom';
+import VerifyAllComponent from '../../Components/VerifyAll';
+import ExportComponent from '../../Components/ExportData';
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
-import VerifyAllComponent from '../../utils/VerifyAll';
-import UnVerifyAllComponent from '../../utils/UnVerifyAll';
-import GeneratePlacementGraphComponent from '../../utils/PlacementGraph';
 
-const SuperAdminForm = () => {
+const AdminForm = () => {
     const [users, setUsers] = useState([]);
     const [selectedBatch, setSelectedBatch] = useState('');
     const [selectedBranch, setSelectedBranch] = useState('');
     const [selectedTraining, setSelectedTraining] = useState('');
     const [editStatus, setEditStatus] = useState({});
     const [refresh, setRefresh] = useState(false); // Refresh state
+    const Location = useLocation()
+    const urn = Location.state && Location.state.urn
+    const admintype = urn && urn.length >= 3 ? urn.slice(-3) : urn;
+    console.log(admintype);
 
     useEffect(() => {
         const fetchUsers = async () => {
             try {
                 const token = localStorage.getItem('authtoken');
+                // console.error(token)
                 const response = await axios.get(`${API_URL}api/users/getallusers/`, {
                     headers: {
                         "auth-token": token // Include the authentication token in the request headers
@@ -37,7 +41,6 @@ const SuperAdminForm = () => {
                     .sort((a, b) => a.urn - b.urn);
 
                 setUsers(filteredUsers);
-                console.log(filteredUsers)
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
@@ -99,8 +102,7 @@ const SuperAdminForm = () => {
                 { accessorKey: "placementData.package", header: "Package" },
                 { accessorKey: "placementData.appointmentNo", header: "Appointment Number" },
                 { accessorKey: "placementData.company", header: "Company" },
-                { accessorKey: "placementData.highStudy", header: "Higher Studies" },
-
+                { accessorKey: "placementData.highStudy", header: "Higher Studies" }
             );
             customColumns.push({
                 accessorKey: `${selectedTraining}.lock`,
@@ -210,7 +212,6 @@ const SuperAdminForm = () => {
             if (response.data.success) {
                 toast.success('Verification Status Change successfully!');
                 setRefresh(prevRefresh => !prevRefresh);
-              
             } else {
                 toast.error('Failed to update verified status.');
                 console.error('Failed to update verified status.');
@@ -234,10 +235,6 @@ const SuperAdminForm = () => {
         setModalContent(content);
         setOpen(true);
     };
-    // Function to handle refreshing data after verification status change
-    const handleRefresh = () => {
-        setRefresh(prevRefresh => !prevRefresh);
-    };
 
     const handleModalClose = () => {
         setOpen(false);
@@ -255,8 +252,41 @@ const SuperAdminForm = () => {
         setSelectedTraining(event.target.value);
     };
 
+    const getTrainingOptions = () => {
+        const options = [
+            { value: "", label: "All" }, // Default option
+            // Always include Placement Data option
+        ];
+
+        // Check the admintype and add training options accordingly
+        if (admintype === "101") {
+            options.push({ value: "tr101", label: "Training 101" });
+        } else if (admintype === "102") {
+            options.push(
+                { value: "tr101", label: "Training 101" },
+                { value: "tr102", label: "Training 102" }
+            );
+        } else if (admintype === "103") {
+            options.push(
+                { value: "tr101", label: "Training 101" },
+                { value: "tr102", label: "Training 102" },
+                { value: "tr103", label: "Training 103" }
+            );
+        } else if (admintype === "104") {
+            options.push(
+                { value: "tr101", label: "Training 101" },
+                { value: "tr102", label: "Training 102" },
+                { value: "tr103", label: "Training 103" },
+                { value: "tr104", label: "Training 104" },
+                { value: "placementData", label: "Placement Data" }
+            );
+        }
+
+        return options;
+    };
+
     return (
-        <div style={{ padding: '0 20px' , marginTop:'20px' }}>
+        <div style={{ marginTop: '100px', padding: '0 20px' }}>
             <Grid container spacing={2} justifyContent="space-around">
                 <Grid item style={{ marginBottom: 20 }}>
                     <FormControl style={{ width: 200 }}>
@@ -281,36 +311,25 @@ const SuperAdminForm = () => {
                     <FormControl style={{ width: 200 }}>
                         <InputLabel>Training</InputLabel>
                         <Select value={selectedTraining} onChange={handleTrainingChange}>
-                            <MenuItem value="">All</MenuItem>
-                            <MenuItem value="tr101">Training 101</MenuItem>
-                            <MenuItem value="tr102">Training 102</MenuItem>
-                            <MenuItem value="tr103">Training 103</MenuItem>
-                            <MenuItem value="tr104">Training 104</MenuItem>
-                            <MenuItem value="placementData">Placement Data</MenuItem>
+                            {getTrainingOptions().map((option) => (
+                                <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
+                            ))}
                         </Select>
                     </FormControl>
+
                 </Grid>
             </Grid>
             <Card variant="outlined" style={{ marginBottom: '50px' }}>
-                <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between' , }}>
-                    <div style={{ display: 'flex',  gap: '10px', flexDirection: 'row' }}>
+                <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between' }}>
+                    <div>
                         <ExportComponent data={filteredUsers} columns={columns} selectedTraining={selectedTraining} />
-                        <div style={{marginTop:'10px'}}>
-                            <GeneratePlacementGraphComponent selectedTraining={selectedTraining} />
-                        </div>
                     </div>
-                    
-                   
-                    
-                    <div style={{ marginTop: '10px', marginRight: '10px', display: 'flex', justifyContent: 'space-between' ,gap:'10px'}}>
-                        <VerifyAllComponent selectedTraining={selectedTraining} refresh={refresh} onRefresh={handleRefresh} />
-                        <UnVerifyAllComponent selectedTraining={selectedTraining} refresh={refresh} onRefresh={handleRefresh} />
+                    <div style={{ marginTop: '10px', marginRight: '10px' }}>
+                        <VerifyAllComponent selectedTraining={selectedTraining} />
                     </div>
                 </div>
                 <MaterialReactTable table={table} />
             </Card>
-
-
 
             <Modal open={open} onClose={handleModalClose}>
                 <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', boxShadow: 24, p: 4 }}>
@@ -332,4 +351,4 @@ const SuperAdminForm = () => {
     );
 };
 
-export default SuperAdminForm;
+export default AdminForm;

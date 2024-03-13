@@ -6,6 +6,7 @@ const fetchuser = require('../../middleware/fetchUser');
 const isAdmin = require('../../middleware/isAdmin');
 
 // Route to create or update a user's placement data
+
 router.post('/', async (req, res) => {
     try {
         const { company, placementType, highStudy, appointmentNo, appointmentLetter, package, isPlaced , gateStatus,gateCertificate,designation,appointmentDate } = req.body.formData;
@@ -17,21 +18,7 @@ router.post('/', async (req, res) => {
             return res.status(404).json({ message: 'UserInfo not found' });
         }
 
-        // Update or create placement data based on existence
-        if (userInfo.placementData) {
-            // Update existing placement data
-            userInfo.placementData.company = company;
-            userInfo.placementData.placementType = placementType;
-            userInfo.placementData.highStudy = highStudy;
-            userInfo.placementData.appointmentNo = appointmentNo;
-            userInfo.placementData.appointmentLetter = appointmentLetter;
-            userInfo.placementData.package = package;
-            userInfo.placementData.isPlaced = isPlaced;
-            userInfo.placementData.gateStatus = gateStatus;
-            userInfo.placementData.gateCertificate = gateCertificate;
-            userInfo.placementData.appointmentDate = appointmentDate;
-            userInfo.placementData.designation = designation;
-        } else {
+       
             // Create new placement data
             userInfo.placementData = new placementData({
                 company,
@@ -46,15 +33,13 @@ router.post('/', async (req, res) => {
                 appointmentDate,
                 designation
             });
-        }
+        
 
-console.log("hello")
-console.log(userInfo.save())
+// console.log(await userInfo.save())
         // Save the updated user info
         const savedUserInfo = await userInfo.save();
     
-console.log("hello")
-
+// console.log(savedUserInfo)
         // Respond with the saved userInfo
         res.status(201).json({ success: true, data: savedUserInfo });
     } catch (error) {

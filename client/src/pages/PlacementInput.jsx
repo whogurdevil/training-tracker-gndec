@@ -13,6 +13,7 @@ import FileBase from 'react-file-base64';
 import Grid from '@mui/material/Grid';
 import { openBase64NewTab } from '../utils/base64topdf';
 import EditIcon from '@mui/icons-material/Edit';
+import { convertBackendDateToPickerFormat } from '../utils/DateConvertToFrontend';
 import { jwtDecode } from "jwt-decode";
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -40,6 +41,9 @@ export default function PlacementForm() {
 
   const decodeAuthToken = (token) => {
     try {
+      if (!token) {
+        throw new Error('Token is null or empty');
+      }
       const decodedToken = jwtDecode(token);
       const urn = decodedToken.urn;
       return urn;
@@ -48,6 +52,7 @@ export default function PlacementForm() {
       return null;
     }
   };
+
   const token = localStorage.getItem("authtoken");
   const urn = decodeAuthToken(token);
   const [errors, setErrors] = useState({});
@@ -63,40 +68,27 @@ export default function PlacementForm() {
         const url = `${API_URL}placement/${urn}`;
         const response = await axios.get(url);
         const userData = response.data.data;
-console.log(userData)
-        // Check if all fields are filled in the fetched data
-        if ( userData.highStudy  && userData.gateStatus) {
-          // If all required fields are present, populate the form data
+
+        // Check if all required fields are present in the fetched data
+        if (userData.highStudy && userData.gateStatus) {
+          // Convert the appointment date to date picker format
+          const formattedAppointmentDate = convertBackendDateToPickerFormat(userData.appointmentDate);
+
+          // Set form data with fetched values
           setFormData({
             ...userData,
-            // Convert the appointment date to date picker format
-            appointmentDate: convertBackendDateToPickerFormat(userData.appointmentDate)
+            appointmentDate: formattedAppointmentDate,
+            isPlaced: userData.isPlaced ? convertBackendDateToPickerFormat(userData.appointmentDate) : null
           });
-          console.log("hello")
-          // console.log("getstatus", gateStatus)
-          if (userData.lock) {
-            setIsLock(true);
-          } else {
-            setIsLock(false);
-          }
-          if(userData.isPlaced){
-            setFormData({
-              ...userData,
-              // Convert the appointment date to date picker format
-              isPlaced: convertBackendDateToPickerFormat(userData.appointmentDate)
-            });
-          }
-          setGateCertificate(userData.gateCertificate)
-          setAppointmentLetter(userData.appointmentLetter)
-          setIsEditing(false);
-          if(userData.isPlaced){
-            setIsPlaced("true");
-          }else{
-            setIsPlaced("false");
-          }
-          
+
+          // Set other state variables
+          setIsLock(userData.lock || false);
+          setIsPlaced(userData.isPlaced ? "true" : "false");
           setHighstudy(userData.highStudy);
-          setgateStatus(userData.gateStatus)
+          setgateStatus(userData.gateStatus);
+          setGateCertificate(userData.gateCertificate);
+          setAppointmentLetter(userData.appointmentLetter);
+          setIsEditing(false);
         } else {
           console.error('Error: Fetched data is incomplete.');
         }
@@ -107,6 +99,7 @@ console.log(userData)
 
     fetchData();
   }, []);
+
   const handleDateChange = (newDate) => {
     console.log(newDate)
     // Extract year, month, and day from the selected date
@@ -117,19 +110,9 @@ console.log(userData)
     // Format the date string
     const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
 
-
-
     setFormData({ ...formData, appointmentDate: formattedDate });
   };
 
-  const handleFileChange = (files) => {
-    setFormData({ ...formData, appointmentLetter: files.base64 });
-    setAppointmentLetter(files.base64);
-  };
-  const handleGateFileChange = (files) => {
-    setFormData({ ...formData, gateCertificate: files.base64 });
-    setGateCertificate(files.base64);
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -161,55 +144,44 @@ console.log(userData)
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-
       // Form validation
       const formErrors = {};
-      if(formData.isPlaced==="true"){
+      if (formData.isPlaced === true) {
         if (!formData.company.trim()) {
           formErrors.company = 'Company name cannot be blank';
           toast.error(formErrors.company);
-        }
-        else if (!formData.designation) {
+        } else if (!formData.designation) {
           formErrors.designation = 'Designation cannot be blank';
-          toast.error(formErrors.designation)
-        }
-        else if(!formData.appointmentNo){
-          formErrors.appointmentNo="Appointment No is required "
-          toast.error(formErrors.appointmentNo)
-        }
-        else if (!formData.appointmentDate) {
+          toast.error(formErrors.designation);
+        } else if (!formData.appointmentNo) {
+          formErrors.appointmentNo = 'Appointment No is required ';
+          toast.error(formErrors.appointmentNo);
+        } else if (!formData.appointmentDate) {
           formErrors.appointmentDate = 'Appointment Date cannot be blank';
           toast.error(formErrors.appointmentDate);
-        }
-        else if (!formData.appointmentLetter) {
+        } else if (!formData.appointmentLetter) {
           formErrors.appointmentLetter = 'Appointment Letter cannot be blank';
           toast.error(formErrors.appointmentLetter);
-        }
-        else if (!formData.package) {
+        } else if (!formData.package) {
           formErrors.package = 'Package cannot be blank';
-          toast.error(formErrors.package)
+          toast.error(formErrors.package);
         }
-      }
-      else if(formData.isPlaced===null){
+      } else if (formData.isPlaced === null) {
         formErrors.isPlaced = 'Placed or Not field cannot be blank';
-        toast.error(formErrors.isPlaced)
-      }
-      else if(!formData.highStudy){
+        toast.error(formErrors.isPlaced);
+      } else if (!formData.highStudy) {
         formErrors.highStudy = 'High Study field cannot be blank';
-        toast.error(formErrors.highStudy)
+        toast.error(formErrors.highStudy);
+      } else if (!formData.gateStatus) {
+        formErrors.gateStatus = "Gate Status Field Cannot Be Blank";
+        toast.error(formErrors.gateStatus);
       }
-      else if(!formData.gateStatus){
-        formErrors.gateStatus ="Gate Status Field Cannot Be Blank";
-        toast.error(formErrors.gateStatus)
-      }
-      //pending to take gatecertificate
-      
-      
+
       if (Object.keys(formErrors).length > 0) {
         setErrors(formErrors);
         return;
       }
-console.log(formData)
+
       // Submit form data
       const response = await axios.post(`${API_URL}placement`, {
         formData: formData,
@@ -231,54 +203,45 @@ console.log(formData)
     }
   };
 
+  const handleFileChange = (files, data) => {
+    setFormData({ ...formData, data: files.base64 });
+    setAppointmentLetter(files.base64);
+  };
+
+
   const handleEdit = () => {
     setIsEditing((prevEditing) => !prevEditing);
   };
 
-  const convertBackendDateToPickerFormat = (backendDate) => {
-    if (!backendDate) return null;
-
-    // Split the backend date string into year, month, and day parts
-    const [year, month, day] = backendDate.split('-');
-
-    // Create a new object with the extracted year, month, and day
-    return { year: parseInt(year), month: parseInt(month) - 1, day: parseInt(day) };
-  };
-
-  const handleViewCertificate = () => {
-    if (appointmentLetter) {
-      openBase64NewTab(appointmentLetter);
+  const handleViewCertificate = (data) => {
+    if (data) {
+      openBase64NewTab(data);
     } else {
-      openBase64NewTab(formData.appointmentLetter);
+      openBase64NewTab(formData.data);
     }
   };
-  const handleGateViewCertificate = () => {
-    if (GateCertificate) {
-      openBase64NewTab(GateCertificate);
-    } else {
-      openBase64NewTab(formData.gateCertificate);
-    }
-  };
+
 
   const handleIsPlacedChange = (e) => {
     const { name, value } = e.target;
     console.log(name, value)
     setIsPlaced(value)
-    let newvalue=(value==="true")
-    setFormData({ ...formData, [name]: newvalue });
+    if(value){
+      let newvalue = (value === "true")
+      setFormData({ ...formData, [name]: newvalue });
+    }
+   
   };
   const handleIsHighChange = (e) => {
     // console.log(e.target)
     const { name, value } = e.target;
     setHighstudy(value);
-    console.log("highStudy",name,value)
-    console.log(value === "Yes")
+   
     setFormData({ ...formData, [name]: value });
   };
   const handleIsGateStatusChange = (e) => {
     // console.log(e.target)
     const { name, value } = e.target;
-    console.log(name, value);
     setgateStatus(value);
 
     setFormData({ ...formData, [name]: value });
@@ -322,12 +285,13 @@ console.log(formData)
           display: 'flex', gap: '10px', position: 'relative',
           float: 'right', }}>
           {!isEditing && appointmentLetter && (
-            <Button onClick={handleViewCertificate}  variant="outlined" color="primary">
+            <Button onClick={() => handleViewCertificate(appointmentLetter)}
+  variant="outlined" color="primary">
               View Appointment Letter
             </Button>
           )}
-          {!isEditing && (gateStatus === "true") && (
-            <Button onClick={handleGateViewCertificate}  variant="outlined" color="primary">
+          {!isEditing && (gateStatus === "Yes") && (
+            <Button onClick={() =>handleViewCertificate(GateCertificate)}  variant="outlined" color="primary">
               View Gate Admit Card
             </Button>
           )}
@@ -350,7 +314,7 @@ console.log(formData)
           sx={{ mb: 2 }}
           disabled={!isEditing || isSubmitting}
         >
-          <MenuItem value={null}>None</MenuItem>
+          <MenuItem value={""}>None</MenuItem>
           <MenuItem value="true">Yes</MenuItem>
           <MenuItem value="false">No</MenuItem>
         </TextField>
@@ -411,13 +375,15 @@ console.log(formData)
                   views={['year', 'month', 'day']}
                   renderInput={(params) => <TextField {...params} helperText="Enter starting year only" />}
                   onChange={handleDateChange}
+                  value={formData.appointmentDate}
 
                   disabled={!isEditing || isSubmitting}
                 />
               </LocalizationProvider>
             </Grid>
+            </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={6} >
               <TextField
                 select
                 label="Placement Type"
@@ -450,7 +416,7 @@ console.log(formData)
               />
 
             </Grid>
-          </Grid>
+          
           {isEditing && (
             <Grid item xs={12} md={6} marginBottom={2} container justifyContent="space-between" alignItems="center">
 
@@ -460,7 +426,7 @@ console.log(formData)
               <FileBase
                 type="file"
                 multiple={false}
-                onDone={handleFileChange}
+                onDone={()=>handleFileChange(appointmentLetter)}
                 disabled={!isEditing || isSubmitting}
               />
 
@@ -481,7 +447,7 @@ console.log(formData)
           sx={{ mb: 2 }}
           disabled={!isEditing || isSubmitting}
         >
-          <MenuItem value={null}>None</MenuItem>
+          <MenuItem value={""}>None</MenuItem>
           <MenuItem value="Yes">Yes</MenuItem>
           <MenuItem value="No">No</MenuItem>
         </TextField>
@@ -499,12 +465,12 @@ console.log(formData)
           sx={{ mb: 2 }}
           disabled={!isEditing || isSubmitting}
         >
-          <MenuItem value={null}>None</MenuItem>
+          <MenuItem value={""}>None</MenuItem>
           <MenuItem value="Yes">Yes</MenuItem>
           <MenuItem value="No">No</MenuItem>
         </TextField>
       </Grid>
-      { isEditing && (gateStatus==="true") && (
+      { isEditing && (gateStatus==="Yes") && (
         <Grid item xs={12} container justifyContent="space-between" alignItems="center">
           <Typography variant="h6" gutterBottom textAlign="left" marginTop={2}>
             Upload Gate Admit Card
@@ -512,7 +478,7 @@ console.log(formData)
           <FileBase
             type="file"
             multiple={false}
-            onDone={handleGateFileChange}
+            onDone={() => handleFileChange(GateCertificate)}
             disabled={!isEditing || isSubmitting}
           />
         </Grid>
