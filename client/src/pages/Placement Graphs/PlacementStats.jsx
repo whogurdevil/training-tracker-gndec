@@ -5,8 +5,8 @@ import { Button } from '@mui/material';
 import html2canvas from 'html2canvas';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
-const GeneratePlacementGraphPDF = ({ selectedTraining }) => {
-    
+const PlacementStats = () => {
+
     const chartCanvasRef = useRef(null);
     const [chartVisible, setChartVisible] = useState(false);
     const [chartInitialized, setChartInitialized] = useState(false);
@@ -109,21 +109,20 @@ const GeneratePlacementGraphPDF = ({ selectedTraining }) => {
 
     return (
         <>
-            {selectedTraining === "placementData" && (
-                <>
-                    <canvas ref={chartCanvasRef} style={{ display: chartVisible ? 'block' : 'none' }} />
 
-                    <Button onClick={handleDownloadPDF} variant="contained" color="primary">
-                        Placement Statistics (PDF)
-                    </Button>
-                    <Button onClick={handleDownloadImage} variant="contained" color="primary" style={{ marginLeft: '10px' }}>
-                        Placement Statistics (PNG)
-                    </Button>
-                </>
-            )}
+            <canvas ref={chartCanvasRef} style={{ display: chartVisible ? 'block' : 'none' }} />
+
+            <Button onClick={handleDownloadPDF} variant="contained" color="primary">
+                Placement Statistics (PDF)
+            </Button>
+            <Button onClick={handleDownloadImage} variant="contained" color="primary" style={{ marginLeft: '10px' }}>
+                Placement Statistics (PNG)
+            </Button>
+
+
         </>
     );
 
 };
 
-export default GeneratePlacementGraphPDF;
+export default PlacementStats;

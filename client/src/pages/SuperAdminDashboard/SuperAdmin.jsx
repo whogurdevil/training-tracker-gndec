@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
-import { Card, Modal, Box, Typography, Grid, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
+import { Card, Modal, Box, Typography, Grid, MenuItem, Select, FormControl, InputLabel , Button } from '@mui/material';
 import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -11,8 +11,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import ExportComponent from '../../Components/ExportData';
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
 import VerifyAllComponent from '../../Components/VerifyAll';
-import UnVerifyAllComponent from '../../Components/UnVerifyAll';
-import GeneratePlacementGraphComponent from '../../Components/PlacementGraph';
+import UnVerifyAllComponent from '../../Components/UnVerifyAll'; 
+import { Link } from 'react-router-dom';
 
 const SuperAdminForm = () => {
     const [users, setUsers] = useState([]);
@@ -296,7 +296,9 @@ const SuperAdminForm = () => {
                     <div style={{ display: 'flex', gap: '10px', flexDirection: 'row' }}>
                         <ExportComponent data={filteredUsers} columns={columns} selectedTraining={selectedTraining} />
                         <div style={{ marginTop: '10px' }}>
-                            <GeneratePlacementGraphComponent selectedTraining={selectedTraining} />
+                            <Button component={Link} to="/superadmin/placementStats" variant="contained" color="primary">
+                                View Placement Stats
+                            </Button>
                         </div>
                     </div>
 

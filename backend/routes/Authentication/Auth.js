@@ -29,10 +29,10 @@ router.post('/signup',
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      console.log(errors.array());
+      // console.log(errors.array());
       return res.status(400).json({ success: false, message: "Invalid Credentials", errors: errors.array() });
     }
-   console.log("Hello")
+  //  console.log("Hello")
     const validateUser = await SignUp.findOne({ email: req.body.email });
     const validateUrn = await SignUp.findOne({ urn: req.body.urn });
     if (validateUser) {
@@ -41,13 +41,13 @@ router.post('/signup',
     if (validateUrn) {
       return res.status(400).json({ success: false, message: 'URN already exist' });
     }
-    console.log("hello")
+    // console.log("hello")
     try {
       const myPlaintextPassword = req.body.password;
       const salt = bcrypt.genSaltSync(10);
       const hash = bcrypt.hashSync(myPlaintextPassword, salt);
       const { urn, email } = req.body;
-      console.log("ji")
+      // console.log("ji")
 
       try {
         const signup = await SignUp.create({

@@ -4,6 +4,7 @@ import { Navigate } from 'react-router-dom';
 import SuperAdmin from '../pages/SuperAdminDashboard/SuperAdmin';
 import Admin from '../pages/AdminDashboard/AdminDashboard';
 import Home from '../pages/Home';
+import PlacementStats from '../pages/Placement Graphs/PlacementStats';
 
 const ProtectedRoute = ({ component: Component, path, ...rest }) => {
     const authToken = localStorage.getItem('authtoken');
@@ -24,16 +25,21 @@ const ProtectedRoute = ({ component: Component, path, ...rest }) => {
             }
             // Check if the user is authenticated and has the required role
             if (userRole === 'superadmin') {
+                if(path==='/superadmin/placementStats'){
+                    return <PlacementStats/>
+                }
                 // Redirect superadmin to home if trying to access admin or superadmin route
-           
-                return <SuperAdmin />;
+           else{
+                    return <SuperAdmin />;
+           }
+               
             } else if (userRole === 'admin') {
                 // Redirect admin to home if trying to access superadmin route
                
                 return <Admin />;
             } else {
                 // Redirect to home or another appropriate route if the user doesn't have the required role
-                if (path === '/admin' || path === '/superadmin') {
+                if (path === '/admin' || path === '/superadmin' || path === '/superadmin/placementStats') {
                     return <Home/>;
                 }
                 return <Component {...rest} />;
