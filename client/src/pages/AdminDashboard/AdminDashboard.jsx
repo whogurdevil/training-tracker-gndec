@@ -9,8 +9,8 @@ import { base64toBlob, openBase64NewTab } from '../../utils/base64topdf';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useLocation } from 'react-router-dom';
-import VerifyAllComponent from '../../utils/VerifyAll'; 
-import ExportComponent from '../../utils/ExportData';
+import VerifyAllComponent from '../../Components/VerifyAll';
+import ExportComponent from '../../Components/ExportData';
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
 
 const AdminForm = () => {
@@ -20,9 +20,9 @@ const AdminForm = () => {
     const [selectedTraining, setSelectedTraining] = useState('');
     const [editStatus, setEditStatus] = useState({});
     const [refresh, setRefresh] = useState(false); // Refresh state
-    const Location=useLocation()
-    const urn=Location.state && Location.state.urn
-    const admintype= urn && urn.length >= 3 ? urn.slice(-3) : urn;
+    const Location = useLocation()
+    const urn = Location.state && Location.state.urn
+    const admintype = urn && urn.length >= 3 ? urn.slice(-3) : urn;
     console.log(admintype);
 
     useEffect(() => {
@@ -122,7 +122,7 @@ const AdminForm = () => {
                     )
                 },
                 { accessorKey: `${selectedTraining}.technology`, header: "Technology" },
-                {accessorKey: `${selectedTraining}.organization`, header: "Organization" },
+                { accessorKey: `${selectedTraining}.organization`, header: "Organization" },
                 { accessorKey: `${selectedTraining}.projectName`, header: "Project Name" },
                 { accessorKey: `${selectedTraining}.type`, header: "Type" }
             );
@@ -185,13 +185,13 @@ const AdminForm = () => {
 
             // Determine the endpoint URL and data based on whether it's for training or placement data
             if (isPlacement) {
-               
+
                 url = `${API_URL}placement/updatelock`;
                 data = {
                     urn: urn,
                     lock: !lockStatus // Toggle the lock status
                 };
-             
+
             } else {
                 // Use the appropriate training number in the URL
                 const trainingNumber = selectedTraining.substring(2);
@@ -255,9 +255,9 @@ const AdminForm = () => {
     const getTrainingOptions = () => {
         const options = [
             { value: "", label: "All" }, // Default option
-             // Always include Placement Data option
+            // Always include Placement Data option
         ];
-    
+
         // Check the admintype and add training options accordingly
         if (admintype === "101") {
             options.push({ value: "tr101", label: "Training 101" });
@@ -281,7 +281,7 @@ const AdminForm = () => {
                 { value: "placementData", label: "Placement Data" }
             );
         }
-    
+
         return options;
     };
 
@@ -308,14 +308,14 @@ const AdminForm = () => {
                     </FormControl>
                 </Grid>
                 <Grid item style={{ marginBottom: 20 }}>
-                <FormControl style={{ width: 200 }}>
-                    <InputLabel>Training</InputLabel>
-                    <Select value={selectedTraining} onChange={handleTrainingChange}>
-                        {getTrainingOptions().map((option) => (
-                            <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
+                    <FormControl style={{ width: 200 }}>
+                        <InputLabel>Training</InputLabel>
+                        <Select value={selectedTraining} onChange={handleTrainingChange}>
+                            {getTrainingOptions().map((option) => (
+                                <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
 
                 </Grid>
             </Grid>

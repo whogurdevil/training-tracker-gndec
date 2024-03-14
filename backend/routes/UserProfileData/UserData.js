@@ -30,9 +30,7 @@ router.post('/', async (req, res) => {
             father,
             personalMail
         });
-
         userInfo.userInfo = newsignup;
-
         const savedUserInfo = await userInfo.save();
 
         // Respond with the saved userInfo
@@ -44,11 +42,13 @@ router.post('/', async (req, res) => {
 router.get('/:urn', async (req, res) => {
     try {
         const urn = req.params.urn;
-        const userInfo = await SignUpdata.findOne({ urn: urn }).populate('tr101');
-
+        console.log("hi")
+        const userInfo = await SignUpdata.findOne({ urn: urn });
+console.log(userInfo)
         if (!userInfo) {
             return res.status(404).json({ message: 'UserInfo not found' });
         }
+        console.log("hello")
 
         // Respond with the user information
         res.status(200).json({ success: true, data: userInfo.userInfo });

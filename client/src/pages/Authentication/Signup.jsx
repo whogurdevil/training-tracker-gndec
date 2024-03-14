@@ -93,7 +93,7 @@ function Signup() {
           navigate('/verify', { state: { email: credentials.email } });
         }, 2000);
       } else {
-        toast('Invalid Credentials');
+        toast(json.message);
         setLoading(false);
       }
     } catch (error) {
@@ -105,7 +105,7 @@ function Signup() {
   const theme = createTheme();
 
   return (
-    <Container component="main" maxWidth="xs" sx={{ pb: 5 }}>
+    <Container component="main" maxWidth="xs" sx={{ pb: 5 , mt: 5 }}>
       <CssBaseline />
       <ToastContainer />
       <Box
@@ -126,6 +126,7 @@ function Signup() {
             margin="normal"
             required
             fullWidth
+            placeholder='1234567'
             id="urn"
             label="URN"
             name="urn"
@@ -134,24 +135,21 @@ function Signup() {
             autoFocus
             error={Boolean(errors.urn)}
             helperText={errors.urn}
-            InputProps={{
-              sx: { padding: '8px' },
-            }}
+            
           />
           <TextField
             margin="normal"
             required
             fullWidth
             id="email"
+          placeholder='nameCRN@gndec.ac.in'
             label="Email Address"
             name="email"
             value={credentials.email}
             onChange={handleChange}
             error={Boolean(errors.email)}
             helperText={errors.email}
-            InputProps={{
-              sx: { padding: '8px' },
-            }}
+           
           />
           <TextField
             margin="normal"
@@ -164,9 +162,7 @@ function Signup() {
             onChange={handleChange}
             error={Boolean(errors.password)}
             helperText={errors.password}
-            InputProps={{
-              sx: { padding: '8px' },
-            }}
+           
           />
           <TextField
             margin="normal"
@@ -179,9 +175,7 @@ function Signup() {
             onChange={handleChange}
             error={Boolean(errors.confirmPassword)}
             helperText={errors.confirmPassword}
-            InputProps={{
-              sx: { padding: '8px' },
-            }}
+           
           />
           <Button
             type="submit"

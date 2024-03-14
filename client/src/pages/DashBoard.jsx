@@ -18,6 +18,7 @@ import { jwtDecode } from "jwt-decode";
 import { Grid } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useMediaQuery } from '@mui/material';
+import { convertBatchToDate } from '../utils/DateConvertToFrontend';
 
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
 
@@ -35,9 +36,9 @@ export default function Form() {
     batch: '',
     gender: '',
     admissionType: '',
-    mother:'',
-    father:'',
-    personalMail:''
+    mother: '',
+    father: '',
+    personalMail: ''
 
   });
   const decodeAuthToken = (token) => {
@@ -60,10 +61,11 @@ export default function Form() {
     const fetchData = async () => {
 
       try {
+        console.log("hello")
         const url = `${API_URL}userprofiles/${urn}`;
         const response = await axios.get(url);
         const userData = response.data.data;
-console.log(userData)
+        // console.log(userData)
         // Check if all fields are filled in the fetched data
         if (
           userData.Name &&
@@ -80,9 +82,11 @@ console.log(userData)
 
         ) {
           // If all fields are filled, populate the form data and disable editing
+          console.log(userData.batch);
           const datePickerBatch = convertBatchToDate(userData.batch);
+          // console.log(datePickerBatch)
           setFormData({ ...userData, batch: datePickerBatch });
-         
+
           setIsEditing(false);
         } else {
           console.error('Error: Fetched data is incomplete.');
@@ -94,13 +98,6 @@ console.log(userData)
 
     fetchData();
   }, []);
-  const convertBatchToDate = (batchValue) => {
-    if (!batchValue) return null;
-
-    const startYear = parseInt(batchValue);
-    const endYear = startYear + 4;
-    return { $y: startYear, $M: 0, $D: 1, $H: 0, $m: 0, $s: 0, $ms: 0, $W: 1, $L: 0, $Ls: 0, $Wc: 0, $T: 0, $U: 0, $x: 0, $off: 0, $df: 0, $l: 'en', $c: 0, $d: 0, $tz: undefined, $tzm: 0, $tzo: 0, $lts: '', $ltz: '', $total: 0, $ttotal: 0, $tzoName: 'GMT', $tzoShort: 'GMT', $dow: 0, $dto: 0, $dtz: undefined, $dtzm: 0, $dtzo: 0, $ordinal: 0, $twoDigitYear: startYear % 100, $i: 0, $t: 0, $ts: 0, $i18n: {} };
-  };
 
 
   // const [endDate, setEndDate] = useState(null);
@@ -149,8 +146,53 @@ console.log(userData)
     try {
       // Form validation
       const formErrors = {};
-      if (!formData.Name.trim()) {
+      if (!formData.Name) {
         formErrors.Name = 'Name cannot be blank';
+        toast.error(formErrors.Name)
+      }
+      else if (!formData.admissionType) {
+        formErrors.admissionType = "Admission Type cannot be blank"
+        toast.error(formErrors.admissionType)
+      }
+      else if (!formData.batch) {
+        formErrors.batch = "Batch cannot be blank"
+        toast.error(formErrors.batch)
+      }
+      else if (!formData.branch) {
+        formErrors.branch = "Branch cannot be blank"
+        toast.error(formErrors.branch)
+      }
+      else if (!formData.contact) {
+        formErrors.contact = "Contact cannot be blank"
+        toast.error(formErrors.contact)
+      }
+      else if (!formData.crn) {
+        formErrors.crn = "College Roll number cannot be blank"
+        toast.error(formErrors.crn)
+      }
+      else if (!formData.father) {
+        formErrors.father = "Father's Name cannot be blank"
+        toast.error(formErrors.father)
+      }
+      else if (!formData.gender) {
+        formErrors.gender = "Gender cannot be blank"
+        toast.error(formErrors.gender)
+      }
+      else if (!formData.mentor.trim()) {
+        formErrors.mentor = "Mentor cannot be blank"
+        toast.error(formErrors.mentor)
+      }
+      else if (!formData.mother.trim()) {
+        formErrors.mother = "Mother's Name cannot be blank"
+        toast.error(formErrors.mother)
+      }
+      else if (!formData.personalMail.trim()) {
+        formErrors.personalMail = "Personal Mail cannot be blank"
+        toast.error(formErrors.personalMail)
+      }
+      else if (!formData.section) {
+        formErrors.section = "Section cannot be blank"
+        toast.error(formErrors.section)
       }
       if (Object.keys(formErrors).length > 0) {
         setErrors(formErrors);
@@ -158,6 +200,7 @@ console.log(userData)
       }
 
       // Submit form data
+      // console.log(formData)
       const response = await axios.post(`${API_URL}userprofiles`, { formData, urn: urn });
       // console.log(response);
       if (response.data.success) {
@@ -190,7 +233,7 @@ console.log(userData)
     if (newDate) {
       // Extract the year from the newDate object
       const year = newDate.$y;
-      // console.log(year);
+      console.log(year);
 
       setFormData({ ...formData, batch: `${year}-${year + 4}` });
     } else {
@@ -200,7 +243,7 @@ console.log(userData)
   };
 
   return (
-    <Container sx={{paddingTop:5}}>
+    <Container sx={{ paddingTop: 5 }}>
       <ToastContainer />
       <form onSubmit={handleSubmit}>
         <Container style={{ paddingTop: 4 }}>
@@ -234,6 +277,7 @@ console.log(userData)
                 fullWidth
                 required
                 name="Name"
+                placeholder='Your Name'
                 value={formData.Name}
                 onChange={handleChange}
                 error={!!errors.Name}
@@ -246,6 +290,7 @@ console.log(userData)
                 variant="outlined"
                 fullWidth
                 required
+                placeholder='Mother’s Name'
                 name="mother"
                 value={formData.mother}
                 onChange={handleChange}
@@ -258,6 +303,7 @@ console.log(userData)
                 label="Father's Name"
                 variant="outlined"
                 fullWidth
+                placeholder='Father’s Name'
                 required
                 name="father"
                 value={formData.father}
@@ -272,6 +318,7 @@ console.log(userData)
                 variant="outlined"
                 fullWidth
                 required
+                placeholder='example@gmail.com'
                 name="personalMail"
                 value={formData.personalMail}
                 onChange={handleChange}
@@ -285,6 +332,7 @@ console.log(userData)
                 variant="outlined"
                 fullWidth
                 required
+                placeholder='9876543210'
                 name="contact"
                 value={formData.contact}
                 onChange={handleChange}
@@ -293,7 +341,7 @@ console.log(userData)
                 sx={{ mb: 2 }}
                 disabled={!isEditing || isSubmitting}
               />
-          
+
               <TextField
                 select
                 label="Section"
@@ -318,15 +366,16 @@ console.log(userData)
                 <MenuItem value="D1">D1</MenuItem>
                 <MenuItem value="D2">D2</MenuItem>
               </TextField>
-              
+
 
             </Grid>
             <Grid item xs={12} md={6} >
               <TextField
-                label="CRN"
+                label="College Roll Number"
                 variant="outlined"
                 fullWidth
                 required
+                placeholder='1234567'
                 name="crn"
                 value={formData.crn}
                 onChange={handleChange}
@@ -353,7 +402,8 @@ console.log(userData)
               </TextField>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
-                  label="Start Year"
+                  label="Admission Year"
+                  
                   views={['year']}
                   renderInput={(params) => <TextField {...params} helperText="Enter starting year only" />}
                   onChange={handleBatchChange}
@@ -367,6 +417,7 @@ console.log(userData)
                 fullWidth
                 required
                 name="mentor"
+                placeholder='Your Mentor Name'
                 value={formData.mentor}
                 onChange={(e) => setMentor(e.target.value)}
                 error={!!errors.mentor}

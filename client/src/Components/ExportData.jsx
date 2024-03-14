@@ -1,8 +1,8 @@
 import React from 'react';
 import { Button, Box } from '@mui/material';
 import { mkConfig, generateCsv, download } from 'export-to-csv';
-import FileDownloadIcon from '@mui/icons-material/FileDownload'; 
-import { base64toBlob , openBase64NewTab } from './base64topdf'  
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import { base64toBlob, openBase64NewTab } from '../utils/base64topdf'
 const ExportComponent = ({ data, selectedTraining }) => {
     const csvConfig = mkConfig({
         fieldSeparator: ',',
@@ -30,7 +30,7 @@ const ExportComponent = ({ data, selectedTraining }) => {
                         const certificateBlob = base64toBlob(trainingData.certificate);
                         const linkcertificate = URL.createObjectURL(certificateBlob)
                         filteredRow['Certificate'] = linkcertificate;
-                    
+
 
                     } else {
                         filteredRow['Certificate'] = '';

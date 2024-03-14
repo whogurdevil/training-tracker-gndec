@@ -1,9 +1,9 @@
 import React from 'react';
 import { jwtDecode } from "jwt-decode";
 import { Navigate } from 'react-router-dom';
-import SuperAdmin from '../Components/SuperAdminDashboard/SuperAdmin';
-import Admin from '../Components/AdminDashboard/AdminDashboard';
-import Home from '../Components/Home';
+import SuperAdmin from '../pages/SuperAdminDashboard/SuperAdmin';
+import Admin from '../pages/AdminDashboard/AdminDashboard';
+import Home from '../pages/Home';
 
 const ProtectedRoute = ({ component: Component, path, ...rest }) => {
     const authToken = localStorage.getItem('authtoken');

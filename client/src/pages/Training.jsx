@@ -9,12 +9,15 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import MenuItem from '@mui/material/MenuItem';
 import FileBase from 'react-file-base64';
+import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid';
 import EditIcon from '@mui/icons-material/Edit';
 import { jwtDecode } from "jwt-decode";
 import { useLocation } from 'react-router-dom';
 import { base64toBlob, openBase64NewTab } from '../utils/base64topdf';
 import { technologyStack } from '../utils/technology';
+
+import Autocomplete from '@mui/material/Autocomplete';
 
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
 
@@ -51,9 +54,10 @@ export default function Form() {
           userData.technology &&
           userData.projectName &&
           userData.type &&
-          userData.organizationType
+          userData.organizationType && userData.certificate
         ) {
           setFormData(userData);
+          setCertificate(userData.certificate);
           setIsEditing(false);
           if (userData.lock) {
             setIsLock(true)
@@ -86,11 +90,9 @@ export default function Form() {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === 'technology') {
-      setFormData({ ...formData, [name]: e.target.value });
-    } else {
+   
       setFormData({ ...formData, [name]: value });
-    }
+    
     setErrors({ ...errors, [name]: '' });
   };
 
@@ -100,21 +102,25 @@ export default function Form() {
       const formErrors = {};
       if (formData.organization.length === 0) {
         formErrors.organization = 'Organization cannot be blank';
+        toast.error(formErrors.organization)
       }
       if (formData.technology.length === 0) {
         formErrors.technology = 'Technology cannot be blank';
+        toast.error(formErrors.technology)
       }
       if (!formData.projectName.trim()) {
-        formErrors.projectName = 'Project Name cannot be blank';
+        formErrors.projectName = 'Project Title cannot be blank';
+        toast.error(formErrors.projectName)
       }
       if (!formData.type.trim()) {
-        formErrors.type = 'Type cannot be blank';
+        formErrors.type = 'Training type cannot be blank';
+        toast.error(formErrors.type)
       }
       if (!formData.certificate) {
         formErrors.certificate = 'Certificate cannot be blank';
         toast.error("certificate cannot be blank")
       }
-      if (!formData.organizationType) {
+      if (!formData.organizationType.trim()) {
         formErrors.organizationType = 'Organization-Type cannot be blank';
         toast.error("Organization-Type cannot be blank")
       }
@@ -194,7 +200,7 @@ export default function Form() {
             Submit
           </Button>
         )}
-        {!isEditing && (
+        {!isEditing && certificate &&  (
           <Button onClick={handleViewCertificate} variant="outlined" color="primary" style={{
             position: 'relative',
             float: 'right',
@@ -205,6 +211,46 @@ export default function Form() {
       </Container>
 
       <Grid container spacing={2}>
+        <Grid item xs={12} md={6}>
+          <TextField
+            select
+            label="Training Type"
+            variant="outlined"
+            fullWidth
+            required
+            name="type"
+            value={formData.type}
+            onChange={handleChange}
+            error={!!errors.type}
+            helperText={errors.type}
+            sx={{ mb: 2 }}
+            disabled={!isEditing || isSubmitting}
+          >
+            <MenuItem value="Training">Training / Internship Without Stipend</MenuItem>
+            <MenuItem value="InternshipWithStipend">Internship With Stipend</MenuItem>
+            <MenuItem value="PaidTraining">Paid Training</MenuItem>
+          </TextField>
+          <TextField
+            select
+            label="Organization Type"
+            variant="outlined"
+            fullWidth
+            required
+            name="organizationType"
+            value={formData.organizationType}
+            onChange={handleChange}
+            error={!!errors.organizationType}
+            helperText={errors.organizationType}
+            sx={{ mb: 2 }}
+            disabled={!isEditing || isSubmitting}
+          >
+            <MenuItem value="industry">Industrial</MenuItem>
+            <MenuItem value="gndec">Institutional ( Guru Nanak Dev Engineering College , Ludhiana) </MenuItem>
+            <MenuItem value="other">Other Institutional</MenuItem>
+          </TextField>
+         
+          
+        </Grid>
         <Grid item xs={12} md={6}>
           <TextField
             label="Organization Name"
@@ -232,70 +278,45 @@ export default function Form() {
             style={{ marginBottom: '1rem' }}
             disabled={!isEditing || isSubmitting}
           />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            select
-            label="Organization Type"
-            variant="outlined"
-            fullWidth
-            required
-            name="organizationType"
-            value={formData.organizationType}
-            onChange={handleChange}
-            error={!!errors.organizationType}
-            helperText={errors.organizationType}
-            sx={{ mb: 2 }}
-            disabled={!isEditing || isSubmitting}
-          >
-            <MenuItem value="industry">Industrial</MenuItem>
-            <MenuItem value="gndec">Institutional ( Guru Nanak Dev Engineering College , Ludhiana) </MenuItem>
-            <MenuItem value="other">Other Institutional</MenuItem>
-          </TextField>
-          <TextField
-            select
-            label="Type"
-            variant="outlined"
-            fullWidth
-            required
-            name="type"
-            value={formData.type}
-            onChange={handleChange}
-            error={!!errors.type}
-            helperText={errors.type}
-            sx={{ mb: 2 }}
-            disabled={!isEditing || isSubmitting}
-          >
-            <MenuItem value="Training">Training / Internship Without Stipend</MenuItem>
-            <MenuItem value="InternshipWithStipend">Internship With Stipend</MenuItem>
-            <MenuItem value="PaidTraining">Paid Training</MenuItem>
-          </TextField>
+          
+         
         </Grid>
       
       </Grid>
-      <TextField
-        select
-        label="Technology"
-        variant="outlined"
-        fullWidth
-        required
-        name="technology"
+      <Typography variant="h6" gutterBottom textAlign={'left'} disabled={!isEditing || isSubmitting}>
+        Technology used
+      </Typography>
+      <Autocomplete
+        multiple
+        options={technologyStack}
         value={formData.technology}
-        onChange={handleChange}
-        SelectProps={{ multiple: true }}
-        error={!!errors.technology}
-        helperText={errors.technology}
-        style={{ marginBottom: '1rem' }}
+        onChange={(event, newValue) => {
+          setFormData({ ...formData, technology: newValue });
+        }}
         disabled={!isEditing || isSubmitting}
-      >
-        {technologyStack.map((tech) => (
-          <MenuItem key={tech} value={tech}>
-            {tech}
-          </MenuItem>
-        ))}
-      </TextField>
-
-      <Typography variant="h6" gutterBottom textAlign="left" marginTop={2}>
+        renderTags={(value, getTagProps) =>
+          value.map((option, index) => (
+            <Chip
+              key={option}
+              label={option}
+              {...getTagProps({ index })}
+            />
+          ))
+        }
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            variant="outlined"
+            label="Technology"
+            placeholder="Type or select Technology Used"
+            fullWidth
+            disabled={!isEditing || isSubmitting}
+          />
+        )}
+      />
+      {isEditing && (
+        <>
+        <Typography variant="h6" gutterBottom textAlign="left" marginTop={2}>
         Upload Certificate
       </Typography>
 
@@ -305,10 +326,11 @@ export default function Form() {
         onDone={handleFileChange}
         disabled={!isEditing || isSubmitting}
       />
+        </>
+      )}
+      
 
-
-
-
+      
 
       <ToastContainer />
     </Container>

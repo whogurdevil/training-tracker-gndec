@@ -6,27 +6,19 @@ const fetchuser = require('../../middleware/fetchUser');
 const isAdmin = require('../../middleware/isAdmin');
 
 // Route to create or update a user's placement data
+
 router.post('/', async (req, res) => {
     try {
         const { company, placementType, highStudy, appointmentNo, appointmentLetter, package, isPlaced , gateStatus,gateCertificate,designation,appointmentDate } = req.body.formData;
         const urn = req.body.urn;
+        console.log(gateStatus)
         let userInfo = await SignUpdata.findOne({ urn: urn });
 
         if (!userInfo) {
             return res.status(404).json({ message: 'UserInfo not found' });
         }
 
-        // Update or create placement data based on existence
-        if (userInfo.placementData) {
-            // Update existing placement data
-            userInfo.placementData.company = company;
-            userInfo.placementData.placementType = placementType;
-            userInfo.placementData.highStudy = highStudy;
-            userInfo.placementData.appointmentNo = appointmentNo;
-            userInfo.placementData.appointmentLetter = appointmentLetter;
-            userInfo.placementData.package = package;
-            userInfo.placementData.isPlaced = isPlaced;
-        } else {
+       
             // Create new placement data
             userInfo.placementData = new placementData({
                 company,
@@ -41,13 +33,13 @@ router.post('/', async (req, res) => {
                 appointmentDate,
                 designation
             });
-        }
+        
 
-
+// console.log(await userInfo.save())
         // Save the updated user info
         const savedUserInfo = await userInfo.save();
-
-
+    
+// console.log(savedUserInfo)
         // Respond with the saved userInfo
         res.status(201).json({ success: true, data: savedUserInfo });
     } catch (error) {
@@ -124,8 +116,7 @@ router.post('/unverifyall', fetchuser, isAdmin, async (req, res) => {
 router.get('/:urn', async (req, res) => {
     try {
         const urn = req.params.urn;
-        const userInfo = await SignUpdata.findOne({ urn: urn }).populate('tr101');
-
+        const userInfo = await SignUpdata.findOne({ urn: urn });
         if (!userInfo) {
             return res.status(404).json({ message: 'UserInfo not found' });
         }
@@ -140,7 +131,8 @@ router.get('/:urn', async (req, res) => {
                 appointmentNo: null,
                 appointmentLetter: null,
                 package: null,
-                isPlaced: false
+                isPlaced: false,
+               
             };
         }
 

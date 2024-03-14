@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -10,7 +9,6 @@ import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import CircularProgress from '@mui/material/CircularProgress'; // Import CircularProgress
@@ -136,16 +134,15 @@ function Login() {
             required
             fullWidth
             id="urn"
-            label="Username/URN(if student)"
+            label="Username/URN"
             name="urn"
+            placeholder='1234567'
             value={credentials.urn}
             onChange={handleChange}
             autoFocus
             error={Boolean(errors.urn)}
             helperText={errors.urn}
-            InputProps={{
-              sx: { padding: '8px' }, // Set the padding to 8px
-            }}
+           
           />
           <TextField
             margin="normal"
@@ -158,9 +155,7 @@ function Login() {
             onChange={handleChange}
             error={Boolean(errors.password)}
             helperText={errors.password}
-            InputProps={{
-              sx: { padding: '8px' }, // Set the padding to 8px
-            }}
+           
           />
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}

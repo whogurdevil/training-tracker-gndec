@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container } from '@mui/material';
-import ButtonCard from './Cards/ButtonCard';
+import ButtonCard from '../Components/Cards/ButtonCard';
 import { LooksOneRounded, LooksTwoRounded, Looks3Rounded, Looks4Rounded, Looks5Rounded, Looks6Rounded } from '@mui/icons-material';
 import { jwtDecode } from "jwt-decode";
 import axios from 'axios';
@@ -10,7 +10,7 @@ const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE
 
 const Home = () => {
     const [batchYear, setBatchYear] = useState(null);
-    const [isLeet,setIsLeet ] = useState(false);
+    const [isLeet, setIsLeet] = useState(false);
 
     useEffect(() => {
         const fetchBatchYear = async () => {
@@ -28,7 +28,7 @@ const Home = () => {
                 });
 
                 const data = response.data.data
-               
+
                 var difference = 0;
                 console.log(data.userInfo.admissionType)
                 if (data.userInfo.batch) {
@@ -41,7 +41,7 @@ const Home = () => {
 
                     difference = 0;
                 }
-                if (data.userInfo.admissionType === "Non LEET"){
+                if (data.userInfo.admissionType === "Non LEET") {
                     setIsLeet(true);
                 }
 
@@ -111,7 +111,7 @@ const Home = () => {
 
     return (
         <Container
-            sx={{ marginX: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop:5 }}>
+            sx={{ marginX: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 5 }}>
             {cardsData.map((data, index) => (
 
                 <ButtonCard key={index}  {...data} />
