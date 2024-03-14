@@ -49,7 +49,6 @@ router.post('/updatelock', fetchuser, isAdmin, async (req, res) => {
             return res.status(404).json({ message: 'User data not found' });
         }
      
-console.log(hello)
 
 
         // Respond with the updated user data

@@ -11,7 +11,6 @@ router.post('/', async (req, res) => {
     try {
         const { company, placementType, highStudy, appointmentNo, appointmentLetter, package, isPlaced , gateStatus,gateCertificate,designation,appointmentDate } = req.body.formData;
         const urn = req.body.urn;
-        console.log(gateStatus)
         let userInfo = await SignUpdata.findOne({ urn: urn });
 
         if (!userInfo) {
