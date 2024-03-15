@@ -13,9 +13,7 @@ import Training101 from './pages/Training'
 import ProtectedRoute from './Components/ProtectedRoute';
 import Admin from './pages/AdminDashboard/AdminDashboard';
 import PlacementStats from './pages/Placement Graphs/PlacementStats';
-
-class App extends Component {
-  render() {
+export default function App() {
     return (
       <div className="App">
         <BrowserRouter>
@@ -39,7 +37,5 @@ class App extends Component {
         </BrowserRouter>
       </div>
     );
-  }
+  
 }
-
-export default App;
