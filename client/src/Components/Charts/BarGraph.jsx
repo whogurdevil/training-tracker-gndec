@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, forwardRef } from 'react';
 import { Bar } from 'react-chartjs-2';
 import {
     CategoryScale, LinearScale, Chart, BarElement, Title,
@@ -8,14 +8,10 @@ import {
 Chart.register(CategoryScale, LinearScale, BarElement, Title,
     Tooltip,
     Legend);
-// import jsPDF from 'jspdf';
-import { Box, Button, CircularProgress } from '@mui/material';
-// import { useLocation } from 'react-router-dom';
+import { CircularProgress } from '@mui/material';
 
-const BarGraph = ({data}) => {
-    console.log(data)
+const BarGraph = forwardRef(({ data }, ref) => {
     const [chartData, setChartData] = useState(null);
-    const chartRef = useRef(null);
     useEffect(() => {
         if (data) {
             const batchWiseData = {};
@@ -60,7 +56,7 @@ const BarGraph = ({data}) => {
                 <>
 
                     <Bar
-                        ref={chartRef}
+                        ref={ref}
                         data={chartData}
                         options={{
                             responsive: true,
@@ -109,6 +105,6 @@ const BarGraph = ({data}) => {
             )}
         </div>
     );
-};
+});
 
 export default BarGraph;
