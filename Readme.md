@@ -1,3 +1,9 @@
+# See this app in action: [https://training-tracker-gndec.vercel.app/home](https://training-tracker-gndec.vercel.app/home)
+## Use demo credentials:
+Super Admin: username: Tr000, password: password
+Super Admin: username: 2104181, password: sam210902
+
+
 run following commands:
 
 ```bash
