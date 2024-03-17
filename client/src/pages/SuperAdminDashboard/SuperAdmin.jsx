@@ -12,7 +12,7 @@ import ExportComponent from '../../Components/ExportData';
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
 import VerifyAllComponent from '../../Components/VerifyAll';
 import UnVerifyAllComponent from '../../Components/UnVerifyAll'; 
-import { Link } from 'react-router-dom';
+import {  useNavigate } from 'react-router-dom';
 
 const SuperAdminForm = () => {
     const [users, setUsers] = useState([]);
@@ -21,6 +21,7 @@ const SuperAdminForm = () => {
     const [selectedTraining, setSelectedTraining] = useState('');
     const [editStatus, setEditStatus] = useState({});
     const [refresh, setRefresh] = useState(false); // Refresh state
+    const navigate=useNavigate()
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -37,7 +38,7 @@ const SuperAdminForm = () => {
                     .sort((a, b) => a.urn - b.urn);
 
                 setUsers(filteredUsers);
-                console.log(filteredUsers)
+           
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
@@ -45,6 +46,9 @@ const SuperAdminForm = () => {
 
         fetchUsers();
     }, [refresh]);
+    const navigateToStats = (data) => {
+        return navigate('/superadmin/placementStats', { state: { data } });
+    }
 
     const filteredUsers = useMemo(() => {
         let filteredData = [...users];
@@ -296,7 +300,7 @@ const SuperAdminForm = () => {
                     <div style={{ display: 'flex', gap: '10px', flexDirection: 'row' }}>
                         <ExportComponent data={filteredUsers} columns={columns} selectedTraining={selectedTraining} />
                         <div style={{ marginTop: '10px' }}>
-                            <Button component={Link} to="/superadmin/placementStats" variant="contained" color="primary">
+                            <Button onClick={()=>navigateToStats(filteredUsers)} variant="contained" color="primary">
                                 View Placement Stats
                             </Button>
                         </div>
