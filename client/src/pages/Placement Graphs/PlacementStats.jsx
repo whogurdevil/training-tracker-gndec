@@ -1,20 +1,16 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Bar } from 'react-chartjs-2';
-// import {
-//     CategoryScale, LinearScale, Chart, BarElement, Title,
-//     Tooltip,
-//     Legend } from 'chart.js';
-// Chart.register(CategoryScale, LinearScale, BarElement, Title,
-//     Tooltip,
-//     Legend);
+
 import jsPDF from 'jspdf';
-import { Box, Button, CircularProgress, Grid } from '@mui/material';
+import { Box, Button, Grid , Typography } from '@mui/material';
 import { useLocation } from 'react-router-dom';
 import BarGraph from '../../Components/Charts/BarGraph';
+import LineGraph from '../../Components/Charts/LineGraph';
 
 const PlacementStats = () => {
     const [updatedata, setUpdateddata] = useState(null)
     const location = useLocation();
+    const chartRef1 = useRef(null);
+    const chartRef2 = useRef(null);
     const data = location.state ? location.state.data : null;
     // console.log(data)
     // console.log(chartData)
@@ -28,25 +24,33 @@ const PlacementStats = () => {
     }, [data]);
 
     const handleDownloadPDF = () => {
-        if (chartData && chartRef.current) {
-            const chartInstance = chartRef.current;
-            const chartCanvas = chartInstance.canvas;
-            const chartImage = chartCanvas.toDataURL('image/png');
+        if (chartRef1.current && chartRef2.current) {
             const doc = new jsPDF({
                 unit: 'px',
                 format: 'letter',
                 userUnit: 300
             });
-            doc.text('Batch-wise Placed Student Percentages', 40, 30);
-            doc.addImage(chartImage, 'PNG', 40, 80, 360, 200);
+
+            // Capture canvas images
+            const canvas1 = chartRef1.current.canvas;
+            const canvas2 = chartRef2.current.canvas;
+
+            // Add canvas images to PDF
+            doc.text('Batch-wise Placed Student Percentages', 130, 40);
+            doc.addImage(canvas1.toDataURL('image/png'), 'PNG', 40, 80, 360, 200);
+            doc.addImage(canvas2.toDataURL('image/png'), 'PNG', 40, 300, 360, 200);
+
+            // Save PDF
             doc.save('placement_graph.pdf');
         }
     };
     return (
         <div>
+            <Typography variant="h4" align="center" gutterBottom>
+                Placement Graphs
+            </Typography>
 
-
-            <Grid container spacing={2} marginTop={5} gap={4} marginInline={2}>
+            <Grid container spacing={2} marginTop={2} gap={4} marginInline={2}>
                 <Box sx={{
                     width: '600px', // Set width of the box
                     height: '300px', // Set height of the box
@@ -56,7 +60,7 @@ const PlacementStats = () => {
                     borderRadius: '8px', // Add border radius
                     boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px', // Add box shadow
                 }}>
-                    <BarGraph data={updatedata} />
+                    <BarGraph data={updatedata} ref={chartRef1} />
                 </Box>
                 <Box sx={{
                     width: '600px', // Set width of the box
@@ -67,7 +71,7 @@ const PlacementStats = () => {
                     borderRadius: '8px', // Add border radius
                     boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px', // Add box shadow
                 }}>
-                    <BarGraph data={updatedata} />
+                    <LineGraph data={updatedata} ref={chartRef2} />
                 </Box>
             </Grid>
             <Box sx={{
