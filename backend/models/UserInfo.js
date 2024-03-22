@@ -67,6 +67,7 @@ const placementDataSchema = new mongoose.Schema({
   designation: { type: String }, //input
   package: { type: Number },
   highStudy: { type: String }, 
+  highStudyplace: { type: String }, 
   gateStatus: { type: String }, //yes no enterprenuership
   gateCertificate:{type:String}, //certificate
   lock: { type: Boolean, default: false }
