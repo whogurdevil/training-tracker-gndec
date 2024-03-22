@@ -13,6 +13,7 @@ const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE
 import VerifyAllComponent from '../../Components/VerifyAll';
 import UnVerifyAllComponent from '../../Components/UnVerifyAll'; 
 import {  useNavigate } from 'react-router-dom';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const SuperAdminForm = () => {
     const [users, setUsers] = useState([]);
@@ -21,10 +22,12 @@ const SuperAdminForm = () => {
     const [selectedTraining, setSelectedTraining] = useState('');
     const [editStatus, setEditStatus] = useState({});
     const [refresh, setRefresh] = useState(false); // Refresh state
+    const [loading, setLoading] = useState(true); // Loading state
     const navigate=useNavigate()
 
     useEffect(() => {
         const fetchUsers = async () => {
+            setLoading(true); // Set loading to true when fetching data
             try {
                 const token = localStorage.getItem('authtoken');
                 const response = await axios.get(`${API_URL}api/users/getallusers/`, {
@@ -38,14 +41,16 @@ const SuperAdminForm = () => {
                     .sort((a, b) => a.urn - b.urn);
 
                 setUsers(filteredUsers);
-           
             } catch (error) {
                 console.error('Error fetching users:', error);
+            } finally {
+                setLoading(false); // Set loading to false regardless of success or failure
             }
         };
 
         fetchUsers();
     }, [refresh]);
+
     const navigateToStats = (data) => {
         return navigate('/superadmin/placementStats', { state: { data } });
     }
@@ -261,6 +266,13 @@ const SuperAdminForm = () => {
 
     return (
         <div style={{ padding: '0 20px', marginTop: '20px' }}>
+        {loading ? ( // Render loader if loading is true
+            
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            <CircularProgress />
+            </Box>
+        ) : (
+        <div style={{ padding: '0 20px', marginTop: '20px' }}>
             <Grid container spacing={2} justifyContent="space-around">
                 <Grid item style={{ marginBottom: 20 }}>
                     <FormControl style={{ width: 200 }}>
@@ -334,6 +346,8 @@ const SuperAdminForm = () => {
                 </Box>
             </Modal>
             <ToastContainer />
+        </div>
+        )}
         </div>
     );
 };
