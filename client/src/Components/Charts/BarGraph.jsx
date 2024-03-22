@@ -10,17 +10,19 @@ Chart.register(CategoryScale, LinearScale, BarElement, Title,
     Legend);
 import { CircularProgress } from '@mui/material';
 
-const BarGraph = forwardRef(({ data }, ref) => {
+const BarGraph = forwardRef(({ data, years }, ref) => {
     const [chartData, setChartData] = useState(null);
     useEffect(() => {
         if (data) {
             const batchWiseData = {};
+            const currentDate = new Date();
+            const cutoffYear = currentDate.getFullYear() - years;
 
             data.forEach((student) => {
                 const startYear = parseInt(student.userInfo.batch.split('-')[0]);
                 const isPlaced = student.placementData.isPlaced;
 
-                if (isPlaced) {
+                if (isPlaced && startYear >= cutoffYear) {
                     batchWiseData[startYear] = batchWiseData[startYear] || { total: 0, placed: 0 };
                     batchWiseData[startYear].total++;
                     batchWiseData[startYear].placed++;
@@ -44,7 +46,7 @@ const BarGraph = forwardRef(({ data }, ref) => {
             });
         }
 
-    }, [data]);
+    }, [data, years]);
 
 
     return (
