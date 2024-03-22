@@ -387,6 +387,7 @@ export default function PlacementForm() {
               <TextField
                 select
                 label="Placement Type"
+                placeholder='Select any one'
                 variant="outlined"
                 fullWidth
                 required
@@ -402,6 +403,7 @@ export default function PlacementForm() {
 
               <TextField
                 label="Package"
+                placeholder='in LPA'
                 variant="outlined"
                 fullWidth
                 required
@@ -438,6 +440,7 @@ export default function PlacementForm() {
         <TextField
           select
           label="Will you pursue higher studies?"
+          placeholder='Select any one'
           variant="outlined"
           fullWidth
           required
@@ -457,6 +460,7 @@ export default function PlacementForm() {
           select
           label="Have you appeared in Gate Exam?"
           variant="outlined"
+          placeholder='Select any one' 
           fullWidth
           required
           name="gateStatus"

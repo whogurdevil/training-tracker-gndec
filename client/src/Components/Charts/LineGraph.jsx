@@ -1,11 +1,12 @@
 import React, { useEffect, useState, forwardRef } from 'react';
-import { Line } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 import { CircularProgress } from '@mui/material';
 import {
-    CategoryScale, LinearScale, Chart, LineElement, Title,
+    CategoryScale, LinearScale, Chart, BarElement, Title,
     Tooltip,
-    Legend ,PointElement} from 'chart.js';
-Chart.register(CategoryScale, LinearScale, LineElement, Title,PointElement,
+    Legend
+} from 'chart.js';
+Chart.register(CategoryScale, LinearScale, BarElement, Title,
     Tooltip,
     Legend);
 
@@ -49,15 +50,21 @@ const LineGraph = forwardRef(({ data }, ref) => {
                         label: 'Male Students',
                         data: placedMaleStudents,
                         fill: false,
-                        borderColor: 'rgb(54, 162, 235)',
-                        tension: 0.1
+                        borderColor: 'rgb(255, 99, 132)',
+
+                       
+                        tension: 0.1,
+                        backgroundColor: 'rgba(53, 162, 235, 0.5)',
+
+                       
                     },
                     {
                         label: 'Female Students',
                         data: placedFemaleStudents,
                         fill: false,
-                        borderColor: 'rgb(255, 99, 132)',
-                        tension: 0.1
+                        borderColor: 'rgb(54, 162, 235)',
+                        tension: 0.1,
+                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
                     }
                 ]
             });
@@ -67,7 +74,7 @@ const LineGraph = forwardRef(({ data }, ref) => {
     return (
         <div style={{ width: '580px', height: '290px' }}>
             {chartData ? (
-                <Line
+                <Bar
                     ref={ref}
                     data={chartData}
                     options={{
@@ -97,7 +104,7 @@ const LineGraph = forwardRef(({ data }, ref) => {
                             },
                             title: {
                                 display: true,
-                                text: 'Batch Wise Placement Data'
+                                text: 'Batch and Gender Wise Placement Data'
                             }
                         }
                     }}
