@@ -9,7 +9,7 @@ const isAdmin = require('../../middleware/isAdmin');
 
 router.post('/', async (req, res) => {
     try {
-        const { company, placementType, highStudy, appointmentNo, appointmentLetter, package, isPlaced , gateStatus,gateCertificate,designation,appointmentDate } = req.body.formData;
+        const { company, placementType, highStudy, appointmentNo, appointmentLetter, package, isPlaced, gateStatus, gateCertificate, designation, appointmentDate, highStudyplace } = req.body.formData;
         const urn = req.body.urn;
         let userInfo = await SignUpdata.findOne({ urn: urn });
 
@@ -17,28 +17,29 @@ router.post('/', async (req, res) => {
             return res.status(404).json({ message: 'UserInfo not found' });
         }
 
-       
-            // Create new placement data
-            userInfo.placementData = new placementData({
-                company,
-                placementType,
-                highStudy,
-                appointmentNo,
-                appointmentLetter,
-                package,
-                isPlaced,
-                gateStatus,
-                gateCertificate,
-                appointmentDate,
-                designation
-            });
-        
 
-// console.log(await userInfo.save())
+        // Create new placement data
+        userInfo.placementData = new placementData({
+            company,
+            placementType,
+            highStudy,
+            appointmentNo,
+            appointmentLetter,
+            package,
+            isPlaced,
+            gateStatus,
+            gateCertificate,
+            appointmentDate,
+            designation,
+            highStudyplace
+        });
+
+
+        // console.log(await userInfo.save())
         // Save the updated user info
         const savedUserInfo = await userInfo.save();
-    
-// console.log(savedUserInfo)
+
+        // console.log(savedUserInfo)
         // Respond with the saved userInfo
         res.status(201).json({ success: true, data: savedUserInfo });
     } catch (error) {
@@ -131,7 +132,7 @@ router.get('/:urn', async (req, res) => {
                 appointmentLetter: null,
                 package: null,
                 isPlaced: false,
-               
+
             };
         }
 

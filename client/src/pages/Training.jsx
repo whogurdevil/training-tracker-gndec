@@ -91,7 +91,15 @@ export default function Form() {
     const { name, value } = e.target;
 
    
+    if (name === 'organizationType' && value === 'gndec') {
+      setFormData({
+        ...formData,
+        [name]: value,
+        organization: 'Guru Nanak Dev Engineering College , Ludhiana'
+      });
+    } else {
       setFormData({ ...formData, [name]: value });
+    }
     
     setErrors({ ...errors, [name]: '' });
   };
