@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Skeleton, Typography } from '@mui/material'; // Import Skeleton component
+import { Container } from '@mui/material';
 import ButtonCard from '../Components/Cards/ButtonCard';
 import { LooksOneRounded, LooksTwoRounded, Looks3Rounded, Looks4Rounded, Looks5Rounded, Looks6Rounded } from '@mui/icons-material';
 import { jwtDecode } from "jwt-decode";
@@ -7,41 +7,46 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
 
+
 const Home = () => {
     const [batchYear, setBatchYear] = useState(null);
     const [isLeet, setIsLeet] = useState(false);
-    const [loading, setLoading] = useState(true); // State for loading
 
     useEffect(() => {
         const fetchBatchYear = async () => {
             try {
+                // Fetch batch year from profile data
                 const token = localStorage.getItem("authtoken");
+                // console.log(token)
                 const urn = decodeAuthToken(token);
+                // console.log(urn)
                 const url = `${API_URL}api/users/getuser/${urn}`
                 const response = await axios.get(url, {
                     headers: {
-                        "auth-token": token
+                        "auth-token": token // Include the authentication token in the request headers
                     }
                 });
 
                 const data = response.data.data
 
                 var difference = 0;
-
+                console.log(data.userInfo.admissionType)
                 if (data.userInfo.batch) {
                     const batchYear = parseInt(data.userInfo.batch.split('-')[0]);
+
                     const currentYear = new Date().getFullYear();
                     difference = currentYear - batchYear;
                 }
                 else {
+
                     difference = 0;
                 }
                 if (data.userInfo.admissionType === "Non LEET") {
                     setIsLeet(true);
                 }
 
+
                 setBatchYear(difference);
-                setLoading(false); // Set loading to false once data is fetched
             } catch (error) {
                 console.error('Error fetching batch year:', error);
             }
@@ -49,7 +54,6 @@ const Home = () => {
 
         fetchBatchYear();
     }, []);
-
     const decodeAuthToken = (token) => {
         try {
             const decodedToken = jwtDecode(token);
@@ -60,7 +64,6 @@ const Home = () => {
             return null;
         }
     };
-
     const cardsData = [
         {
             text: 'Profile Data',
@@ -109,34 +112,11 @@ const Home = () => {
     return (
         <Container
             sx={{ marginX: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 5 }}>
-            {loading ? ( // Show Skeleton while loading
-                // cardsData.map((data, index) => (
-                //     <Skeleton variant='rounded' width={'90vw'} 
-                //     animation='wave'
-                //     sx={{
-                //         width: '90vw',
-                //         display: 'flex',
-                //         alignItems: 'center',
-                //         justifyContent: 'space-between',
-                //         marginY: 1,
-                //         padding: 2,
-                //         boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.25)',
-                //     }}>
-                //         <div style={{ justifyContent: 'left' }}>
-                //             <div>
-                //                 <Typography gutterBottom textAlign={'left'} component="div" sx={{ maxWidth: '20vw', marginY: 'auto', fontSize: 18 }}>
-                //                     Loading
-                //                 </Typography>
-                //             </div>
-                //         </div>
-                //     </Skeleton>
-                // ))
-                null
-            ) : (
-                cardsData.map((data, index) => (
-                    <ButtonCard key={index} {...data} />
-                ))
-            )}
+            {cardsData.map((data, index) => (
+
+                <ButtonCard key={index}  {...data} />
+
+            ))}
         </Container>
     );
 };
