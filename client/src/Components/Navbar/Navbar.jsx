@@ -6,7 +6,6 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { toast } from 'react-toastify';
-import gndecLogo from '../../assets/gndec-logo.png'
 import { Container } from "@mui/material";
 import navbarimg from "../../assets/navbarimg.png"
 
@@ -28,8 +27,8 @@ function Navbar() {
     <Box sx={{ flexGrow: 1 }} margin={0}>
       <AppBar position="relative" sx={{ backgroundColor: '#FFF5E0' }}>
         <Toolbar sx={{ boxShadow: 'none' }}>
+            <Button variant="text" style={{ position: 'absolute', left: 5 }} onClick={handleGoBack}>Back</Button> {/* Back button */}
           <Container sx={{ display: 'flex', alignItems: 'center', paddingLeft: 0, marginLeft: 0 }}>
-            <Button variant="text" onClick={handleGoBack}>Back</Button> {/* Back button */}
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
               <Box sx={{ textAlign: 'center', width: '90vw' }}>
                 <img src={navbarimg} style={{ width: '60vw', backgroundColor: 'white' }} alt="Navbar Img" />
