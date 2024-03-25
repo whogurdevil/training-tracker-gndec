@@ -14,6 +14,7 @@ import VerifyAllComponent from '../../Components/VerifyAll';
 import UnVerifyAllComponent from '../../Components/UnVerifyAll'; 
 import {  useNavigate } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
+import TrainingNames from '../TrainingNamesController/TrainingNames';
 
 const SuperAdminForm = () => {
     const [users, setUsers] = useState([]);
@@ -29,7 +30,9 @@ const SuperAdminForm = () => {
         const fetchUsers = async () => {
             setLoading(true); // Set loading to true when fetching data
             try {
+
                 const token = localStorage.getItem('authtoken');
+                console.log(token)
                 const response = await axios.get(`${API_URL}api/users/getallusers/`, {
                     headers: {
                         "auth-token": token // Include the authentication token in the request headers
@@ -53,6 +56,9 @@ const SuperAdminForm = () => {
 
     const navigateToStats = (data) => {
         return navigate('/superadmin/placementStats', { state: { data } });
+    }
+    const navigateToTrainingNames = (data) => {
+        return navigate('/superadmin/trainingNames');
     }
 
     const filteredUsers = useMemo(() => {
@@ -311,10 +317,13 @@ const SuperAdminForm = () => {
                 <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', }}>
                     <div style={{ display: 'flex', gap: '10px', flexDirection: 'row' }}>
                         <ExportComponent data={filteredUsers} columns={columns} selectedTraining={selectedTraining} />
-                        <div style={{ marginTop: '10px' }}>
+                        <div style={{ marginTop: '10px' , display:'flex', gap:'5px' }}>
                             <Button onClick={()=>navigateToStats(filteredUsers)} variant="contained" color="primary">
                                 View Placement Stats
                             </Button>
+                                        <Button onClick={() => navigateToTrainingNames()} variant="contained" color="primary">
+                                           Set Training Names
+                                        </Button>
                         </div>
                     </div>
 

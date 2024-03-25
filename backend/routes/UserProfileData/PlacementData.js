@@ -63,7 +63,7 @@ router.post('/updatelock', fetchuser, isAdmin, async (req, res) => {
         }
 
         // Respond with the updated user data
-        res.status(200).json({ success: true, data: userData });
+        res.status(200).json({ success: true });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
@@ -85,7 +85,7 @@ router.post('/verifyall', fetchuser, isAdmin, async (req, res) => {
         }));
 
         // Respond with the updated user data
-        res.status(200).json({ success: true, data: updatedUsers });
+        res.status(200).json({ success: true });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
@@ -106,7 +106,7 @@ router.post('/unverifyall', fetchuser, isAdmin, async (req, res) => {
         }));
 
         // Respond with the updated user data
-        res.status(200).json({ success: true, data: updatedUsers });
+        res.status(200).json({ success: true});
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
