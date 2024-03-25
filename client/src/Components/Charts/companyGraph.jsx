@@ -5,12 +5,15 @@ import {
     Tooltip,
     Legend
 } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { CircularProgress } from '@mui/material';
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const CompanyGraph = forwardRef(({ data, years }, ref) => {
     const [chartData, setChartData] = useState(null);
+    
+    Chart.register(ChartDataLabels);
 
     useEffect(() => {
         if (data) {
@@ -42,6 +45,7 @@ const CompanyGraph = forwardRef(({ data, years }, ref) => {
 
             setChartData({
                 labels: labels,
+
                 datasets: [
                     {
                         label: 'Maximum Package',
@@ -68,7 +72,7 @@ const CompanyGraph = forwardRef(({ data, years }, ref) => {
                         options={{
                             responsive: true,
                             legend: {
-                                position: 'top',
+                                display: false,
                             },
                             scales: {
                                 x: {
@@ -83,30 +87,39 @@ const CompanyGraph = forwardRef(({ data, years }, ref) => {
                                         text: 'Package in LPA', // Y-axis label
                                     },
                                     beginAtZero: true,
-                                    max: 20
+                                    max: 20,
                                 },
                             },
                             plugins: {
+                                title: {
+                                    display: true,
+                                    text: 'Batch Wise Highest Packages',
+                                },
                                 tooltip: {
                                     enabled: true,
                                     callbacks: {
                                         label: function (context) {
                                             const label = context.dataset.label || '';
                                             if (label) {
-                                                {console.log(data[context.dataIndex].placementData.company)}
                                                 return [label, `Company: ${data[context.dataIndex].placementData.company}`, `Package: ${data[context.dataIndex].placementData.package}`];
                                             }
                                             return null;
-                                        }
-                                    }
+                                        },
+                                    },
                                 },
-                                title: {
-                                    display: true,
-                                    text: 'Batch Wise Highest Packages',
+                                datalabels: {
+                                    anchor: 'end',
+                                    align: 'top',
+                                    offset: 4, // Adjust this value to adjust the distance between the label and the bar
+                                    formatter: function (value, context) {
+                                        return data[context.dataIndex].placementData.company;
+                                    },
+                                    color: '#333', // Customize the color of the label
                                 },
-                            }
+                            },
                         }}
                     />
+
                 </>
             ) : (
                 <CircularProgress />
