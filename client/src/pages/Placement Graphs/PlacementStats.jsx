@@ -12,6 +12,7 @@ const PlacementStats = () => {
     const location = useLocation();
     const chartRef1 = useRef(null);
     const chartRef2 = useRef(null);
+    const chartRef3 = useRef(null);
     const data = location.state ? location.state.data : null;
 
     useEffect(() => {
@@ -21,7 +22,7 @@ const PlacementStats = () => {
     }, [data]);
 
     const handleDownloadPDF = () => {
-        if (chartRef1.current && chartRef2.current) {
+        if (chartRef1.current && chartRef2.current && chartRef3.current) {
             const doc = new jsPDF({
                 unit: 'px',
                 format: 'letter',
@@ -31,11 +32,13 @@ const PlacementStats = () => {
             // Capture canvas images
             const canvas1 = chartRef1.current.canvas;
             const canvas2 = chartRef2.current.canvas;
+            const canvas3 = chartRef3.current.canvas;
 
             // Add canvas images to PDF
             doc.text('Batch-wise Placed Student Percentages', 130, 40);
-            doc.addImage(canvas1.toDataURL('image/png'), 'PNG', 40, 80, 360, 200);
-            doc.addImage(canvas2.toDataURL('image/png'), 'PNG', 40, 300, 360, 200);
+            doc.addImage(canvas1.toDataURL('image/png'), 'PNG', 40, 80, 300, 150);
+            doc.addImage(canvas2.toDataURL('image/png'), 'PNG', 40, 280, 300, 150);
+            doc.addImage(canvas3.toDataURL('image/png'), 'PNG', 40, 430, 300, 150);
 
             // Save PDF
             doc.save('placement_graph.pdf');
@@ -116,7 +119,7 @@ const PlacementStats = () => {
                         boxShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px',
                     }}
                 >
-                    <CompanyGraph data={updatedata} ref={chartRef1} years={selectedYears + 4} />
+                    <CompanyGraph data={updatedata} ref={chartRef3} years={selectedYears + 4} />
                 </Box>
             </Grid>
             <Box
