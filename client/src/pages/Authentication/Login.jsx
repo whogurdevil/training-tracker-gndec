@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Button from '@mui/material/Button';
@@ -21,6 +21,13 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({ urn: '', password: '' });
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem('authtoken');
+    if (isLoggedIn) {
+      navigate('/home')
+    }
+  }, []); 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
