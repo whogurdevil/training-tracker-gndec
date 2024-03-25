@@ -33,11 +33,14 @@ export default function PlacementForm() {
     gateStatus: '',
     gateCertificate: '',
     appointmentDate: '',
-    isPlaced:null
+    isPlaced:null,
+    highStudyplace:''
   });
   const [isPlaced, setIsPlaced] = useState("");
   const [isHighstudy, setHighstudy] = useState("No");
   const [gateStatus, setgateStatus] = useState("No");
+  const [highStudyplace, sethighStudyplace] = useState("");
+
 
   const decodeAuthToken = (token) => {
     try {
@@ -86,6 +89,7 @@ export default function PlacementForm() {
           setIsPlaced(userData.isPlaced ? "true" : "false");
           setHighstudy(userData.highStudy);
           setgateStatus(userData.gateStatus);
+          sethighStudyplace(userData.highStudyplace)
           setGateCertificate(userData.gateCertificate);
           setAppointmentLetter(userData.appointmentLetter);
           setIsEditing(false);
@@ -145,6 +149,8 @@ export default function PlacementForm() {
     e.preventDefault();
     try {
       // Form validation
+      console.log(isHighstudy)
+      console.log(highStudyplace)
       const formErrors = {};
       if (formData.isPlaced === true) {
         if (!formData.company.trim()) {
@@ -172,6 +178,9 @@ export default function PlacementForm() {
       } else if (!formData.highStudy) {
         formErrors.highStudy = 'High Study field cannot be blank';
         toast.error(formErrors.highStudy);
+      } else if (isHighstudy==="Yes" && !formData.highStudyplace){
+        formErrors.highStudyplace = "Place of High Study Cannot be blank";
+        toast.error(formErrors.highStudyplace);
       } else if (!formData.gateStatus) {
         formErrors.gateStatus = "Gate Status Field Cannot Be Blank";
         toast.error(formErrors.gateStatus);
@@ -232,6 +241,7 @@ export default function PlacementForm() {
     }
    
   };
+
   const handleIsHighChange = (e) => {
     // console.log(e.target)
     const { name, value } = e.target;
@@ -245,6 +255,14 @@ export default function PlacementForm() {
     setgateStatus(value);
 
     setFormData({ ...formData, [name]: value });
+  };
+  const handlehighStudyplace = (e) => {
+    // console.log(e.target)
+    const { name, value } = e.target;
+   sethighStudyplace(value);
+
+    setFormData({ ...formData, [name]: value });
+  
   };
 
   return (
@@ -383,10 +401,11 @@ export default function PlacementForm() {
             </Grid>
             </Grid>
 
-            <Grid item xs={12} md={6} >
+            <Grid item xs={12} md={6} marginTop={2}>
               <TextField
                 select
                 label="Placement Type"
+                placeholder='Select any one'
                 variant="outlined"
                 fullWidth
                 required
@@ -402,6 +421,7 @@ export default function PlacementForm() {
 
               <TextField
                 label="Package"
+                placeholder='in LPA'
                 variant="outlined"
                 fullWidth
                 required
@@ -438,6 +458,7 @@ export default function PlacementForm() {
         <TextField
           select
           label="Will you pursue higher studies?"
+          placeholder='Select any one'
           variant="outlined"
           fullWidth
           required
@@ -452,11 +473,33 @@ export default function PlacementForm() {
           <MenuItem value="No">No</MenuItem>
         </TextField>
       </Grid>
+      {isHighstudy==="Yes" && (
+        <Grid item xs={12} md={6}>
+          <TextField
+            select
+            label="Where you wanna pursue higher studies"
+            variant="outlined"
+            fullWidth
+            required
+            name="highStudyplace"
+            value={highStudyplace}
+            onChange={handlehighStudyplace}
+            sx={{ mb: 2 }}
+            disabled={!isEditing || isSubmitting}
+          >
+            <MenuItem value={""}>None</MenuItem>
+            <MenuItem value="India">India</MenuItem>
+            <MenuItem value="Outside">Abroad</MenuItem>
+          </TextField>
+        </Grid>
+      )}
+      
       <Grid item xs={12} md={6}>
         <TextField
           select
           label="Have you appeared in Gate Exam?"
           variant="outlined"
+          placeholder='Select any one' 
           fullWidth
           required
           name="gateStatus"
@@ -473,7 +516,7 @@ export default function PlacementForm() {
       { isEditing && (gateStatus==="Yes") && (
         <Grid item xs={12} container justifyContent="space-between" alignItems="center">
           <Typography variant="h6" gutterBottom textAlign="left" marginTop={2}>
-            Upload Gate Admit Card
+            Upload Gate Admit Card / Scorecard
           </Typography>
           <FileBase
             type="file"
