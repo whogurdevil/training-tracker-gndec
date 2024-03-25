@@ -21,31 +21,26 @@ function Navbar() {
     navigate('/login')
   }
 
-  return (
-    <div>
-      <Box sx={{ flexGrow: 1}} margin={0}>
-        <AppBar position="relative" sx={{backgroundColor:'#FFF5E0'}}>
-          <Toolbar sx={{boxShadow:'none'}}>
-            <Container sx={{ display: 'flex', alignItems: 'center', paddingLeft: 0, marginLeft: 0 }}>
-              {/* <img
-              style={{ height: '50px', marginRight: '10px' }}
-              src={gndecLogo}
-              alt="GNDEC Logo"
-            /> */}
-              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                {/* Training Data Tracker */}
-                <Box sx={{textAlign: 'center', width:'90vw' }}>
-                  <img src={navbarimg} style={{ width:'60vw', backgroundColor:'white' }}></img>
-
-                </Box>
-              </Typography>
-            </Container>
-            <Button variant="text" style={{position:'absolute', right:5}} onClick={handleLogout}>Logout</Button>
-          </Toolbar>
-        </AppBar>
-      </Box>
-    </div>
-  );
+  function handleGoBack() {
+    navigate(-1)
+  }
+  return ( <div>
+    <Box sx={{ flexGrow: 1 }} margin={0}>
+      <AppBar position="relative" sx={{ backgroundColor: '#FFF5E0' }}>
+        <Toolbar sx={{ boxShadow: 'none' }}>
+          <Container sx={{ display: 'flex', alignItems: 'center', paddingLeft: 0, marginLeft: 0 }}>
+            <Button variant="text" onClick={handleGoBack}>Back</Button> {/* Back button */}
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              <Box sx={{ textAlign: 'center', width: '90vw' }}>
+                <img src={navbarimg} style={{ width: '60vw', backgroundColor: 'white' }} alt="Navbar Img" />
+              </Box>
+            </Typography>
+          </Container>
+          <Button variant="text" style={{ position: 'absolute', right: 5 }} onClick={handleLogout}>Logout</Button>
+        </Toolbar>
+      </AppBar>
+    </Box>
+  </div>);
 }
 
 export default Navbar;
