@@ -12,7 +12,6 @@ const VerifyAllComponent = ({ selectedTraining, refresh, onRefresh }) => {
     const handleVerifyAll = async () => {
         setOpen(true);
     };
-
     const handleConfirmVerifyAll = async () => {
         try {
             const token = localStorage.getItem('authtoken');
