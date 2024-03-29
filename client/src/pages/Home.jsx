@@ -18,30 +18,34 @@ const Home = () => {
     useEffect(() => {
         const fetchBatchYear = async () => {
             try {
+                // Fetch batch year from profile data
                 const token = localStorage.getItem("authtoken");
+                // console.log(token)
                 const urn = decodeAuthToken(token);
+                // console.log(urn)
                 const url = `${API_URL}api/users/getuser/${urn}`
                 const response = await axios.get(url, {
                     headers: {
-                        "auth-token": token
+                        "auth-token": token // Include the authentication token in the request headers
                     }
                 });
                 const data = response.data.data
                 var difference = 0;
-
+                console.log(data.userInfo.admissionType)
                 if (data.userInfo.batch) {
                     const batchYear = parseInt(data.userInfo.batch.split('-')[0]);
+
                     const currentYear = new Date().getFullYear();
                     difference = currentYear - batchYear;
                 }
                 else {
+
                     difference = 0;
                 }
                 if (data.userInfo.admissionType === "Non LEET") {
                     setIsLeet(true);
                 }
                 setBatchYear(difference);
-                setLoading(false); // Set loading to false once data is fetched
             } catch (error) {
                 console.error('Error fetching batch year:', error);
             }
@@ -58,7 +62,6 @@ const Home = () => {
         loadTrainingNames();
 
     }, []);
-
     const decodeAuthToken = (token) => {
         try {
             const decodedToken = jwtDecode(token);
