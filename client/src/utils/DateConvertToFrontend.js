@@ -19,8 +19,7 @@ export const convertBatchToDate = (backendDate) => {
     // Extract year, month, and day from the backend date string
     const [datePart, timePart] = backendDate.split(' ');
     const [year] = datePart.split('-');
-    console.log(year)
-
+    
     // Create a new Day.js object with the extracted date parts
     const formattedDate = dayjs(year);
     console.log(formattedDate)

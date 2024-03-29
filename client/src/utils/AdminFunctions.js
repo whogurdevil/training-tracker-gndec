@@ -15,12 +15,26 @@ export const fetchUsers = async () => {
             .filter(user => user.userInfo.Name !== undefined)
             .sort((a, b) => a.urn - b.urn);
 
-        return filteredUsers;
+        // Extracting unique batches from userinfo.batch
+        const batches = filteredUsers.reduce((acc, user) => {
+            if (user.userInfo.batch) {
+                const batch = user.userInfo.batch.split('-')[0]; // Assuming batch is in format: YYYY-NNN
+                const endYear = user.userInfo.batch.split('-')[1]; // Assuming batch is in format: YYYY-NNN
+                const fullBatch = `${batch}-${endYear}`; // Combine start and end year to get full batch range
+                if (!acc.includes(fullBatch)) {
+                    acc.push(fullBatch);
+                }
+            }
+            return acc;
+        }, []);
+        const sortedBatches = batches.sort((b, a) => a.localeCompare(b));
+        return { users: filteredUsers, batches: sortedBatches };
     } catch (error) {
         console.error('Error fetching users:', error);
         throw new Error('Error fetching users');
     }
 };
+
 
 export const changeLock = async (urn, lockStatus, isPlacement , selectedTraining) => {
     try {
@@ -48,7 +62,6 @@ export const changeLock = async (urn, lockStatus, isPlacement , selectedTraining
                 'auth-token': token
             }
         });
-
         if (response.data.success) {
             return 'Verification Status Change successfully!';
         } else {

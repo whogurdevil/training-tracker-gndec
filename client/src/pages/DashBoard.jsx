@@ -55,6 +55,7 @@ export default function Form() {
   const urn = decodeAuthToken(token);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditing, setIsEditing] = useState(true);
+  const [admissionYear, setAdmissionYear] = useState(null);
   const [errors, setErrors] = useState({});
   useEffect(() => {
     // Fetch data from the database when the component mounts or the page is refreshed
@@ -81,6 +82,7 @@ export default function Form() {
 
         ) {
           const datePickerBatch = convertBatchToDate(userData.batch);
+          setAdmissionYear(datePickerBatch);
           // console.log(datePickerBatch)
           setFormData({ ...userData, batch: datePickerBatch });
 
@@ -196,8 +198,6 @@ export default function Form() {
         return;
       }
 
-      // Submit form data
-      // console.log(formData)
       const response = await axios.post(`${API_URL}userprofiles`, { formData, urn: urn });
       // console.log(response);
       if (response.data.success) {
@@ -227,7 +227,6 @@ export default function Form() {
   const handleBatchChange = (newDate) => {
     // console.log(newDate);
     if (newDate) {
-      // Extract the year from the newDate object
       const year = newDate.$y;
 
       setFormData({ ...formData, batch: `${year}-${year + 4}` });
@@ -402,6 +401,7 @@ export default function Form() {
                   views={['year']}
                   renderInput={(params) => <TextField {...params} helperText="Enter starting year only" />}
                   onChange={handleBatchChange}
+                  value={admissionYear}
                   sx={{ mb: 2 }}
                   disabled={!isEditing || isSubmitting}
                 />
