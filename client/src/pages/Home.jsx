@@ -76,7 +76,7 @@ const Home = () => {
             console.error('Error decoding JWT token:', error);
             return null;
         }
-    }; const cardsData = loading ? [{},{},{},{},{}] : [
+    }; const cardsData = loading ? [{},{},{},{},{},{}] : [
         {
             text: 'Profile Data',
             path: '/dashboard',
