@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Skeleton, Typography , Box } from '@mui/material'; // Import Skeleton component
+import { Container, Skeleton, Typography, Box } from '@mui/material'; // Import Skeleton component
 import ButtonCard from '../Components/Cards/ButtonCard';
 import { LooksOneRounded, LooksTwoRounded, Looks3Rounded, Looks4Rounded, Looks5Rounded, Looks6Rounded } from '@mui/icons-material';
 import { jwtDecode } from "jwt-decode";
 import axios from 'axios';
-import { fetchTrainingNames , initialTrainingNames } from '../utils/TrainingNamesApi';
+import { fetchTrainingNames, initialTrainingNames } from '../utils/TrainingNamesApi';
 
 
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
@@ -18,6 +18,8 @@ const Home = () => {
     useEffect(() => {
         const fetchBatchYear = async () => {
             try {
+                setLoading(true)
+
                 // Fetch batch year from profile data
                 const token = localStorage.getItem("authtoken");
                 // console.log(token)
@@ -56,6 +58,9 @@ const Home = () => {
                 setTrainingNames(data);
             } catch (error) {
                 console.error('Error loading training names:', error);
+            } finally {
+                setLoading(false)
+
             }
         };
         fetchBatchYear();
@@ -71,7 +76,7 @@ const Home = () => {
             console.error('Error decoding JWT token:', error);
             return null;
         }
-    }; const cardsData = loading ? [] : [
+    }; const cardsData = loading ? [{},{},{},{},{}] : [
         {
             text: 'Profile Data',
             path: '/dashboard',
@@ -132,29 +137,34 @@ const Home = () => {
         }
     ];
 
+    const load = {}
+
     return (
         <Container
             sx={{ marginX: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 5 }}>
             {loading ? (
-                <Skeleton variant='rounded' width={'90vw'}
-                    animation='wave'
-                    sx={{
-                        width: '90vw',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        marginY: 1,
-                        padding: 2,
-                        boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.25)',
-                    }}>
-                    <div style={{ justifyContent: 'left' }}>
-                        <div>
-                            <Typography gutterBottom textAlign={'left'} component="div" sx={{ maxWidth: '20vw', marginY: 'auto', fontSize: 18 }}>
-                                Loading
-                            </Typography>
-                        </div>
-                    </div>
-                </Skeleton>
+                             cardsData.map((data, index) => (
+                                <Skeleton key={index} variant='rounded' width={'90vw'}
+                                animation='wave'
+                                sx={{
+                                    width: '90vw',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    marginY: 1,
+                                    padding: 2,
+                                    boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.25)',
+                                }}>
+                                <div style={{ justifyContent: 'left' }}>
+                                    <div>
+                                        <Typography gutterBottom textAlign={'left'} component="div" sx={{ maxWidth: '20vw', marginY: 'auto', fontSize: 18 }}>
+                                            Loading
+                                        </Typography>
+                                    </div>
+                                </div>
+                            </Skeleton>
+                            ))
+
             ) : (
                 cardsData.map((data, index) => (
                     <ButtonCard key={index} {...data} />
