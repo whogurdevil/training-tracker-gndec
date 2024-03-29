@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -11,6 +11,7 @@ import navbarimg from '../../assets/navbarimg.png';
 
 function Navbar() {
   const location = useLocation();
+  const navigate = useNavigate()
   const [open, setOpen] = React.useState(false);
 
   const handleOpen = () => setOpen(true);

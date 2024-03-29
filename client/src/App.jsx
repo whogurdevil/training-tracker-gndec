@@ -14,7 +14,7 @@ import ProtectedRoute from './Components/ProtectedRoute';
 import Admin from './pages/AdminDashboard/AdminDashboard';
 import PlacementStats from './pages/Placement Graphs/PlacementStats';
 import TrainingNames from './pages/TrainingNamesController/TrainingNames';
-
+import Footer from './Components/Footer';
 class App extends Component {
   render() {
     return (
@@ -38,6 +38,7 @@ class App extends Component {
             <Route path="/dashboard" element={<ProtectedRoute path="/dashboard" component={DashBoard} />} />
             <Route path="/forgotpassword" element={<ForgotPassword />} />
           </Routes>
+          <Footer /> {/* Include the Footer component */}
         </BrowserRouter>
       </div>
     );

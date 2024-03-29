@@ -5,21 +5,6 @@ import { ThemeProvider } from '@mui/material/styles';
 import { createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
-// Define your custom theme
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#3fb589',
-    },
-    secondary: {
-      main: '#f50057',
-    },
-    success: {
-      main: '#00ff0d',
-    },
-  },
-});
-
 // Main component
 const Main = () => {
   // Determine if user prefers dark mode
