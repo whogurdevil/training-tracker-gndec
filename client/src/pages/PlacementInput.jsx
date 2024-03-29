@@ -105,7 +105,6 @@ export default function PlacementForm() {
   }, []);
 
   const handleDateChange = (newDate) => {
-    console.log(newDate)
     // Extract year, month, and day from the selected date
     const year = newDate.$y;
     const month = newDate.$M + 1; // Months start from 0, so add 1
@@ -149,8 +148,7 @@ export default function PlacementForm() {
     e.preventDefault();
     try {
       // Form validation
-      console.log(isHighstudy)
-      console.log(highStudyplace)
+   
       const formErrors = {};
       if (formData.isPlaced === true) {
         if (!formData.company.trim()) {
@@ -233,7 +231,6 @@ export default function PlacementForm() {
 
   const handleIsPlacedChange = (e) => {
     const { name, value } = e.target;
-    console.log(name, value)
     setIsPlaced(value)
     if(value){
       let newvalue = (value === "true")
@@ -477,7 +474,7 @@ export default function PlacementForm() {
         <Grid item xs={12} md={6}>
           <TextField
             select
-            label="Where you wanna pursue higher studies"
+            label="Where do you want to pursue higher Studies?"
             variant="outlined"
             fullWidth
             required

@@ -61,7 +61,6 @@ export default function Form() {
     const fetchData = async () => {
 
       try {
-        console.log("hello")
         const url = `${API_URL}userprofiles/${urn}`;
         const response = await axios.get(url);
         const userData = response.data.data;
@@ -81,8 +80,6 @@ export default function Form() {
           userData.father
 
         ) {
-          // If all fields are filled, populate the form data and disable editing
-          console.log(userData.batch);
           const datePickerBatch = convertBatchToDate(userData.batch);
           // console.log(datePickerBatch)
           setFormData({ ...userData, batch: datePickerBatch });
@@ -228,12 +225,10 @@ export default function Form() {
     setIsEditing((prevEditing) => !prevEditing);
   };
   const handleBatchChange = (newDate) => {
-    console.log(newDate)
     // console.log(newDate);
     if (newDate) {
       // Extract the year from the newDate object
       const year = newDate.$y;
-      console.log(year);
 
       setFormData({ ...formData, batch: `${year}-${year + 4}` });
     } else {
