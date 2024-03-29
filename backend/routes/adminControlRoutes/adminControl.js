@@ -7,7 +7,6 @@ const isAdmin = require('../../middleware/isAdmin');
 
 router.post('/trainingNames', fetchuser, isAdmin, async (req, res) => {
     try {
-        console.log(req.body)
         const { Training_No, Training1_name, Training2_name, Training3_name, Training4_name, Placement_name } = req.body;
 
         // Assuming you have a unique identifier to find the document, for example, its ID
