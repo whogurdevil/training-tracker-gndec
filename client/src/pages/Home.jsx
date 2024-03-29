@@ -18,55 +18,59 @@ const Home = () => {
     useEffect(() => {
         const fetchBatchYear = async () => {
             try {
-                setLoading(true)
-
-                // Fetch batch year from profile data
                 const token = localStorage.getItem("authtoken");
-                // console.log(token)
                 const urn = decodeAuthToken(token);
-                // console.log(urn)
                 const url = `${API_URL}api/users/getuser/${urn}`
                 const response = await axios.get(url, {
                     headers: {
-                        "auth-token": token // Include the authentication token in the request headers
+                        "auth-token": token
                     }
                 });
                 const data = response.data.data
-                var difference = 0;
-                console.log(data.userInfo.admissionType)
+                let difference = 0;
+        
                 if (data.userInfo.batch) {
                     const batchYear = parseInt(data.userInfo.batch.split('-')[0]);
-
                     const currentYear = new Date().getFullYear();
                     difference = currentYear - batchYear;
                 }
-                else {
-
-                    difference = 0;
-                }
-                if (data.userInfo.admissionType === "Non LEET") {
-                    setIsLeet(true);
-                }
+                setIsLeet(data.userInfo.admissionType === "Non LEET");
                 setBatchYear(difference);
             } catch (error) {
                 console.error('Error fetching batch year:', error);
             }
         };
+        
         const loadTrainingNames = async () => {
             try {
                 const data = await fetchTrainingNames();
                 setTrainingNames(data);
             } catch (error) {
                 console.error('Error loading training names:', error);
-            } finally {
-                setLoading(false)
-
             }
         };
-        fetchBatchYear();
-        loadTrainingNames();
-
+    
+        try {
+            // Set loading to true before starting fetch
+            setLoading(true);
+            // Use Promise.all() to wait for both fetchBatchYear and loadTrainingNames to complete
+            Promise.all([fetchBatchYear(), loadTrainingNames()])
+                .then(() => {
+                    // Set loading to false after both fetches have completed
+                    setLoading(false);
+                })
+                .catch((error) => {
+                    console.error("Some error occurred:", error);
+                    // Make sure to set loading to false even if there's an error
+                    setLoading(false);
+                });
+        } catch (err) {
+            console.error("Some error occurred:", err);
+            // Make sure to set loading to false even if there's an error
+            setLoading(false);
+        }
     }, []);
+    
     const decodeAuthToken = (token) => {
         try {
             const decodedToken = jwtDecode(token);
@@ -76,7 +80,7 @@ const Home = () => {
             console.error('Error decoding JWT token:', error);
             return null;
         }
-    }; const cardsData = loading ? [{},{},{},{},{},{}] : [
+    }; const cardsData = loading ? [{}, {}, {}, {}, {}, {}] : [
         {
             text: 'Profile Data',
             path: '/dashboard',
@@ -137,33 +141,32 @@ const Home = () => {
         }
     ];
 
-    const load = {}
 
     return (
         <Container
             sx={{ marginX: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 5 }}>
             {loading ? (
-                             cardsData.map((data, index) => (
-                                <Skeleton key={index} variant='rounded' width={'90vw'}
-                                animation='wave'
-                                sx={{
-                                    width: '90vw',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                    marginY: 1,
-                                    padding: 2,
-                                    boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.25)',
-                                }}>
-                                <div style={{ justifyContent: 'left' }}>
-                                    <div>
-                                        <Typography gutterBottom textAlign={'left'} component="div" sx={{ maxWidth: '20vw', marginY: 'auto', fontSize: 18 }}>
-                                            Loading
-                                        </Typography>
-                                    </div>
-                                </div>
-                            </Skeleton>
-                            ))
+                cardsData.map((data, index) => (
+                    <Skeleton key={index} variant='rounded' width={'90vw'}
+                        animation='wave'
+                        sx={{
+                            width: '90vw',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            marginY: 1,
+                            padding: 2,
+                            boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.25)',
+                        }}>
+                        <div style={{ justifyContent: 'left' }}>
+                            <div>
+                                <Typography gutterBottom textAlign={'left'} component="div" sx={{ maxWidth: '20vw', marginY: 'auto', fontSize: 18 }}>
+                                    Loading
+                                </Typography>
+                            </div>
+                        </div>
+                    </Skeleton>
+                ))
 
             ) : (
                 cardsData.map((data, index) => (
