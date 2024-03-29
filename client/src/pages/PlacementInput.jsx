@@ -263,7 +263,7 @@ export default function PlacementForm() {
   };
 
   return (
-    <Container>
+    <Container style={{ marginBottom: "100px" }}>
 
       <Container style={{ paddingInline: 0, paddingBottom: 50, marginTop: '15px' }} >
         {!isLock && (

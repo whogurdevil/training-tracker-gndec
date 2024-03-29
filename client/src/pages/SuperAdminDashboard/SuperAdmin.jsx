@@ -212,14 +212,14 @@ const SuperAdminForm = () => {
     };
 
     return (
-        <div style={{ padding: '0 20px', marginTop: '20px' }}>
+        <div style={{ padding: '0 20px', marginTop: '20px', marginBottom: "100px" }}>
             {loading ? ( // Render loader if loading is true
 
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <CircularProgress />
                 </Box>
             ) : (
-                <div style={{ padding: '0 20px', marginTop: '20px' }}>
+                <div style={{ padding: '0 20px', marginTop: '20px'  }}>
                     <Grid container spacing={2} justifyContent="space-around">
                         <Grid item style={{ marginBottom: 20 }}>
                             <FormControl style={{ width: 200 }}>

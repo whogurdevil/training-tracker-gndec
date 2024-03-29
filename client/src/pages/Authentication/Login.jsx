@@ -118,7 +118,7 @@ function Login() {
   const theme = createTheme();
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Container component="main" maxWidth="xs" style={{ marginBottom: "100px" }}>
       <CssBaseline />
       <ToastContainer />
       <Box
