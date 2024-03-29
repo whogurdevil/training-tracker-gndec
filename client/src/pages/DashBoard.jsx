@@ -55,13 +55,13 @@ export default function Form() {
   const urn = decodeAuthToken(token);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditing, setIsEditing] = useState(true);
+  const [admissionYear, setAdmissionYear] = useState(null);
   const [errors, setErrors] = useState({});
   useEffect(() => {
     // Fetch data from the database when the component mounts or the page is refreshed
     const fetchData = async () => {
 
       try {
-        console.log("hello")
         const url = `${API_URL}userprofiles/${urn}`;
         const response = await axios.get(url);
         const userData = response.data.data;
@@ -81,9 +81,8 @@ export default function Form() {
           userData.father
 
         ) {
-          // If all fields are filled, populate the form data and disable editing
-          console.log(userData.batch);
           const datePickerBatch = convertBatchToDate(userData.batch);
+          setAdmissionYear(datePickerBatch);
           // console.log(datePickerBatch)
           setFormData({ ...userData, batch: datePickerBatch });
 
@@ -199,8 +198,6 @@ export default function Form() {
         return;
       }
 
-      // Submit form data
-      // console.log(formData)
       const response = await axios.post(`${API_URL}userprofiles`, { formData, urn: urn });
       // console.log(response);
       if (response.data.success) {
@@ -228,12 +225,9 @@ export default function Form() {
     setIsEditing((prevEditing) => !prevEditing);
   };
   const handleBatchChange = (newDate) => {
-    console.log(newDate)
     // console.log(newDate);
     if (newDate) {
-      // Extract the year from the newDate object
       const year = newDate.$y;
-      console.log(year);
 
       setFormData({ ...formData, batch: `${year}-${year + 4}` });
     } else {
@@ -407,6 +401,7 @@ export default function Form() {
                   views={['year']}
                   renderInput={(params) => <TextField {...params} helperText="Enter starting year only" />}
                   onChange={handleBatchChange}
+                  value={admissionYear}
                   sx={{ mb: 2 }}
                   disabled={!isEditing || isSubmitting}
                 />

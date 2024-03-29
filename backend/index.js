@@ -26,6 +26,7 @@ const tr102=require('./routes/UserProfileData/Training2')
 const tr103=require('./routes/UserProfileData/Training3')
 const tr104=require('./routes/UserProfileData/Training4')
 const placementData=require('./routes/UserProfileData/PlacementData')
+const adminControl=require('./routes/adminControlRoutes/adminControl')
 
 app.use('/userprofiles', userProfileRoutes);
 app.use('/tr101',tr101)
@@ -37,6 +38,7 @@ app.use('/api/auth', authRoute);
 app.use('/api/users', userRoute);
 app.use('/api/validate', validateRoute);
 app.use('/api/password', passwordResetRoute);
+app.use('/api/admin',adminControl)
 // Start the server
 const port = process.env.PORT;
 app.listen(port, () => {

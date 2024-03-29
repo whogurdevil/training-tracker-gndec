@@ -5,6 +5,7 @@ import SuperAdmin from '../pages/SuperAdminDashboard/SuperAdmin';
 import Admin from '../pages/AdminDashboard/AdminDashboard';
 import Home from '../pages/Home';
 import PlacementStats from '../pages/Placement Graphs/PlacementStats';
+import TrainingNames from '../pages/TrainingNamesController/TrainingNames';
 
 const ProtectedRoute = ({ component: Component, path, ...rest }) => {
     const authToken = localStorage.getItem('authtoken');
@@ -28,6 +29,9 @@ const ProtectedRoute = ({ component: Component, path, ...rest }) => {
                 if(path==='/superadmin/placementStats'){
                     return <PlacementStats/>
                 }
+                else if(path==='/superadmin/trainingNames'){
+                    return <TrainingNames/>
+                }
                 // Redirect superadmin to home if trying to access admin or superadmin route
            else{
                     return <SuperAdmin />;
@@ -39,7 +43,7 @@ const ProtectedRoute = ({ component: Component, path, ...rest }) => {
                 return <Admin />;
             } else {
                 // Redirect to home or another appropriate route if the user doesn't have the required role
-                if (path === '/admin' || path === '/superadmin' || path === '/superadmin/placementStats') {
+                if (path === '/admin' || path === '/superadmin' || path === '/superadmin/placementStats' || path === '/superadmin/trainingNames') {
                     return <Home/>;
                 }
                 return <Component {...rest} />;

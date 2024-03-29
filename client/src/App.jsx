@@ -13,7 +13,10 @@ import Training101 from './pages/Training'
 import ProtectedRoute from './Components/ProtectedRoute';
 import Admin from './pages/AdminDashboard/AdminDashboard';
 import PlacementStats from './pages/Placement Graphs/PlacementStats';
-export default function App() {
+import TrainingNames from './pages/TrainingNamesController/TrainingNames';
+import Footer from './Components/Footer';
+class App extends Component {
+  render() {
     return (
       <div className="App">
         <BrowserRouter>
@@ -27,6 +30,7 @@ export default function App() {
 
             <Route path="/home" element={<ProtectedRoute path="/home" component={Home} />} />
             <Route path='/placement' element={<ProtectedRoute path="/placement" component={PlacementForm} />} />
+            <Route path='/superadmin/trainingNames' element={<ProtectedRoute path="/superadmin/trainingNames" component={TrainingNames} />} />
             <Route path='/tr' element={<ProtectedRoute path="/tr" component={Training101} />} />
             <Route path="/superadmin" element={<ProtectedRoute path="/superadmin" component={SuperAdminForm} />} />
             <Route path="/superadmin/placementStats" element={<ProtectedRoute path="/superadmin/placementStats" component={PlacementStats} />} />
@@ -34,6 +38,7 @@ export default function App() {
             <Route path="/dashboard" element={<ProtectedRoute path="/dashboard" component={DashBoard} />} />
             <Route path="/forgotpassword" element={<ForgotPassword />} />
           </Routes>
+          <Footer /> {/* Include the Footer component */}
         </BrowserRouter>
       </div>
     );

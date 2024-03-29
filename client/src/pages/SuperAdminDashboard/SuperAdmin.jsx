@@ -1,58 +1,64 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
-import { Card, Modal, Box, Typography, Grid, MenuItem, Select, FormControl, InputLabel , Button } from '@mui/material';
+import { Card, Modal, Box, Typography, Grid, MenuItem, Select, FormControl, InputLabel, Button } from '@mui/material';
 import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
-import { base64toBlob, openBase64NewTab } from '../../utils/base64topdf';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ExportComponent from '../../Components/ExportData';
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
 import VerifyAllComponent from '../../Components/VerifyAll';
-import UnVerifyAllComponent from '../../Components/UnVerifyAll'; 
-import {  useNavigate } from 'react-router-dom';
+import UnVerifyAllComponent from '../../Components/UnVerifyAll';
+import { useNavigate } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
+import { fetchTrainingNames, initialTrainingNames } from '../../utils/TrainingNamesApi';
+import { fetchUsers, changeLock, viewCertificate } from '../../utils/AdminFunctions';
 
 const SuperAdminForm = () => {
     const [users, setUsers] = useState([]);
     const [selectedBatch, setSelectedBatch] = useState('');
     const [selectedBranch, setSelectedBranch] = useState('');
-    const [selectedTraining, setSelectedTraining] = useState('');
+    const [selectedTraining, setSelectedTraining] = useState("");
     const [editStatus, setEditStatus] = useState({});
     const [refresh, setRefresh] = useState(false); // Refresh state
     const [loading, setLoading] = useState(true); // Loading state
-    const navigate=useNavigate()
+    const [trainingNames, setTrainingNames] = useState(initialTrainingNames);
+    const [allBatches,setallBatches]=useState([])
+    const navigate = useNavigate()
 
     useEffect(() => {
-        const fetchUsers = async () => {
-            setLoading(true); // Set loading to true when fetching data
+        const fetchData = async () => {
             try {
-                const token = localStorage.getItem('authtoken');
-                const response = await axios.get(`${API_URL}api/users/getallusers/`, {
-                    headers: {
-                        "auth-token": token // Include the authentication token in the request headers
-                    }
-                });
-                const filteredUsers = response.data.data
-                    .filter(user => user.role === 'user')
-                    .filter(user => user.userInfo.Name !== undefined)
-                    .sort((a, b) => a.urn - b.urn);
-
-                setUsers(filteredUsers);
+                const usersData = await fetchUsers();
+                setUsers(usersData.users);
+                setallBatches(usersData.batches)
+                console.log(usersData.batches)
+                setLoading(false);
             } catch (error) {
-                console.error('Error fetching users:', error);
-            } finally {
-                setLoading(false); // Set loading to false regardless of success or failure
+                setLoading(false);
+            }
+        };
+        const loadTrainingNames = async () => {
+            try {
+                const data = await fetchTrainingNames();
+                setTrainingNames(data);
+            } catch (error) {
+                console.error('Error loading training names:', error);
             }
         };
 
-        fetchUsers();
+        console.log(users)
+        loadTrainingNames();
+        fetchData();
     }, [refresh]);
 
     const navigateToStats = (data) => {
         return navigate('/superadmin/placementStats', { state: { data } });
+    }
+    const navigateToTrainingNames = (data) => {
+        return navigate('/superadmin/trainingNames');
     }
 
     const filteredUsers = useMemo(() => {
@@ -74,18 +80,9 @@ const SuperAdminForm = () => {
     }, [users, selectedBatch, selectedBranch, selectedTraining]);
 
     const handleViewCertificate = (row) => {
-        if (selectedTraining === 'placementData') {
-            if (row.original.placementData && row.original.placementData.appointmentLetter) {
-                openBase64NewTab(row.original.placementData.appointmentLetter);
-            } else {
-                console.error("Appointment Letter not found for this user in placement data.");
-            }
-        } else if (selectedTraining && row.original[selectedTraining] && row.original[selectedTraining].certificate) {
-            openBase64NewTab(row.original[selectedTraining].certificate);
-        } else {
-            console.error("Certificate not found for this user or training data is missing.");
-        }
+        viewCertificate(row, selectedTraining);
     };
+
 
     const columns = useMemo(() => {
         let customColumns = [
@@ -147,7 +144,7 @@ const SuperAdminForm = () => {
                 Cell: ({ row }) => (
                     <VerificationIcon
                         lockStatus={row.original[selectedTraining].lock}
-                        handlelock={handlelock}
+                        handleLock={handleLock}
                         row={row}
                     />
                 ),
@@ -158,9 +155,9 @@ const SuperAdminForm = () => {
     }, [selectedTraining, editStatus]);
 
 
-    const VerificationIcon = ({ lockStatus, handlelock, row }) => {
+    const VerificationIcon = ({ lockStatus, handleLock, row }) => {
         const handleClick = () => {
-            handlelock(row);
+            handleLock(row);
         };
 
         return lockStatus ? (
@@ -170,66 +167,15 @@ const SuperAdminForm = () => {
         );
     }
 
-    const handlelock = (row) => {
-        if (selectedTraining === 'placementData') {
-            if (row.original.placementData && row.original.placementData.lock !== undefined) {
-                ChangeLock(row.original.urn, row.original.placementData.lock, true); // Specify isPlacement as true
-            } else {
-                console.error("Verification data not found.");
-            }
-        } else if (selectedTraining && row.original[selectedTraining] && row.original[selectedTraining].lock !== undefined) {
-            ChangeLock(row.original.urn, row.original[selectedTraining].lock, false); // Specify isPlacement as false
-        } else {
-            console.error("Verification data not found.");
-        }
-    };
-
-    const ChangeLock = async (urn, lockStatus, isPlacement) => {
+    const handleLock = async (row) => {
         try {
-            const token = localStorage.getItem('authtoken');
-            let url = '';
-            let data = {};
-
-            // Determine the endpoint URL and data based on whether it's for training or placement data
-            if (isPlacement) {
-
-                url = `${API_URL}placement/updatelock`;
-                data = {
-                    urn: urn,
-                    lock: !lockStatus // Toggle the lock status
-                };
-
-            } else {
-                // Use the appropriate training number in the URL
-                const trainingNumber = selectedTraining.substring(2);
-                url = `${API_URL}tr${trainingNumber}/updatelock`;
-                data = {
-                    urn: urn,
-                    lock: !lockStatus // Toggle the lock status
-                };
-            }
-
-            // Send a POST request to the backend API endpoint
-            const response = await axios.post(url, data, {
-                headers: {
-                    'auth-token': token
-                }
-            });
-
-            if (response.data.success) {
-                toast.success('Verification Status Change successfully!');
-                setRefresh(prevRefresh => !prevRefresh);
-
-            } else {
-                toast.error('Failed to update verified status.');
-                console.error('Failed to update verified status.');
-            }
+            let successMessage = await changeLock(row.original.urn, row.original[selectedTraining].lock, selectedTraining === 'placementData', selectedTraining);
+            toast.success(successMessage);
+            setRefresh(prevRefresh => !prevRefresh);
         } catch (error) {
-            toast.error('Error updating verification status:');
-            console.error('Error updating verification status:', error);
+            toast.error(error.message);
         }
     };
-
 
     const table = useMaterialReactTable({
         data: filteredUsers,
@@ -261,93 +207,117 @@ const SuperAdminForm = () => {
     };
 
     const handleTrainingChange = (event) => {
+        console.log(event.target.value)
         setSelectedTraining(event.target.value);
     };
 
     return (
         <div style={{ padding: '0 20px', marginTop: '20px' }}>
-        {loading ? ( // Render loader if loading is true
-            
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-            <CircularProgress />
-            </Box>
-        ) : (
-        <div style={{ padding: '0 20px', marginTop: '20px' }}>
-            <Grid container spacing={2} justifyContent="space-around">
-                <Grid item style={{ marginBottom: 20 }}>
-                    <FormControl style={{ width: 200 }}>
-                        <InputLabel>Batch</InputLabel>
-                        <Select value={selectedBatch} onChange={handleBatchChange}>
-                            <MenuItem value="">All</MenuItem>
-                            <MenuItem value="2020-2024">2020-2024</MenuItem>
-                            <MenuItem value="2021-2025">2021-2025</MenuItem>
-                        </Select>
-                    </FormControl>
-                </Grid>
-                <Grid item style={{ marginBottom: 20 }}>
-                    <FormControl style={{ width: 200 }}>
-                        <InputLabel>Branch</InputLabel>
-                        <Select value={selectedBranch} onChange={handleBranchChange}>
-                            <MenuItem value="">All</MenuItem>
-                            <MenuItem value="CSE">Computer Science & Engineering</MenuItem>
-                        </Select>
-                    </FormControl>
-                </Grid>
-                <Grid item style={{ marginBottom: 20 }}>
-                    <FormControl style={{ width: 200 }}>
-                        <InputLabel>Training</InputLabel>
-                        <Select value={selectedTraining} onChange={handleTrainingChange}>
-                            <MenuItem value="">All</MenuItem>
-                            <MenuItem value="tr101">Training 101</MenuItem>
-                            <MenuItem value="tr102">Training 102</MenuItem>
-                            <MenuItem value="tr103">Training 103</MenuItem>
-                            <MenuItem value="tr104">Training 104</MenuItem>
-                            <MenuItem value="placementData">Placement Data</MenuItem>
-                        </Select>
-                    </FormControl>
-                </Grid>
-            </Grid>
-            <Card variant="outlined" style={{ marginBottom: '50px' }}>
-                <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', }}>
-                    <div style={{ display: 'flex', gap: '10px', flexDirection: 'row' }}>
-                        <ExportComponent data={filteredUsers} columns={columns} selectedTraining={selectedTraining} />
-                        <div style={{ marginTop: '10px' }}>
-                            <Button onClick={()=>navigateToStats(filteredUsers)} variant="contained" color="primary">
-                                View Placement Stats
-                            </Button>
-                        </div>
-                    </div>
+            {loading ? ( // Render loader if loading is true
 
-
-
-                    <div style={{ marginTop: '10px', marginRight: '10px', display: 'flex', justifyContent: 'space-between', gap: '10px' }}>
-                        <VerifyAllComponent selectedTraining={selectedTraining} refresh={refresh} onRefresh={handleRefresh} />
-                        <UnVerifyAllComponent selectedTraining={selectedTraining} refresh={refresh} onRefresh={handleRefresh} />
-                    </div>
-                </div>
-                <MaterialReactTable table={table} />
-            </Card>
-
-
-
-            <Modal open={open} onClose={handleModalClose}>
-                <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', boxShadow: 24, p: 4 }}>
-                    {modalContent && (
-                        <>
-                            <Typography variant="h6" gutterBottom>
-                                {Object.keys(modalContent).map((key) => (
-                                    <div key={key}>
-                                        <strong>{key}: </strong> {modalContent[key]}
-                                    </div>
-                                ))}
-                            </Typography>
-                        </>
-                    )}
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <CircularProgress />
                 </Box>
-            </Modal>
-            <ToastContainer />
-        </div>
-        )}
+            ) : (
+                <div style={{ padding: '0 20px', marginTop: '20px' }}>
+                    <Grid container spacing={2} justifyContent="space-around">
+                        <Grid item style={{ marginBottom: 20 }}>
+                            <FormControl style={{ width: 200 }}>
+                                <InputLabel>Batch</InputLabel>
+                                    <Select value={selectedBatch} onChange={handleBatchChange} MenuProps={{
+                                        PaperProps: {
+                                            style: {
+                                                maxHeight: 200, // Maximum height for the menu
+                                                width: 'auto',
+                                            },
+                                        },
+                                    }}
+                                        style={{ height: 50 }} >
+                                        <MenuItem value="">All</MenuItem>
+                                        {allBatches.map((data, index) => (
+                                            <MenuItem key={index} value={data}>{data}</MenuItem>
+                                        ))}
+                                    </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item style={{ marginBottom: 20 }}>
+                            <FormControl style={{ width: 200 }}>
+                                <InputLabel>Branch</InputLabel>
+                                <Select value={selectedBranch} onChange={handleBranchChange}>
+                                    <MenuItem value="">All</MenuItem>
+                                    <MenuItem value="CSE">Computer Science & Engineering</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item style={{ marginBottom: 20 }}>
+                            <FormControl style={{ width: 200 }}>
+                                <InputLabel>Training</InputLabel>
+                                <Select value={selectedTraining} onChange={handleTrainingChange}>
+                                    <MenuItem value="">All</MenuItem>
+                                    {Array.from({ length: trainingNames[0]["Training_No"] }, (_, index) => {
+                                        const trainingNumber = index + 1;
+                                        const trainingName = trainingNames[0][`Training${trainingNumber}_name`];
+                                        return (
+                                            <MenuItem key={`tr${trainingNumber}`} value={`tr10${trainingNumber}`}>
+                                                {trainingName}
+                                            </MenuItem>
+                                        );
+                                    })}
+                                    <MenuItem value="placementData">{trainingNames[0]["Placement_name"]}</MenuItem>
+                                </Select>
+
+                            </FormControl>
+                        </Grid>
+                    </Grid>
+                    <Card variant="outlined" style={{ marginBottom: '50px' }}>
+                        <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', }}>
+                            <div style={{ display: 'flex', gap: '10px', flexDirection: 'row' }}>
+                                <ExportComponent data={filteredUsers} columns={columns} selectedTraining={selectedTraining} />
+                                <div style={{ marginTop: '10px', display: 'flex', gap: '5px' }}>
+                                        {selectedTraining == "placementData" && (
+                                            <Button onClick={() => navigateToStats(filteredUsers)} variant="contained" color="primary">
+                                            View Placement Stats
+                                        </Button>
+                                        )}
+                                    
+                                    <Button onClick={() => navigateToTrainingNames()} variant="contained" color="primary">
+                                        Set Training Names
+                                    </Button>
+                                </div>
+                            </div>
+
+
+
+                                {selectedTraining && (
+                                    <div style={{ marginTop: '10px', marginRight: '10px', display: 'flex', justifyContent: 'space-between', gap: '10px' }}>
+                                        <VerifyAllComponent selectedTraining={selectedTraining} refresh={refresh} onRefresh={handleRefresh} />
+                                        <UnVerifyAllComponent selectedTraining={selectedTraining} refresh={refresh} onRefresh={handleRefresh} />
+                                    </div>
+                                )}
+                        </div>
+                        <MaterialReactTable table={table} />
+                    </Card>
+
+
+
+                    <Modal open={open} onClose={handleModalClose}>
+                        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', boxShadow: 24, p: 4 }}>
+                            {modalContent && (
+                                <>
+                                    <Typography variant="h6" gutterBottom>
+                                        {Object.keys(modalContent).map((key) => (
+                                            <div key={key}>
+                                                <strong>{key}: </strong> {modalContent[key]}
+                                            </div>
+                                        ))}
+                                    </Typography>
+                                </>
+                            )}
+                        </Box>
+                    </Modal>
+                    <ToastContainer />
+                </div>
+            )}
         </div>
     );
 };
