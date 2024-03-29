@@ -25,6 +25,7 @@ const AdminForm = () => {
     const [editStatus, setEditStatus] = useState({});
     const [refresh, setRefresh] = useState(false); // Refresh state
     const [loading, setLoading] = useState(true);
+    const [allBatches, setallBatches] = useState([])
     const Location = useLocation()
     const urn = Location.state && Location.state.urn
     const admintype = urn && urn.length >= 3 ? urn.slice(-3) : urn;
@@ -32,7 +33,8 @@ const AdminForm = () => {
         const fetchData = async () => {
             try {
                 const usersData = await fetchUsers();
-                setUsers(usersData);
+                setUsers(usersData.users);
+                setallBatches(usersData.batches)
                 setLoading(false);
             } catch (error) {
                 setLoading(false);
@@ -204,14 +206,23 @@ const AdminForm = () => {
                 <div style={{ marginTop: '100px', padding: '0 20px' }}>
                     <Grid container spacing={2} justifyContent="space-around">
                         <Grid item style={{ marginBottom: 20 }}>
-                            <FormControl style={{ width: 200 }}>
-                                <InputLabel>Batch</InputLabel>
-                                <Select value={selectedBatch} onChange={handleBatchChange}>
-                                    <MenuItem value="">All</MenuItem>
-                                    <MenuItem value="2020-2024">2020-2024</MenuItem>
-                                    <MenuItem value="2021-2025">2021-2025</MenuItem>
-                                </Select>
-                            </FormControl>
+                                <FormControl style={{ width: 200 }}>
+                                    <InputLabel>Batch</InputLabel>
+                                    <Select value={selectedBatch} onChange={handleBatchChange} MenuProps={{
+                                        PaperProps: {
+                                            style: {
+                                                maxHeight: 200, // Maximum height for the menu
+                                                width: 'auto',
+                                            },
+                                        },
+                                    }}
+                                        style={{ height: 50 }} >
+                                        <MenuItem value="">All</MenuItem>
+                                        {allBatches.map((data, index) => (
+                                            <MenuItem key={index} value={data}>{data}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
                         </Grid>
                         <Grid item style={{ marginBottom: 20 }}>
                             <FormControl style={{ width: 200 }}>
