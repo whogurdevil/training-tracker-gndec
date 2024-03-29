@@ -237,7 +237,7 @@ export default function Form() {
   };
 
   return (
-    <Container sx={{ paddingTop: 5 }}>
+    <Container sx={{ paddingTop: 5 }} style={{ marginBottom: "100px" }}>
       <ToastContainer />
       <form onSubmit={handleSubmit}>
         <Container style={{ paddingTop: 4 }}>

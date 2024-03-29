@@ -2,14 +2,13 @@ import React from 'react';
 import { Button, Box } from '@mui/material';
 import { mkConfig, generateCsv, download } from 'export-to-csv';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import { base64toBlob, openBase64NewTab } from '../utils/base64topdf'
+import { base64toBlob } from '../utils/base64topdf'
 const ExportComponent = ({ data, selectedTraining }) => {
     const csvConfig = mkConfig({
         fieldSeparator: ',',
         decimalSeparator: '.',
         useKeysAsHeaders: true,
     });
-
 
     const handleExportData = () => {
         const filteredData = data.map(row => {

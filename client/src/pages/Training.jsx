@@ -176,8 +176,8 @@ export default function Form() {
   };
 
   return (
-    <Container>
-      <Container style={{ paddingInline: 0, paddingBottom: 50, paddingTop:10 }} >
+    <Container style={{marginBottom: "100px"}} >
+      <Container style={{ paddingInline: 0, paddingBottom: 50, paddingTop: 10 }}>
         {!isLock && (
           <Button
             onClick={handleEdit}

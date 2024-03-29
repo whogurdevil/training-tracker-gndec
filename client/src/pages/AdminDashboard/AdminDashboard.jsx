@@ -5,7 +5,7 @@ import { MaterialReactTable, useMaterialReactTable } from 'material-react-table'
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
-
+import { fetchTrainingNames, initialTrainingNames } from '../../utils/TrainingNamesApi';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useLocation } from 'react-router-dom';
@@ -26,6 +26,7 @@ const AdminForm = () => {
     const [refresh, setRefresh] = useState(false); // Refresh state
     const [loading, setLoading] = useState(true);
     const [allBatches, setallBatches] = useState([])
+    const [trainingNames, setTrainingNames] = useState(initialTrainingNames);
     const Location = useLocation()
     const urn = Location.state && Location.state.urn
     const admintype = urn && urn.length >= 3 ? urn.slice(-3) : urn;
@@ -40,7 +41,16 @@ const AdminForm = () => {
                 setLoading(false);
             }
         };
+        const loadTrainingNames = async () => {
+            try {
+                const data = await fetchTrainingNames();
+                setTrainingNames(data);
+            } catch (error) {
+                console.error('Error loading training names:', error);
+            }
+        };
 
+        loadTrainingNames();
         fetchData();
     }, [refresh]);
 
@@ -192,11 +202,11 @@ const AdminForm = () => {
     };
 
     const getAdminTrainingOptions = () => {
-        return getTrainingOptions(admintype);
+        return getTrainingOptions(admintype,trainingNames);
     };
 
     return (
-        <div style={{ padding: '0 20px', marginTop: '20px' }}>
+        <div style={{ padding: '0 20px', marginTop: '20px', marginBottom: "100px" }}>
             {loading ? ( // Render loader if loading is true
 
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>

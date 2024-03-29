@@ -8,6 +8,7 @@ const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE
 const TrainingNames = () => {
     const [trainingNames, setTrainingNames] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [trainingCount, setTrainingCount] = useState(0);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -15,6 +16,7 @@ const TrainingNames = () => {
                 setLoading(true);
                 const response = await axios.get(`${API_URL}api/admin/trainingNames`);
                 setTrainingNames(response.data.data[0]);
+                setTrainingCount(response.data.data[0]["Training_No"]);
 
             } catch (error) {
                 console.error('Error fetching training names:', error);
@@ -31,6 +33,9 @@ const TrainingNames = () => {
             ...prevState,
             [name]: value
         }));
+        if (name === "Training_No") {
+            setTrainingCount(parseInt(value)); 
+        }
     };
 
     const handleSubmit = async () => {
@@ -65,7 +70,7 @@ const TrainingNames = () => {
 
     return (
         <Container
-            sx={{ marginX: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 5 }}>
+            sx={{ marginX: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 5, marginBottom: "100px" }}>
             <Typography variant="h5" gutterBottom>
                 Training Names 
             </Typography>
@@ -79,19 +84,22 @@ const TrainingNames = () => {
                 margin="normal"
                 disabled={loading}
             />
-            {[1, 2, 3, 4].map((number, index) => (
-                <TextField
-                    key={index}
-                    fullWidth
-                    label={`Training ${number} Name`}
-                    name={`Training${number}_name`}
-                    value={trainingNames[`Training${number}_name`]}
-                    onChange={e => handleChange(e, `Training${number}_name`)}
-                    variant="outlined"
-                    margin="normal"
-                    disabled={loading}
-                />
-            ))}
+            {trainingCount>0 && (
+                [...Array(trainingCount).keys()].map((number, index) => (
+                    <TextField
+                        key={index}
+                        fullWidth
+                        label={`Training ${number + 1} Name`}
+                        name={`Training${number + 1}_name`}
+                        value={trainingNames[`Training${number + 1}_name`]}
+                        onChange={e => handleChange(e, `Training${number + 1}_name`)}
+                        variant="outlined"
+                        margin="normal"
+                        disabled={loading}
+                    />
+                ))
+            )}
+            
             <TextField
                 fullWidth
                 label={"Placement Name"}

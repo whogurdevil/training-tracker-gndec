@@ -73,36 +73,47 @@ export const changeLock = async (urn, lockStatus, isPlacement , selectedTraining
 };
 
 
-export const getTrainingOptions = (admintype) => {
+export const getTrainingOptions = (adminType, trainingNames) => {
     const options = [
         { value: "", label: "All" }
     ];
 
-    if (admintype === "101" ) {
-        options.push({ value: "tr101", label: "Training 101" });
-    } else if (admintype === "102" ) {
-        options.push(
-            { value: "tr101", label: "Training 101" },
-            { value: "tr102", label: "Training 102" }
-        );
-    } else if (admintype === "103" ) {
-        options.push(
-            { value: "tr101", label: "Training 101" },
-            { value: "tr102", label: "Training 102" },
-            { value: "tr103", label: "Training 103" }
-        );
-    } else if (admintype === "104") {
-        options.push(
-            { value: "tr101", label: "Training 101" },
-            { value: "tr102", label: "Training 102" },
-            { value: "tr103", label: "Training 103" },
-            { value: "tr104", label: "Training 104" },
-            { value: "placementData", label: "Placement Data" }
-        );
+    const trainingNumber = trainingNames[0]["Training_No"];
+
+    if (adminType === "104") {
+        for (let i = 1; i <= trainingNumber && i <= 4; i++) {
+            options.push({
+                value: `tr10${i}`,
+                label: ` ${trainingNames[0][`Training${i}_name`]}`
+            });
+        }
+        options.push({ value: "placementData", label: "Placement Data" });
+    } else if (adminType === "103") {
+        for (let i = 1; i <= trainingNumber && i <= 3; i++) {
+            options.push({
+                value: `tr10${i}`,
+                label: ` ${trainingNames[0][`Training${i}_name`]}`
+            });
+        }
+    } else if (adminType === "102") {
+        for (let i = 1; i <= trainingNumber && i <= 2; i++) {
+            options.push({
+                value: `tr10${i}`,
+                label: ` ${trainingNames[0][`Training${i}_name`]}`
+            });
+        }
+    } else if (adminType === "101") {
+        if (trainingNumber >= 1) {
+            options.push({
+                value: "tr101",
+                label: ` ${trainingNames[0]["Training1_name"]}`
+            });
+        }
     }
 
     return options;
 };
+
 
 
 export const viewCertificate = (row, selectedTraining) => {
