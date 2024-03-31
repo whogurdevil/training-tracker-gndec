@@ -462,7 +462,8 @@ export default function PlacementForm() {
               <FileBase
                 type="file"
                 multiple={false}
-                onDone={() => handleFileChange(appointmentLetter)}
+
+                onDone={handleFileChange}
                 disabled={!isEditing || isSubmitting}
               />
 
