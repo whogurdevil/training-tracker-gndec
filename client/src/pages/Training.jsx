@@ -18,6 +18,7 @@ import { base64toBlob, openBase64NewTab } from '../utils/base64topdf';
 import { technologyStack } from '../utils/technology';
 
 import Autocomplete from '@mui/material/Autocomplete';
+import { LinearProgress } from '@mui/material';
 
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
 
@@ -38,11 +39,13 @@ export default function Form() {
   const [isLock, setIsLock] = useState(false);
   const [certificate, setCertificate] = useState(null);
   let location = useLocation();
+  const [loading, setLoading]  = useState(true)
   const number = location.state && location.state.number
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true)
         const token = localStorage.getItem("authtoken");
         const urn = decodeAuthToken(token);
         // console.log(urn)
@@ -69,6 +72,9 @@ export default function Form() {
         }
       } catch (error) {
         console.error('Error fetching data:', error);
+        setLoading(false)
+      } finally {
+        setLoading(false)
       }
     };
 
@@ -176,8 +182,10 @@ export default function Form() {
   };
 
   return (
+    <>
+    {loading && <LinearProgress/>}
     <Container>
-      <Container style={{ paddingInline: 0, paddingBottom: 50, paddingTop:10 }} >
+      <Container style={{ paddingInline: 0, paddingBottom: 50, paddingTop:10, marginTop:2 }} >
         {!isLock && (
           <Button
             onClick={handleEdit}
@@ -336,11 +344,8 @@ export default function Form() {
       />
         </>
       )}
-      
-
-      
-
       <ToastContainer />
     </Container>
+    </>
   );
 }

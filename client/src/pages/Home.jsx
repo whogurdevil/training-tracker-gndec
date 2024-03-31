@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Skeleton, Typography, Box } from '@mui/material'; // Import Skeleton component
+import { Container, Skeleton, Typography, Box, LinearProgress } from '@mui/material'; // Import Skeleton component
 import ButtonCard from '../Components/Cards/ButtonCard';
 import { LooksOneRounded, LooksTwoRounded, Looks3Rounded, Looks4Rounded, Looks5Rounded, Looks6Rounded } from '@mui/icons-material';
 import { jwtDecode } from "jwt-decode";
@@ -143,6 +143,8 @@ const Home = () => {
 
 
     return (
+        <>
+        {loading && <LinearProgress/>}
         <Container
             sx={{ marginX: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 5 }}>
             {loading ? (
@@ -174,6 +176,7 @@ const Home = () => {
                 ))
             )}
         </Container>
+        </>
     );
 }
 export default Home;
