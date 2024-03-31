@@ -42,7 +42,7 @@ class App extends Component {
         </BrowserRouter>
       </div>
     );
-  }
+    }
 }
 
-export default App;
+export default App

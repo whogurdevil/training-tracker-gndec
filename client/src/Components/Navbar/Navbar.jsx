@@ -21,8 +21,8 @@ function Navbar() {
     localStorage.removeItem('authtoken'); // Remove authentication token
     localStorage.removeItem('userId'); // Remove user ID or any other relevant data
     toast('Successfully logged out');
-    console.log('test');
-    navigate('/login');
+    navigate('/login')
+    setOpen(false)
   };
 
   const handleGoBack = () => {
