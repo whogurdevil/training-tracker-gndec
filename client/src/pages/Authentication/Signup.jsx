@@ -13,6 +13,7 @@ import CircularProgress from '@mui/material/CircularProgress'; // Import Circula
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import Modal from '@mui/material/Modal';
+import { Alert } from '@mui/material';
 
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
 
@@ -256,31 +257,33 @@ function Signup() {
         </Box>
       </Box>
       <Modal open={showModal} onClose={() => setShowModal(false)}>
-        <div style={{
-          position: 'absolute',
-          width: 400,
-          backgroundColor: 'white',
-          border: '2px solid #000',
-          boxShadow: 24,
-          padding: 16,
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          textAlign: 'center'
+        <Box sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            bgcolor: 'background.paper',
+            boxShadow: 24,
+            p: 4,
         }}>
-          <Typography variant="h6" gutterBottom>
+          <Typography variant="h6"  fontWeight={'bold'} gutterBottom>
             Confirm data before submitting
           </Typography>
-          <Typography variant="body1" gutterBottom>
+          <Typography variant="body1" >
             Email: {credentials.email}
           </Typography>
-          <Typography variant="body1" gutterBottom>
+          {/* <Typography variant="body1" gutterBottom>
             Password: {credentials.password}
-          </Typography>
-          <Typography variant="body1" gutterBottom>
+          </Typography> */}
+          <Typography variant="body1" >
             CRN: {credentials.crn}
           </Typography>
-          <div style={{display:'flex',justifyContent:"center",gap:'10px'}}>
+          <Alert
+          sx={{marginTop:5}}
+            severity='info'
+          >This information will be used for official data storage in future operations</Alert>
+          <hr/>
+          <div style={{display:'flex',justifyContent:"flex-end",gap:25, paddingTop:10}}>
           <Button variant="contained"  onClick={() => setShowModal(false)}>
             Cancel
           </Button>
@@ -288,7 +291,7 @@ function Signup() {
             Confirm
           </Button>
           </div>
-        </div>
+        </Box>
       </Modal>
     </Container>
   );

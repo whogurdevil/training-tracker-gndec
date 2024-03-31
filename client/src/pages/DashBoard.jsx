@@ -14,7 +14,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { jwtDecode } from "jwt-decode";
-import { Grid, LinearProgress } from '@mui/material';
+import { Alert, AlertTitle, Grid, LinearProgress } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useMediaQuery } from '@mui/material';
 import { convertBatchToDate } from '../utils/DateConvertToFrontend';
@@ -53,7 +53,7 @@ export default function Form() {
   };
   const token = localStorage.getItem("authtoken");
   const crn = decodeAuthToken(token);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(true);
   const [admissionYear, setAdmissionYear] = useState(null);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false)
@@ -255,12 +255,13 @@ export default function Form() {
     {loading && <LinearProgress/>}
     <Container sx={{ paddingTop: 5 }} style={{ marginBottom: "100px" }}>
       <ToastContainer />
-        <Container style={{ paddingTop: 4 }}>
+        <Container style={{ paddingBottom: 30  }}>
             {isSubmitting ? (
-              <Typography variant="body1" gutterBottom>
-                You have already submitted the form. Contact the training coordinator for any changes.
-              </Typography>
-            ) : (
+              <Alert severity="error">
+              <AlertTitle>This information is read only !</AlertTitle>
+              You have already submitted the form. Contact the training coordinator for any changes.
+            </Alert>
+              ) : (
               <>
        
           <Button
@@ -478,22 +479,25 @@ export default function Form() {
           position: 'absolute',
           width: 400,
           backgroundColor: 'white',
-          border: '2px solid #000',
+          borderRadius: 10,
           boxShadow: 24,
           padding: 16,
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          textAlign: 'center'
+          textAlign: 'center',
         }}>
           <Typography variant="h6" gutterBottom style={{ marginBottom: 16 }}>
-            Are you sure you want to submit the form?
+            Are you sure ?
           </Typography>
-          <Typography variant="body1" gutterBottom style={{ marginBottom: 16 }}>
-            Once you submit the form, you won't be able to edit it. Contact the training coordinator for any changes.
-          </Typography>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 16 }}>
-            <Button variant="contained"  onClick={() => setShowConfirmation(false)}>
+          <Alert
+            severity='warning'
+          >
+            Once you submit the form, you won't be able to edit it.
+            </Alert>
+          <hr/>
+          <div style={{ display: 'flex', justifyContent: 'end', gap: 16, paddingBlock:6 }}>
+            <Button variant="text"  onClick={() => setShowConfirmation(false)}>
               Cancel
             </Button>
             <Button variant="contained"  onClick={handleSubmit}>

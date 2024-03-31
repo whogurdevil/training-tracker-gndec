@@ -61,7 +61,7 @@ export default function PlacementForm() {
   const [errors, setErrors] = useState({});
   const [appointmentLetter, setAppointmentLetter] = useState(null);
   const [GateCertificate, setGateCertificate] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(true);
   const [isEditing, setIsEditing] = useState(true);
   const [isLock, setIsLock] = useState(false);
   const [loading, setLoading] = useState(true)
@@ -349,7 +349,6 @@ export default function PlacementForm() {
           sx={{ mb: 2 }}
           disabled={!isEditing || isSubmitting}
         >
-          <MenuItem value={""}>None</MenuItem>
           <MenuItem value="true">Yes</MenuItem>
           <MenuItem value="false">No</MenuItem>
         </TextField>
