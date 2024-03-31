@@ -15,7 +15,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import EditIcon from '@mui/icons-material/Edit';
 import { jwtDecode } from "jwt-decode";
-import { Grid } from '@mui/material';
+import { Grid, LinearProgress } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useMediaQuery } from '@mui/material';
 import { convertBatchToDate } from '../utils/DateConvertToFrontend';
@@ -54,14 +54,16 @@ export default function Form() {
   const token = localStorage.getItem("authtoken");
   const urn = decodeAuthToken(token);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isEditing, setIsEditing] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
   const [admissionYear, setAdmissionYear] = useState(null);
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false)
   useEffect(() => {
     // Fetch data from the database when the component mounts or the page is refreshed
     const fetchData = async () => {
 
       try {
+        setLoading(true)
         const url = `${API_URL}userprofiles/${urn}`;
         const response = await axios.get(url);
         const userData = response.data.data;
@@ -92,6 +94,9 @@ export default function Form() {
         }
       } catch (error) {
         console.error('Error fetching data:', error);
+        setLoading(false)
+      } finally {
+        setLoading(false)
       }
     };
 
@@ -237,6 +242,8 @@ export default function Form() {
   };
 
   return (
+    <>
+    {loading && <LinearProgress/>}
     <Container sx={{ paddingTop: 5 }}>
       <ToastContainer />
       <form onSubmit={handleSubmit}>
@@ -246,6 +253,7 @@ export default function Form() {
             color="primary"
             variant="contained"
             style={{ position: 'relative' }}
+            disabled={loading}
           // endIcon={<EditIcon />}
           >
             {/* Edit */}
@@ -459,5 +467,6 @@ export default function Form() {
         </Container>
       </form>
     </Container>
+    </>
   )
 }
