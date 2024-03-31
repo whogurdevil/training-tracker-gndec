@@ -188,6 +188,7 @@ export default function Form() {
       <Container style={{ paddingInline: 0, paddingBottom: 50, paddingTop:10, marginTop:2 }} >
         {!isLock && (
           <Button
+            disabled={loading || (!formData.organization || !formData.certificate || !formData.organizationType || !formData.organization || !formData.projectName || !formData.technology)}
             onClick={handleEdit}
             color="primary"
             variant="contained"
@@ -207,7 +208,7 @@ export default function Form() {
             color="primary"
             variant="contained"
             endIcon={<KeyboardArrowRightIcon />}
-            disabled={isSubmitting}
+            disabled={isSubmitting }
             style={{
               position: 'relative',
               float: 'right',
