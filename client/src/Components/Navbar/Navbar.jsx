@@ -29,16 +29,19 @@ function Navbar() {
     navigate(-1);
   };
 
-  const shouldShowLogoutButton = !location.pathname.endsWith('/login');
+  const shouldShowLogoutButton = !(location.pathname.endsWith('/login') || location.pathname.endsWith('/signup'));
+  const shouldShowBackButton = !(location.pathname.endsWith('/login') || location.pathname.endsWith('/signup'));
 
   return (
     <div>
       <Box sx={{ flexGrow: 1 }} margin={0}>
         <AppBar position="relative" sx={{ backgroundColor: '#FFF5E0' }}>
           <Toolbar sx={{ boxShadow: 'none' }}>
+            {shouldShowBackButton && (
             <Button variant="text" style={{ position: 'absolute', left: 5 }} onClick={handleGoBack}>
               Back
             </Button>
+            )}
             <Container sx={{ display: 'flex', alignItems: 'center', paddingLeft: 0, marginLeft: 0 }}>
               <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                 <Box sx={{ textAlign: 'center', width: '90vw' }}>

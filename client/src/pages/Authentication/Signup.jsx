@@ -105,7 +105,7 @@ function Signup() {
   const theme = createTheme();
 
   return (
-    <Container component="main" maxWidth="xs" sx={{ pb: 5 , mt: 5 }}>
+    <Container component="main" maxWidth="xs" sx={{ pb: 5 , mt: 5 }} style={{marginBottom:"50px"}}>
       <CssBaseline />
       <ToastContainer />
       <Box

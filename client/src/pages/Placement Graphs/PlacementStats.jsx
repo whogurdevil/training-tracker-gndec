@@ -5,6 +5,7 @@ import { useLocation } from 'react-router-dom';
 import BarGraph from '../../Components/Charts/BarGraph';
 import LineGraph from '../../Components/Charts/genderGraph';
 import CompanyGraph from '../../Components/Charts/companyGraph';
+import ExportHighestPackageData from '../../Components/Charts/ExportHighestPackageData';
 
 const PlacementStats = () => {
     const [updatedata, setUpdateddata] = useState(null);
@@ -51,7 +52,7 @@ const PlacementStats = () => {
     };
 
     return (
-        <div>
+        <div style={{marginBottom: "100px"}}>
             <Typography variant="h4" align="center" gutterBottom>
                 Placement Graphs
             </Typography>
@@ -62,6 +63,7 @@ const PlacementStats = () => {
                     justifyContent: 'center',
                 }}
             >
+                
                 <FormControl style={{ width: 200 }}>
                     <InputLabel>Number of Years</InputLabel>
                     <Select value={selectedYears} onChange={handleYearsChange}>
@@ -80,7 +82,6 @@ const PlacementStats = () => {
                 spacing={2}
                 marginTop={2}
                 gap={4}
-                marginInline={2}
             >
                 <Box
                     sx={{
@@ -127,11 +128,13 @@ const PlacementStats = () => {
                     marginTop: '2rem',
                     display: 'flex',
                     justifyContent: 'center',
+                    gap:'20px'
                 }}
             >
                 <Button onClick={handleDownloadPDF} variant="contained" color="primary">
                     Download Statistics (PDF)
                 </Button>
+                <ExportHighestPackageData data={data}/>
             </Box>
         </div>
     );

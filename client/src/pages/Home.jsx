@@ -28,7 +28,7 @@ const Home = () => {
                 });
                 const data = response.data.data
                 let difference = 0;
-        
+
                 if (data.userInfo.batch) {
                     const batchYear = parseInt(data.userInfo.batch.split('-')[0]);
                     const currentYear = new Date().getFullYear();
@@ -40,7 +40,7 @@ const Home = () => {
                 console.error('Error fetching batch year:', error);
             }
         };
-        
+
         const loadTrainingNames = async () => {
             try {
                 const data = await fetchTrainingNames();
@@ -49,7 +49,7 @@ const Home = () => {
                 console.error('Error loading training names:', error);
             }
         };
-    
+
         try {
             // Set loading to true before starting fetch
             setLoading(true);
@@ -70,7 +70,7 @@ const Home = () => {
             setLoading(false);
         }
     }, []);
-    
+
     const decodeAuthToken = (token) => {
         try {
             const decodedToken = jwtDecode(token);
@@ -146,7 +146,7 @@ const Home = () => {
         <>
         {loading && <LinearProgress/>}
         <Container
-            sx={{ marginX: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 5 }}>
+            sx={{ marginX: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 5 }} style={{ marginBottom: "100px" }}>
             {loading ? (
                 cardsData.map((data, index) => (
                     <Skeleton key={index} variant='rounded' width={'90vw'}

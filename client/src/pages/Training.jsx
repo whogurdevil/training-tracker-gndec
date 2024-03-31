@@ -182,10 +182,8 @@ export default function Form() {
   };
 
   return (
-    <>
-    {loading && <LinearProgress/>}
-    <Container>
-      <Container style={{ paddingInline: 0, paddingBottom: 50, paddingTop:10, marginTop:2 }} >
+    <Container style={{marginBottom: "100px"}} >
+      <Container style={{ paddingInline: 0, paddingBottom: 50, paddingTop: 10 }}>
         {!isLock && (
           <Button
             disabled={loading || (!formData.organization || !formData.certificate || !formData.organizationType || !formData.organization || !formData.projectName || !formData.technology)}

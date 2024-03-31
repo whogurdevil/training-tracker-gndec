@@ -38,11 +38,11 @@ class App extends Component {
             <Route path="/dashboard" element={<ProtectedRoute path="/dashboard" component={DashBoard} />} />
             <Route path="/forgotpassword" element={<ForgotPassword />} />
           </Routes>
-          <Footer /> {/* Include the Footer component */}
+          <Footer />
         </BrowserRouter>
       </div>
     );
-  }
+    }
 }
 
-export default App;
+export default App
