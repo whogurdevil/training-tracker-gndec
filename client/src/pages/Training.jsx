@@ -182,6 +182,8 @@ export default function Form() {
   };
 
   return (
+    <>
+    {loading && <LinearProgress/>}
     <Container style={{marginBottom: "100px"}} >
       <Container style={{ paddingInline: 0, paddingBottom: 50, paddingTop: 10 }}>
         {!isLock && (
