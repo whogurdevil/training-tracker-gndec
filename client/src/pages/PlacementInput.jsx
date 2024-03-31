@@ -17,6 +17,7 @@ import { jwtDecode } from "jwt-decode";
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LinearProgress } from '@mui/material';
 
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
 
@@ -63,10 +64,12 @@ export default function PlacementForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditing, setIsEditing] = useState(true);
   const [isLock, setIsLock] = useState(false);
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true)
         const token = localStorage.getItem('authtoken');
         const url = `${API_URL}placement/${crn}`;
         const response = await axios.get(url, {
@@ -102,6 +105,9 @@ export default function PlacementForm() {
         }
       } catch (error) {
         console.error('Error fetching data:', error);
+        setLoading(false)
+      } finally {
+        setLoading(false)
       }
     };
 
@@ -275,6 +281,8 @@ export default function PlacementForm() {
   };
 
   return (
+    <>
+    {loading && <LinearProgress/>}
     <Container style={{ marginBottom: "100px" }}>
 
       <Container style={{ paddingInline: 0, paddingBottom: 50, marginTop: '15px' }} >
@@ -455,7 +463,9 @@ export default function PlacementForm() {
               <FileBase
                 type="file"
                 multiple={false}
+
                 onDone={handleAppointmentFileChange}
+
                 disabled={!isEditing || isSubmitting}
               />
 
@@ -537,9 +547,8 @@ export default function PlacementForm() {
 
       )}
 
-
-
       <ToastContainer />
     </Container>
+    </>
   );
 }
