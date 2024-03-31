@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import CircularProgress from '@mui/material/CircularProgress'; // Import CircularProgress
@@ -21,14 +19,14 @@ const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE
 function Signup() {
   const navigate = useNavigate();
   const [credentials, setCredentials] = useState({
-    urn: '',
+    crn: '',
     email: '',
     password: '',
     confirmPassword: '',
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({
-    urn: '',
+    crn: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -36,8 +34,8 @@ function Signup() {
 
   const validateField = (fieldName, value) => {
     switch (fieldName) {
-      case 'urn':
-        return /^\d{7}$|^Tr\d{3}$/.test(value) ? '' : 'Invalid URN: must be a 7-digit number';
+      case 'crn':
+        return /^\d{7}$|^Tr\d{3}$/.test(value) ? '' : 'Invalid CRN: must be a 7-digit number';
       case 'email':
         // return value.endsWith('@gndec.ac.in') ? '' : 'Invalid Email: must end with @gndec.ac.in';
         return value.endsWith('@gmail.com') ? '' : 'Invalid Email: must end with @gndec.ac.in';
@@ -52,6 +50,24 @@ function Signup() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if(name==="email"){
+      let crn = '';
+      const match = value.match(/\d+/);
+      if (match) {
+        crn = match[0];
+      }
+
+      setCredentials((prevCredentials) => ({
+        ...prevCredentials,
+        [name]: value,
+        crn: crn, // Set the CRN extracted from the email
+      }));
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: validateField(name, crn),
+      }));
+    
+    }
     setCredentials((prevCredentials) => ({
       ...prevCredentials,
       [name]: value,
@@ -126,21 +142,6 @@ function Signup() {
             margin="normal"
             required
             fullWidth
-            placeholder='1234567'
-            id="urn"
-            label="URN"
-            name="urn"
-            value={credentials.urn}
-            onChange={handleChange}
-            autoFocus
-            error={Boolean(errors.urn)}
-            helperText={errors.urn}
-            
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
             id="email"
           placeholder='nameCRN@gndec.ac.in'
             label="Email Address"
@@ -176,6 +177,21 @@ function Signup() {
             error={Boolean(errors.confirmPassword)}
             helperText={errors.confirmPassword}
            
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            placeholder='1234567'
+            id="crn"
+            label="CRN"
+            name="crn"
+            value={credentials.crn}
+            onChange={handleChange}
+            autoFocus
+            error={Boolean(errors.crn)}
+            helperText={errors.crn}
+            disabled={true}
           />
           <Button
             type="submit"

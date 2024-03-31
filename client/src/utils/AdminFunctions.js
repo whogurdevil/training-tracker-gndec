@@ -13,7 +13,7 @@ export const fetchUsers = async () => {
         const filteredUsers = response.data.data
             .filter(user => user.role === 'user')
             .filter(user => user.userInfo.Name !== undefined)
-            .sort((a, b) => a.urn - b.urn);
+            .sort((a, b) => a.crn - b.crn);
 
         // Extracting unique batches from userinfo.batch
         const batches = filteredUsers.reduce((acc, user) => {
@@ -36,7 +36,7 @@ export const fetchUsers = async () => {
 };
 
 
-export const changeLock = async (urn, lockStatus, isPlacement , selectedTraining) => {
+export const changeLock = async (crn, lockStatus, isPlacement , selectedTraining) => {
     try {
         const token = localStorage.getItem('authtoken');
         let url = '';
@@ -45,14 +45,14 @@ export const changeLock = async (urn, lockStatus, isPlacement , selectedTraining
         if (isPlacement) {
             url = `${API_URL}placement/updatelock`;
             data = {
-                urn: urn,
+                crn: crn,
                 lock: !lockStatus // Toggle the lock status
             };
         } else {
             const trainingNumber = selectedTraining.substring(2);
             url = `${API_URL}tr${trainingNumber}/updatelock`;
             data = {
-                urn: urn,
+                crn: crn,
                 lock: !lockStatus // Toggle the lock status
             };
         }

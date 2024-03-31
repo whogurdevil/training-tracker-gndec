@@ -6,7 +6,7 @@ const userInfoSchema = new mongoose.Schema({
     type: String,
     match: /^[0-9]{10}$/ 
   },
-  crn: { type: Number },
+  urn: { type: Number },
   branch: { type: String, default: 'Computer Science & Enginnering' },
   section: { type: String }, 
   mentor: { type: String }, 
@@ -74,7 +74,7 @@ const placementDataSchema = new mongoose.Schema({
 });
 
 const SignupSchema = new mongoose.Schema({
-  urn: { type: String, required: true, unique: true },
+  crn: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: {

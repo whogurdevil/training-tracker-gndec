@@ -17,9 +17,9 @@ import { useNavigate } from "react-router-dom";
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
 
 function Login() {
-  const [credentials, setCredentials] = useState({ urn: '', password: '' });
+  const [credentials, setCredentials] = useState({ crn: '', password: '' });
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({ urn: '', password: '' });
+  const [errors, setErrors] = useState({ crn: '', password: '' });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -84,7 +84,7 @@ function Login() {
           else if (json.body.user.role === 'admin') {
             toast('Successfully logged in');
             setTimeout(() => {
-              navigate('/admin', { state: { urn: credentials.urn } });
+              navigate('/admin', { state: { crn: credentials.crn } });
             }, 1000);
           } else {
             toast('Successfully logged in');
@@ -106,8 +106,8 @@ function Login() {
 
   const validateField = (fieldName, value) => {
     switch (fieldName) {
-      case 'urn':
-        return /^\d{7}$|^Tr\d{3}$/.test(value) ? '' : 'Invalid URN: must be a 7-digit number';
+      case 'crn':
+        return /^\d{7}$|^Tr\d{3}$/.test(value) ? '' : 'Invalid CRN: must be a 7-digit number';
       case 'password':
         return value.length >= 8 ? '' : 'Password must be at least 8 characters long';
       default:
@@ -140,15 +140,15 @@ function Login() {
             margin="normal"
             required
             fullWidth
-            id="urn"
-            label="Username/URN"
-            name="urn"
+            id="crn"
+            label="Username/CRN"
+            name="crn"
             placeholder='1234567'
-            value={credentials.urn}
+            value={credentials.crn}
             onChange={handleChange}
             autoFocus
-            error={Boolean(errors.urn)}
-            helperText={errors.urn}
+            error={Boolean(errors.crn)}
+            helperText={errors.crn}
            
           />
           <TextField

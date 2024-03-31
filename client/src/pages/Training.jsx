@@ -47,9 +47,12 @@ export default function Form() {
       try {
         setLoading(true)
         const token = localStorage.getItem("authtoken");
-        const urn = decodeAuthToken(token);
-        // console.log(urn)
-        const response = await axios.get(`${API_URL}tr${number}/${urn}`);
+        const crn = decodeAuthToken(token);
+        const response = await axios.get(`${API_URL}tr${number}/${crn}`, {
+          headers: {
+            "auth-token": token
+          }
+        });
         const userData = response.data.data;
 
         if (
@@ -84,8 +87,8 @@ export default function Form() {
   const decodeAuthToken = (token) => {
     try {
       const decodedToken = jwtDecode(token);
-      const urn = decodedToken.urn;
-      return urn;
+      const crn = decodedToken.crn;
+      return crn;
     } catch (error) {
       console.error('Error decoding JWT token:', error);
       return null;
@@ -145,9 +148,13 @@ export default function Form() {
       }
 
       const token = localStorage.getItem("authtoken");
-      const urn = decodeAuthToken(token);
+      const crn = decodeAuthToken(token);
       const url = `${API_URL}tr${number}`
-      const response = await axios.post(url, { formData, urn: urn });
+      const response = await axios.post(url, { formData, crn: crn }, {
+        headers: {
+          "auth-token": token
+        }
+      });
 
       if (response.data.success) {
         toast.success('Form submitted successfully!');
