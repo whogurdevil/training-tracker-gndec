@@ -6,12 +6,12 @@ const fetchuser = require('../../middleware/fetchUser');
 const isAdmin = require('../../middleware/isAdmin');
 
 // Route to create a new user profile
-router.post('/', async (req, res) => {
+router.post('/', fetchuser, async (req, res) => {
     try {
         const { organization, technology, projectName, type, certificate, organizationType } = req.body.formData;
-        const urn = req.body.urn
+        const crn = req.body.crn
 
-        const userInfo = await SignUpdata.findOne({ urn: urn });
+        const userInfo = await SignUpdata.findOne({ crn: crn });
 
         if (!userInfo) {
             return res.status(404).json({ message: 'UserInfo not found' });
@@ -39,10 +39,10 @@ router.post('/', async (req, res) => {
 });
 router.post('/updatelock', fetchuser, isAdmin, async (req, res) => {
     try {
-        const { urn, lock } = req.body;
+        const { crn, lock } = req.body;
         const trainingField = "tr103.lock";
         userData = await SignUpdata.findOneAndUpdate(
-            { urn: urn },
+            { crn: crn },
             { [trainingField]: lock },
             { new: true }
         );
@@ -58,10 +58,10 @@ router.post('/updatelock', fetchuser, isAdmin, async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 });
-router.get('/:urn', async (req, res) => {
+router.get('/:crn', fetchuser, async (req, res) => {
     try {
-        const urn = req.params.urn;
-        const userInfo = await SignUpdata.findOne({ urn: urn }).populate('tr103');
+        const crn = req.params.crn;
+        const userInfo = await SignUpdata.findOne({ crn: crn }).populate('tr103');
 
         if (!userInfo) {
             return res.status(404).json({ message: 'UserInfo not found' });

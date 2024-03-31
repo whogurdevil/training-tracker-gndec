@@ -7,7 +7,6 @@ import TextField from '@mui/material/TextField';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
 import MenuItem from '@mui/material/MenuItem';
 import FileBase from 'react-file-base64';
 import Grid from '@mui/material/Grid';
@@ -18,6 +17,7 @@ import { jwtDecode } from "jwt-decode";
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LinearProgress } from '@mui/material';
 
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
 
@@ -33,8 +33,8 @@ export default function PlacementForm() {
     gateStatus: '',
     gateCertificate: '',
     appointmentDate: '',
-    isPlaced:null,
-    highStudyplace:''
+    isPlaced: null,
+    highStudyplace: ''
   });
   const [isPlaced, setIsPlaced] = useState("");
   const [isHighstudy, setHighstudy] = useState("No");
@@ -48,8 +48,8 @@ export default function PlacementForm() {
         throw new Error('Token is null or empty');
       }
       const decodedToken = jwtDecode(token);
-      const urn = decodedToken.urn;
-      return urn;
+      const crn = decodedToken.crn;
+      return crn;
     } catch (error) {
       console.error('Error decoding JWT token:', error);
       return null;
@@ -57,19 +57,26 @@ export default function PlacementForm() {
   };
 
   const token = localStorage.getItem("authtoken");
-  const urn = decodeAuthToken(token);
+  const crn = decodeAuthToken(token);
   const [errors, setErrors] = useState({});
   const [appointmentLetter, setAppointmentLetter] = useState(null);
   const [GateCertificate, setGateCertificate] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditing, setIsEditing] = useState(true);
   const [isLock, setIsLock] = useState(false);
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const url = `${API_URL}placement/${urn}`;
-        const response = await axios.get(url);
+        setLoading(true)
+        const token = localStorage.getItem('authtoken');
+        const url = `${API_URL}placement/${crn}`;
+        const response = await axios.get(url, {
+          headers: {
+            "auth-token": token
+          }
+        });
         const userData = response.data.data;
 
         // Check if all required fields are present in the fetched data
@@ -98,6 +105,9 @@ export default function PlacementForm() {
         }
       } catch (error) {
         console.error('Error fetching data:', error);
+        setLoading(false)
+      } finally {
+        setLoading(false)
       }
     };
 
@@ -148,7 +158,7 @@ export default function PlacementForm() {
     e.preventDefault();
     try {
       // Form validation
-   
+
       const formErrors = {};
       if (formData.isPlaced === true) {
         if (!formData.company.trim()) {
@@ -176,7 +186,7 @@ export default function PlacementForm() {
       } else if (!formData.highStudy) {
         formErrors.highStudy = 'High Study field cannot be blank';
         toast.error(formErrors.highStudy);
-      } else if (isHighstudy==="Yes" && !formData.highStudyplace){
+      } else if (isHighstudy === "Yes" && !formData.highStudyplace) {
         formErrors.highStudyplace = "Place of High Study Cannot be blank";
         toast.error(formErrors.highStudyplace);
       } else if (!formData.gateStatus) {
@@ -188,12 +198,17 @@ export default function PlacementForm() {
         setErrors(formErrors);
         return;
       }
-
+      const token = localStorage.getItem('authtoken');
       // Submit form data
       const response = await axios.post(`${API_URL}placement`, {
         formData: formData,
-        urn: urn,
-      });
+        crn: crn,
+      },
+        {
+          headers: {
+            "auth-token": token
+          }
+        });
 
       if (response.data.success) {
         toast.success('Placement details submitted successfully!');
@@ -210,11 +225,14 @@ export default function PlacementForm() {
     }
   };
 
-  const handleFileChange = (files, data) => {
-    setFormData({ ...formData, data: files.base64 });
+  const handleAppointmentFileChange = (files) => {
+    setFormData({ ...formData, appointmentLetter: files.base64 });
     setAppointmentLetter(files.base64);
   };
-
+  const handleGateFileChange = (files) => {
+    setFormData({ ...formData, gateCertificate: files.base64 });
+    setGateCertificate(files.base64);
+  };
 
   const handleEdit = () => {
     setIsEditing((prevEditing) => !prevEditing);
@@ -232,18 +250,18 @@ export default function PlacementForm() {
   const handleIsPlacedChange = (e) => {
     const { name, value } = e.target;
     setIsPlaced(value)
-    if(value){
+    if (value) {
       let newvalue = (value === "true")
       setFormData({ ...formData, [name]: newvalue });
     }
-   
+
   };
 
   const handleIsHighChange = (e) => {
     // console.log(e.target)
     const { name, value } = e.target;
     setHighstudy(value);
-   
+
     setFormData({ ...formData, [name]: value });
   };
   const handleIsGateStatusChange = (e) => {
@@ -256,13 +274,15 @@ export default function PlacementForm() {
   const handlehighStudyplace = (e) => {
     // console.log(e.target)
     const { name, value } = e.target;
-   sethighStudyplace(value);
+    sethighStudyplace(value);
 
     setFormData({ ...formData, [name]: value });
-  
+
   };
 
   return (
+    <>
+    {loading && <LinearProgress/>}
     <Container style={{ marginBottom: "100px" }}>
 
       <Container style={{ paddingInline: 0, paddingBottom: 50, marginTop: '15px' }} >
@@ -276,7 +296,6 @@ export default function PlacementForm() {
               float: 'left',
             }}
           >
-
             <EditIcon />
           </Button>
         )}
@@ -298,15 +317,16 @@ export default function PlacementForm() {
         )}
         <div style={{
           display: 'flex', gap: '10px', position: 'relative',
-          float: 'right', }}>
+          float: 'right',
+        }}>
           {!isEditing && appointmentLetter && (
             <Button onClick={() => handleViewCertificate(appointmentLetter)}
-  variant="outlined" color="primary">
+              variant="outlined" color="primary">
               View Appointment Letter
             </Button>
           )}
           {!isEditing && (gateStatus === "Yes") && (
-            <Button onClick={() =>handleViewCertificate(GateCertificate)}  variant="outlined" color="primary">
+            <Button onClick={() => handleViewCertificate(GateCertificate)} variant="outlined" color="primary">
               View Gate Admit Card
             </Button>
           )}
@@ -329,14 +349,13 @@ export default function PlacementForm() {
           sx={{ mb: 2 }}
           disabled={!isEditing || isSubmitting}
         >
-          <MenuItem value={""}>None</MenuItem>
           <MenuItem value="true">Yes</MenuItem>
           <MenuItem value="false">No</MenuItem>
         </TextField>
 
       </Grid>
 
-      {isPlaced==="true" && (
+      {isPlaced === "true" && (
         <>
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
@@ -396,44 +415,44 @@ export default function PlacementForm() {
                 />
               </LocalizationProvider>
             </Grid>
-            </Grid>
+          </Grid>
 
-            <Grid item xs={12} md={6} marginTop={2}>
-              <TextField
-                select
-                label="Placement Type"
-                placeholder='Select any one'
-                variant="outlined"
-                fullWidth
-                required
-                name="placementType"
-                value={formData.placementType}
-                onChange={handleChange}
-                sx={{ mb: 2 }}
-                disabled={!isEditing || isSubmitting}
-              >
-                <MenuItem value="On Campus">On Campus</MenuItem>
-                <MenuItem value="Off Campus">Off Campus</MenuItem>
-              </TextField>
+          <Grid item xs={12} md={6} marginTop={2}>
+            <TextField
+              select
+              label="Placement Type"
+              placeholder='Select any one'
+              variant="outlined"
+              fullWidth
+              required
+              name="placementType"
+              value={formData.placementType}
+              onChange={handleChange}
+              sx={{ mb: 2 }}
+              disabled={!isEditing || isSubmitting}
+            >
+              <MenuItem value="On Campus">On Campus</MenuItem>
+              <MenuItem value="Off Campus">Off Campus</MenuItem>
+            </TextField>
 
-              <TextField
-                label="Package"
-                placeholder='in LPA'
-                variant="outlined"
-                fullWidth
-                required
-                name="package"
-                style={{ marginTop: '10px' }}
-                value={formData.package}
-                onChange={handleChange}
-                error={!!errors.package}
-                helperText={errors.package}
-                sx={{ mb: 2 }}
-                disabled={!isEditing || isSubmitting}
-              />
+            <TextField
+              label="Package"
+              placeholder='in LPA'
+              variant="outlined"
+              fullWidth
+              required
+              name="package"
+              style={{ marginTop: '10px' }}
+              value={formData.package}
+              onChange={handleChange}
+              error={!!errors.package}
+              helperText={errors.package}
+              sx={{ mb: 2 }}
+              disabled={!isEditing || isSubmitting}
+            />
 
-            </Grid>
-          
+          </Grid>
+
           {isEditing && (
             <Grid item xs={12} md={6} marginBottom={2} container justifyContent="space-between" alignItems="center">
 
@@ -443,7 +462,9 @@ export default function PlacementForm() {
               <FileBase
                 type="file"
                 multiple={false}
-                onDone={()=>handleFileChange(appointmentLetter)}
+
+                onDone={handleAppointmentFileChange}
+
                 disabled={!isEditing || isSubmitting}
               />
 
@@ -470,7 +491,7 @@ export default function PlacementForm() {
           <MenuItem value="No">No</MenuItem>
         </TextField>
       </Grid>
-      {isHighstudy==="Yes" && (
+      {isHighstudy === "Yes" && (
         <Grid item xs={12} md={6}>
           <TextField
             select
@@ -490,13 +511,13 @@ export default function PlacementForm() {
           </TextField>
         </Grid>
       )}
-      
+
       <Grid item xs={12} md={6}>
         <TextField
           select
           label="Have you appeared in Gate Exam?"
           variant="outlined"
-          placeholder='Select any one' 
+          placeholder='Select any one'
           fullWidth
           required
           name="gateStatus"
@@ -510,7 +531,7 @@ export default function PlacementForm() {
           <MenuItem value="No">No</MenuItem>
         </TextField>
       </Grid>
-      { isEditing && (gateStatus==="Yes") && (
+      {isEditing && (gateStatus === "Yes") && (
         <Grid item xs={12} container justifyContent="space-between" alignItems="center">
           <Typography variant="h6" gutterBottom textAlign="left" marginTop={2}>
             Upload Gate Admit Card / Scorecard
@@ -518,16 +539,15 @@ export default function PlacementForm() {
           <FileBase
             type="file"
             multiple={false}
-            onDone={() => handleFileChange(GateCertificate)}
+            onDone={handleGateFileChange}
             disabled={!isEditing || isSubmitting}
           />
         </Grid>
 
       )}
 
-
-
       <ToastContainer />
     </Container>
+    </>
   );
 }

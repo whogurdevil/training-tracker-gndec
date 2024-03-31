@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import CircularProgress from '@mui/material/CircularProgress'; // Import CircularProgress
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
+import Modal from '@mui/material/Modal';
+import { Alert } from '@mui/material';
 
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
 
@@ -21,23 +21,23 @@ const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE
 function Signup() {
   const navigate = useNavigate();
   const [credentials, setCredentials] = useState({
-    urn: '',
+    crn: '',
     email: '',
     password: '',
     confirmPassword: '',
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({
-    urn: '',
+    crn: '',
     email: '',
     password: '',
     confirmPassword: '',
   });
-
+  const [showModal, setShowModal] = useState(false);
   const validateField = (fieldName, value) => {
     switch (fieldName) {
-      case 'urn':
-        return /^\d{7}$|^Tr\d{3}$/.test(value) ? '' : 'Invalid URN: must be a 7-digit number';
+      case 'crn':
+        return /^\d{7}$|^Tr\d{3}$/.test(value) ? '' : 'Invalid CRN: must be a 7-digit number';
       case 'email':
         // return value.endsWith('@gndec.ac.in') ? '' : 'Invalid Email: must end with @gndec.ac.in';
         return value.endsWith('@gmail.com') ? '' : 'Invalid Email: must end with @gndec.ac.in';
@@ -52,6 +52,24 @@ function Signup() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if(name==="email"){
+      let crn = '';
+      const match = value.match(/\d+/);
+      if (match) {
+        crn = match[0];
+      }
+
+      setCredentials((prevCredentials) => ({
+        ...prevCredentials,
+        [name]: value,
+        crn: crn, // Set the CRN extracted from the email
+      }));
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: validateField(name, crn),
+      }));
+    
+    }
     setCredentials((prevCredentials) => ({
       ...prevCredentials,
       [name]: value,
@@ -63,6 +81,7 @@ function Signup() {
   };
 
   const handleSubmit = async (e) => {
+    setShowModal(false)
     e.preventDefault();
     setLoading(true);
 
@@ -101,6 +120,42 @@ function Signup() {
       setLoading(false);
     }
   };
+ const handleConfirm = async () => {
+    setLoading(true);
+
+    try {
+      const validationErrors = Object.keys(credentials).reduce((acc, key) => {
+        const error = validateField(key, credentials[key]);
+        return error ? { ...acc, [key]: error } : acc;
+      }, {});
+
+      if (Object.keys(validationErrors).length > 0) {
+        setErrors(validationErrors);
+        setLoading(false);
+        return;
+      }
+
+      // Post request
+      const response = await fetch(`${API_URL}api/auth/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials),
+      });
+      const json = await response.json();
+      if (json.success) {
+        toast('Successfully signed up');
+        setTimeout(() => {
+          navigate('/verify', { state: { email: credentials.email } });
+        }, 2000);
+      } else {
+        toast(json.message);
+        setLoading(false);
+      }
+    } catch (error) {
+      toast('Invalid Credentials');
+      setLoading(false);
+    }
+  };
 
   const theme = createTheme();
 
@@ -121,22 +176,7 @@ function Signup() {
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            placeholder='1234567'
-            id="urn"
-            label="URN"
-            name="urn"
-            value={credentials.urn}
-            onChange={handleChange}
-            autoFocus
-            error={Boolean(errors.urn)}
-            helperText={errors.urn}
-            
-          />
+        <Box  sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             required
@@ -177,12 +217,28 @@ function Signup() {
             helperText={errors.confirmPassword}
            
           />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            placeholder='1234567'
+            id="crn"
+            label="CRN"
+            name="crn"
+            value={credentials.crn}
+            onChange={handleChange}
+            autoFocus
+            error={Boolean(errors.crn)}
+            helperText={errors.crn}
+            disabled={true}
+          />
           <Button
             type="submit"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
             disabled={loading}
+            onClick={()=>setShowModal(true)}
           >
             {loading ? (
               <CircularProgress size={24} color="primary" /> // Render CircularProgress if loading is true
@@ -200,6 +256,44 @@ function Signup() {
           </Grid>
         </Box>
       </Box>
+      <Modal open={showModal} onClose={() => setShowModal(false)}>
+        <Box sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            bgcolor: 'background.paper',
+            boxShadow: 24,
+            p: 4,
+            borderRadius:5
+        }}>
+          <Typography variant="h6"  fontWeight={'bold'} gutterBottom>
+            Confirm data before submitting
+          </Typography>
+          <Typography variant="body1" >
+            Email: {credentials.email}
+          </Typography>
+          {/* <Typography variant="body1" gutterBottom>
+            Password: {credentials.password}
+          </Typography> */}
+          <Typography variant="body1" >
+            CRN: {credentials.crn}
+          </Typography>
+          <Alert
+          sx={{marginTop:5}}
+            severity='info'
+          >This information will be used for official data storage in future operations</Alert>
+          <hr/>
+          <div style={{display:'flex',justifyContent:"flex-end",gap:25, paddingTop:10}}>
+          <Button variant="contained"  onClick={() => setShowModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="contained"  onClick={handleSubmit}>
+            Confirm
+          </Button>
+          </div>
+        </Box>
+      </Modal>
     </Container>
   );
 }

@@ -13,12 +13,12 @@ import MenuItem from '@mui/material/MenuItem'; // Import MenuItem for dropdown o
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import EditIcon from '@mui/icons-material/Edit';
 import { jwtDecode } from "jwt-decode";
-import { Grid, LinearProgress } from '@mui/material';
+import { Alert, AlertTitle, Grid, LinearProgress } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useMediaQuery } from '@mui/material';
 import { convertBatchToDate } from '../utils/DateConvertToFrontend';
+import Modal from '@mui/material/Modal';
 
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
 
@@ -29,7 +29,7 @@ export default function Form() {
   const [formData, setFormData] = useState({
     Name: '',
     contact: '',
-    crn: '',
+    urn: '',
     branch: '',
     section: '',
     mentor: '',
@@ -44,35 +44,40 @@ export default function Form() {
   const decodeAuthToken = (token) => {
     try {
       const decodedToken = jwtDecode(token);
-      const urn = decodedToken.urn;
-      return urn;
+      const crn = decodedToken.crn;
+      return crn;
     } catch (error) {
       console.error('Error decoding JWT token:', error);
       return null;
     }
   };
   const token = localStorage.getItem("authtoken");
-  const urn = decodeAuthToken(token);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const crn = decodeAuthToken(token);
+  const [isSubmitting, setIsSubmitting] = useState(true);
   const [admissionYear, setAdmissionYear] = useState(null);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false)
+  const [showConfirmation, setShowConfirmation] = useState(false);
   useEffect(() => {
     // Fetch data from the database when the component mounts or the page is refreshed
     const fetchData = async () => {
 
       try {
         setLoading(true)
-        const url = `${API_URL}userprofiles/${urn}`;
-        const response = await axios.get(url);
+        const token = localStorage.getItem('authtoken');
+        const url = `${API_URL}userprofiles/${crn}`;
+        const response = await axios.get(url, {
+            headers: {
+                "auth-token": token
+            }
+        });
         const userData = response.data.data;
         // console.log(userData)
         // Check if all fields are filled in the fetched data
         if (
           userData.Name &&
           userData.contact &&
-          userData.crn &&
+          userData.urn &&
           userData.branch &&
           userData.section &&
           userData.mentor &&
@@ -87,22 +92,24 @@ export default function Form() {
           setAdmissionYear(datePickerBatch);
           // console.log(datePickerBatch)
           setFormData({ ...userData, batch: datePickerBatch });
+          setIsSubmitting(true)
 
-          setIsEditing(false);
         } else {
           console.error('Error: Fetched data is incomplete.');
+          setIsSubmitting(false)
         }
       } catch (error) {
         console.error('Error fetching data:', error);
+        setIsSubmitting(false)
         setLoading(false)
       } finally {
         setLoading(false)
+  
       }
     };
 
     fetchData();
   }, []);
-
 
   // const [endDate, setEndDate] = useState(null);
   const handleChange = (e) => {
@@ -128,9 +135,9 @@ export default function Form() {
         regex = /^\d{10}$/;
         errorMsg = 'Contact must be 10 digits';
         break;
-      case 'crn':
+      case 'urn':
         regex = /^\d{7}$/;
-        errorMsg = 'CRN must be a 7-digit number';
+        errorMsg = 'URN must be a 7-digit number';
         break;
       case 'personalMail':
         let regex = /^\S+@\S+\.\S+$/;
@@ -146,6 +153,7 @@ export default function Form() {
   };
 
   const handleSubmit = async (e) => {
+    setShowConfirmation(false)
     e.preventDefault();
     try {
       // Form validation
@@ -170,9 +178,9 @@ export default function Form() {
         formErrors.contact = "Contact cannot be blank"
         toast.error(formErrors.contact)
       }
-      else if (!formData.crn) {
-        formErrors.crn = "College Roll number cannot be blank"
-        toast.error(formErrors.crn)
+      else if (!formData.urn) {
+        formErrors.urn = "College Roll number cannot be blank"
+        toast.error(formErrors.urn)
       }
       else if (!formData.father) {
         formErrors.father = "Father's Name cannot be blank"
@@ -202,13 +210,16 @@ export default function Form() {
         setErrors(formErrors);
         return;
       }
-
-      const response = await axios.post(`${API_URL}userprofiles`, { formData, urn: urn });
-      // console.log(response);
+      const token = localStorage.getItem('authtoken');
+      const response = await axios.post(`${API_URL}userprofiles`, { formData, crn: crn },
+       {
+          headers: {
+            "auth-token": token
+          }
+        });      // console.log(response);
       if (response.data.success) {
         toast.success('Form submitted successfully!');
-        setIsSubmitting(false);
-        setIsEditing(false);
+        setIsSubmitting(true);
       } else {
         toast.error('Failed to submit form. Please try again later.');
         setIsSubmitting(false);
@@ -226,9 +237,7 @@ export default function Form() {
     setFormData({ ...formData, mentor: value });
   };
 
-  const handleEdit = () => {
-    setIsEditing((prevEditing) => !prevEditing);
-  };
+ 
   const handleBatchChange = (newDate) => {
     // console.log(newDate);
     if (newDate) {
@@ -246,29 +255,28 @@ export default function Form() {
     {loading && <LinearProgress/>}
     <Container sx={{ paddingTop: 5 }} style={{ marginBottom: "100px" }}>
       <ToastContainer />
-      <form onSubmit={handleSubmit}>
-        <Container style={{ paddingTop: 4 }}>
-          <Button
-            onClick={handleEdit}
-            color="primary"
-            variant="contained"
-            style={{ position: 'relative' }}
-            disabled={loading}
-          // endIcon={<EditIcon />}
-          >
-            {/* Edit */}
-            <EditIcon />
-          </Button>
+        <Container style={{ paddingBottom: 30  }}>
+            {isSubmitting ? (
+              <Alert severity="error">
+              <AlertTitle>This information is read only !</AlertTitle>
+              You have already submitted the form. Contact the training coordinator for any changes.
+            </Alert>
+              ) : (
+              <>
+       
           <Button
             style={{ float: 'right' }}
             type='submit'
             color="primary"
             variant="contained"
             endIcon={<KeyboardArrowRightIcon />}
-            disabled={!isEditing || isSubmitting}
+            disabled={ isSubmitting}
+            onClick={() => setShowConfirmation(true)}
           >
             Submit
           </Button>
+          </>
+          )}
         </Container>
         <Container sx={{ margin: 0, padding: 0 }}>
           <Grid container spacing={isSmallScreen ? 2 : 4}>
@@ -285,7 +293,7 @@ export default function Form() {
                 error={!!errors.Name}
                 helperText={errors.Name}
                 sx={{ mb: 2 }}
-                disabled={!isEditing || isSubmitting}
+                disabled={isSubmitting}
               />
               <TextField
                 label="Mother's Name"
@@ -299,7 +307,7 @@ export default function Form() {
                 error={!!errors.mother}
                 helperText={errors.mother}
                 sx={{ mb: 2 }}
-                disabled={!isEditing || isSubmitting}
+                disabled={ isSubmitting}
               />
               <TextField
                 label="Father's Name"
@@ -313,7 +321,7 @@ export default function Form() {
                 error={!!errors.father}
                 helperText={errors.father}
                 sx={{ mb: 2 }}
-                disabled={!isEditing || isSubmitting}
+                disabled={ isSubmitting}
               />
               <TextField
                 label="Personal Mail"
@@ -327,7 +335,7 @@ export default function Form() {
                 error={!!errors.personalMail}
                 helperText={errors.personalMail}
                 sx={{ mb: 2 }}
-                disabled={!isEditing || isSubmitting}
+                disabled={ isSubmitting}
               />
               <TextField
                 label="Contact"
@@ -341,7 +349,7 @@ export default function Form() {
                 error={!!errors.contact}
                 helperText={errors.contact}
                 sx={{ mb: 2 }}
-                disabled={!isEditing || isSubmitting}
+                disabled={ isSubmitting}
               />
 
               <TextField
@@ -353,7 +361,7 @@ export default function Form() {
                 name="section"
                 value={formData.section}
                 onChange={(e) => setSection(e.target.value)}
-                disabled={!isEditing || isSubmitting}
+                disabled={ isSubmitting}
                 sx={{
                   mb: 2,
                   '& .MuiSelect-select': { textAlign: 'left' } // Aligns the selected value to the left
@@ -373,18 +381,18 @@ export default function Form() {
             </Grid>
             <Grid item xs={12} md={6} >
               <TextField
-                label="College Roll Number"
+                label="University Roll Number"
                 variant="outlined"
                 fullWidth
                 required
                 placeholder='1234567'
-                name="crn"
-                value={formData.crn}
+                name="urn"
+                value={formData.urn}
                 onChange={handleChange}
-                error={!!errors.crn}
-                helperText={errors.crn}
+                error={!!errors.urn}
+                helperText={errors.urn}
                 sx={{ mb: 2 }}
-                disabled={!isEditing || isSubmitting}
+                disabled={ isSubmitting}
               />
               <TextField
                 select
@@ -398,7 +406,7 @@ export default function Form() {
                 error={!!errors.branch}
                 helperText={errors.branch}
                 sx={{ mb: 2 }}
-                disabled={!isEditing || isSubmitting}
+                disabled={ isSubmitting}
               >
                 <MenuItem value="CSE">Computer Science & Engineering</MenuItem>
               </TextField>
@@ -411,7 +419,7 @@ export default function Form() {
                   onChange={handleBatchChange}
                   value={admissionYear}
                   sx={{ mb: 2 }}
-                  disabled={!isEditing || isSubmitting}
+                  disabled={ isSubmitting}
                 />
               </LocalizationProvider>
               <TextField
@@ -426,7 +434,7 @@ export default function Form() {
                 error={!!errors.mentor}
                 helperText={errors.mentor}
                 sx={{ mb: 2 }}
-                disabled={!isEditing || isSubmitting}
+                disabled={ isSubmitting}
               />
               <TextField
                 select
@@ -440,7 +448,7 @@ export default function Form() {
                 error={!!errors.gender}
                 helperText={errors.gender}
                 sx={{ mb: 2 }}
-                disabled={!isEditing || isSubmitting}
+                disabled={ isSubmitting}
               >
                 <MenuItem value="Male">Male</MenuItem>
                 <MenuItem value="Female">Female</MenuItem>
@@ -457,7 +465,7 @@ export default function Form() {
                 error={!!errors.admissionType}
                 helperText={errors.admissionType}
                 sx={{ mb: 2 }}
-                disabled={!isEditing || isSubmitting}
+                disabled={ isSubmitting}
               >
                 <MenuItem value="Non LEET">Non LEET</MenuItem>
                 <MenuItem value="LEET">LEET</MenuItem>
@@ -465,8 +473,40 @@ export default function Form() {
             </Grid>
           </Grid>
         </Container>
-      </form>
     </Container>
+      <Modal open={showConfirmation} onClose={() => setShowConfirmation(false)}>
+        <div style={{
+          position: 'absolute',
+          width: 400,
+          backgroundColor: 'white',
+          borderRadius: 10,
+          boxShadow: 24,
+          padding: 16,
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          textAlign: 'center',
+        }}>
+          <Typography variant="h6" gutterBottom style={{ marginBottom: 16 }}>
+            Are you sure ?
+          </Typography>
+          <Alert
+            severity='warning'
+          >
+            Once you submit the form, you won't be able to edit it.
+            </Alert>
+          <hr/>
+          <div style={{ display: 'flex', justifyContent: 'end', gap: 16, paddingBlock:6 }}>
+            <Button variant="text"  onClick={() => setShowConfirmation(false)}>
+              Cancel
+            </Button>
+            <Button variant="contained"  onClick={handleSubmit}>
+              Submit
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
     </>
   )
 }

@@ -2,14 +2,15 @@ const express = require('express');
 const UserInfo = require('../../models/UserInfo').UserInfo;
 const SignUpdata = require('../../models/UserInfo').SignUp;
 const router = express.Router();
+const fetchuser=require('../../middleware/fetchUser')
 
 // Route to create a new user profile
-router.post('/', async (req, res) => {
+router.post('/', fetchuser, async (req, res) => {
     try {
-        const { Name, contact, crn, branch, batch, gender, admissionType, section, mentor , mother,father,personalMail } = req.body.formData;
+        const { Name, contact, urn, branch, batch, gender, admissionType, section, mentor , mother,father,personalMail } = req.body.formData;
 
-        const urn = req.body.urn
-        const userInfo = await SignUpdata.findOne({ urn: urn });
+        const crn = req.body.crn
+        const userInfo = await SignUpdata.findOne({ crn: crn });
 
         if (!userInfo) {
             return res.status(404).json({ message: 'UserInfo not found' });
@@ -19,7 +20,7 @@ router.post('/', async (req, res) => {
         const newsignup = new UserInfo({
             Name,
             contact,
-            crn,
+            urn,
             section,
             mentor,
             branch,
@@ -39,10 +40,10 @@ router.post('/', async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 });
-router.get('/:urn', async (req, res) => {
+router.get('/:crn', fetchuser, async (req, res) => {
     try {
-        const urn = req.params.urn;
-        const userInfo = await SignUpdata.findOne({ urn: urn });
+        const crn = req.params.crn;
+        const userInfo = await SignUpdata.findOne({ crn: crn });
         if (!userInfo) {
             return res.status(404).json({ message: 'UserInfo not found' });
         }

@@ -18,10 +18,10 @@ router.post('/signup',
     }
     return true; // Return true if validation passes
   }),
-  body('urn').custom((value) => {
+  body('crn').custom((value) => {
     // Check if the urn is exactly 7 digits or in the format "Tr-xxx"
     if (!/^\d{7}$|^Tr\d{3}$/.test(value)) {
-      throw new Error('Invalid urn. It should be exactly 7 digits or in the format "Tr-xxx"');
+      throw new Error('Invalid crn. It should be exactly 7 digits or in the format "Tr-xxx"');
     }
     return true; // Return true if validation passes
   }),
@@ -34,28 +34,28 @@ router.post('/signup',
     }
   //  console.log("Hello")
     const validateUser = await SignUp.findOne({ email: req.body.email });
-    const validateUrn = await SignUp.findOne({ urn: req.body.urn });
+    const validateCrn = await SignUp.findOne({ crn: req.body.crn });
     if (validateUser) {
-      return res.status(400).json({ success: false, message: 'email id already exist' });
+      return res.status(400).json({ success: false, message: 'Email id already exist' });
     }
-    if (validateUrn) {
-      return res.status(400).json({ success: false, message: 'URN already exist' });
+    if (validateCrn) {
+      return res.status(400).json({ success: false, message: 'CRN already exist' });
     }
     // console.log("hello")
     try {
       const myPlaintextPassword = req.body.password;
       const salt = bcrypt.genSaltSync(10);
       const hash = bcrypt.hashSync(myPlaintextPassword, salt);
-      const { urn, email } = req.body;
+      const { crn, email } = req.body;
       // console.log("ji")
 
       try {
         const signup = await SignUp.create({
-          urn: urn,
+          crn: crn,
           email: email,
           password: hash,
           isVerified: false,
-          userInfo: { crn: urn },
+          userInfo: { urn: crn },
           tr101: {},
           tr102: {},
           tr103: {},
@@ -76,9 +76,9 @@ router.post('/signup',
   }
 );
 
-router.post('/login', body('password', 'Password should have a minimum length of 5').isLength({ min: 5 }), body('urn').custom((value) => {
+router.post('/login', body('password', 'Password should have a minimum length of 5').isLength({ min: 5 }), body('crn').custom((value) => {
   if (!/^\d{7}$|^Tr\d{3}$/.test(value)) {
-    throw new Error('Invalid urn. It should be exactly 7 digits and should not start with "0"');
+    throw new Error('Invalid crn. It should be exactly 7 digits and should not start with "0"');
   }
   return true; // Return true if validation passes
 }), async (req, res) => {
@@ -87,8 +87,8 @@ router.post('/login', body('password', 'Password should have a minimum length of
     return res.status(400).json({ success: false, message: "Invalid Credentials", errors: errors.array() });
   }
 
-  const { urn, password } = req.body;
-  const user = await SignUp.findOne({ urn });
+  const { crn, password } = req.body;
+  const user = await SignUp.findOne({ crn });
 
   if (!user) {
     return res.status(400).json({ success: false, message: "User Not found" });
@@ -118,7 +118,7 @@ router.post('/login', body('password', 'Password should have a minimum length of
     }
 
     const data = {
-      urn: user.urn,
+      crn: user.crn,
       user: roleSpecificData
     };
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
-import { Card, Modal, Box, Typography, Grid, MenuItem, Select, FormControl, InputLabel, Button } from '@mui/material';
+import { Card, Modal, Box, Typography, Grid, MenuItem, Select, FormControl, InputLabel, Button, LinearProgress, Skeleton } from '@mui/material';
 import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -25,7 +25,7 @@ const SuperAdminForm = () => {
     const [refresh, setRefresh] = useState(false); // Refresh state
     const [loading, setLoading] = useState(true); // Loading state
     const [trainingNames, setTrainingNames] = useState(initialTrainingNames);
-    const [allBatches,setallBatches]=useState([])
+    const [allBatches, setallBatches] = useState([])
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -86,9 +86,9 @@ const SuperAdminForm = () => {
 
     const columns = useMemo(() => {
         let customColumns = [
-            { accessorKey: "urn", header: "URN" },
+            { accessorKey: "crn", header: "CRN" },
             { accessorKey: "userInfo.Name", header: "Name" },
-            { accessorKey: "userInfo.crn", header: "CRN" },
+            { accessorKey: "userInfo.urn", header: "URN" },
             { accessorKey: "userInfo.mentor", header: "Mentor" },
             { accessorKey: "userInfo.batch", header: "Batch" },
             { accessorKey: "userInfo.section", header: "Section" },
@@ -169,7 +169,7 @@ const SuperAdminForm = () => {
 
     const handleLock = async (row) => {
         try {
-            let successMessage = await changeLock(row.original.urn, row.original[selectedTraining].lock, selectedTraining === 'placementData', selectedTraining);
+            let successMessage = await changeLock(row.original.crn, row.original[selectedTraining].lock, selectedTraining === 'placementData', selectedTraining);
             toast.success(successMessage);
             setRefresh(prevRefresh => !prevRefresh);
         } catch (error) {
@@ -212,32 +212,90 @@ const SuperAdminForm = () => {
     };
 
     return (
-        <div style={{ padding: '0 20px', marginTop: '20px', marginBottom: "100px" }}>
+        <div>
             {loading ? ( // Render loader if loading is true
+                <>
+                    <LinearProgress />
+                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '40px', marginBottom: "100px", width: '100vw', height: '100vh' }}>
+                        <Box
+                            sx={{
+                                width: '90vw',
+                                height: '50vh',
+                                border: 1,
+                                borderColor: 'lightgray',
+                                borderRadius: 1,
+                                backgroundColor: 'white',
+                            }}
+                        >
+                            <Skeleton
+                                animation={'wave'}
+                                sx={{ width: '300px', height: '60px', marginLeft: 2, marginBlock: 1}}
+                                
+                                />
+                            <hr/>
 
-                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <CircularProgress />
-                </Box>
+                            <Box
+                                sx={{
+                                    paddingInline:2,
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    justifyContent: 'space-between'
+                                }}
+                            >
+                            <Skeleton
+                                animation={'wave'}
+                                sx={{
+                                    width: '20vw',
+                                    height: '40px'
+                                }}
+                            />
+                            <Skeleton
+                                animation={'wave'}
+                                sx={{
+                                    width: '20vw',
+                                    height: '40px'
+                                }}
+                            />
+                            <Skeleton
+                                animation={'wave'}
+                                sx={{
+                                    width: '20vw',
+                                    height: '40px'
+                                }}
+                            />
+                            <Skeleton
+                                animation={'wave'}
+                                sx={{
+                                    width: '20vw',
+                                    height: '40px'
+                                }}
+                            />
+                            </Box>
+                            
+                        </Box>
+                    </div>
+                </>
+
             ) : (
-                <div style={{ padding: '0 20px', marginTop: '20px'  }}>
+                <div style={{ padding: '0 40px', marginTop: '40px', marginBottom: "100px" }}>
                     <Grid container spacing={2} justifyContent="space-around">
                         <Grid item style={{ marginBottom: 20 }}>
                             <FormControl style={{ width: 200 }}>
                                 <InputLabel>Batch</InputLabel>
-                                    <Select value={selectedBatch} onChange={handleBatchChange} MenuProps={{
-                                        PaperProps: {
-                                            style: {
-                                                maxHeight: 200, // Maximum height for the menu
-                                                width: 'auto',
-                                            },
+                                <Select value={selectedBatch} onChange={handleBatchChange} MenuProps={{
+                                    PaperProps: {
+                                        style: {
+                                            maxHeight: 200, // Maximum height for the menu
+                                            width: 'auto',
                                         },
-                                    }}
-                                        style={{ height: 50 }} >
-                                        <MenuItem value="">All</MenuItem>
-                                        {allBatches.map((data, index) => (
-                                            <MenuItem key={index} value={data}>{data}</MenuItem>
-                                        ))}
-                                    </Select>
+                                    },
+                                }}
+                                    style={{ height: 50 }} >
+                                    <MenuItem value="">All</MenuItem>
+                                    {allBatches.map((data, index) => (
+                                        <MenuItem key={index} value={data}>{data}</MenuItem>
+                                    ))}
+                                </Select>
                             </FormControl>
                         </Grid>
                         <Grid item style={{ marginBottom: 20 }}>
@@ -274,26 +332,26 @@ const SuperAdminForm = () => {
                             <div style={{ display: 'flex', gap: '10px', flexDirection: 'row' }}>
                                 <ExportComponent data={filteredUsers} columns={columns} selectedTraining={selectedTraining} />
                                 <div style={{ marginTop: '10px', display: 'flex', gap: '5px' }}>
-                                        {selectedTraining == "placementData" && (
-                                            <Button onClick={() => navigateToStats(filteredUsers)} variant="contained" color="primary">
+                                    {selectedTraining == "placementData" && (
+                                        <Button onClick={() => navigateToStats(filteredUsers)} variant="contained" color="primary">
                                             View Placement Stats
                                         </Button>
-                                        )}
-                                    
+                                    )}
+
                                     <Button onClick={() => navigateToTrainingNames()} variant="contained" color="primary">
-                                        Set Training Names
+                                        Change Training Names
                                     </Button>
                                 </div>
                             </div>
 
 
 
-                                {selectedTraining && (
-                                    <div style={{ marginTop: '10px', marginRight: '10px', display: 'flex', justifyContent: 'space-between', gap: '10px' }}>
-                                        <VerifyAllComponent selectedTraining={selectedTraining} refresh={refresh} onRefresh={handleRefresh} />
-                                        <UnVerifyAllComponent selectedTraining={selectedTraining} refresh={refresh} onRefresh={handleRefresh} />
-                                    </div>
-                                )}
+                            {selectedTraining && (
+                                <div style={{ marginTop: '10px', marginRight: '10px', display: 'flex', justifyContent: 'space-between', gap: '10px' }}>
+                                    <VerifyAllComponent selectedTraining={selectedTraining} refresh={refresh} onRefresh={handleRefresh} />
+                                    <UnVerifyAllComponent selectedTraining={selectedTraining} refresh={refresh} onRefresh={handleRefresh} />
+                                </div>
+                            )}
                         </div>
                         <MaterialReactTable table={table} />
                     </Card>
