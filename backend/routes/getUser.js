@@ -5,10 +5,10 @@ const fetchuser = require('../middleware/fetchUser');
 const isAdmin = require('../middleware/isAdmin');
 
 
-router.get('/getuser/:urn', fetchuser, async (req, res) => {
+router.get('/getuser/:crn', fetchuser, async (req, res) => {
   try {
-    const urn = req.params.urn;
-    const user = await userInfo.findOne({ urn: urn })
+    const crn = req.params.crn;
+    const user = await userInfo.findOne({ crn: crn })
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }

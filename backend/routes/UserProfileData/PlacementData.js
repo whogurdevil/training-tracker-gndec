@@ -7,11 +7,11 @@ const isAdmin = require('../../middleware/isAdmin');
 
 // Route to create or update a user's placement data
 
-router.post('/', async (req, res) => {
+router.post('/', fetchuser, async (req, res) => {
     try {
         const { company, placementType, highStudy, appointmentNo, appointmentLetter, package, isPlaced, gateStatus, gateCertificate, designation, appointmentDate, highStudyplace } = req.body.formData;
-        const urn = req.body.urn;
-        let userInfo = await SignUpdata.findOne({ urn: urn });
+        const crn = req.body.crn;
+        let userInfo = await SignUpdata.findOne({ crn: crn });
 
         if (!userInfo) {
             return res.status(404).json({ message: 'UserInfo not found' });
@@ -50,10 +50,10 @@ router.post('/', async (req, res) => {
 // Route to update lock status
 router.post('/updatelock', fetchuser, isAdmin, async (req, res) => {
     try {
-        const { urn, lock } = req.body;
+        const { crn, lock } = req.body;
 
         const userData = await SignUpdata.findOneAndUpdate(
-            { urn: urn },
+            { crn: crn },
             { 'placementData.lock': lock },
             { new: true }
         );
@@ -113,10 +113,10 @@ router.post('/unverifyall', fetchuser, isAdmin, async (req, res) => {
 });
 // Route to get user's placement data
 // Route to get user's placement data
-router.get('/:urn', async (req, res) => {
+router.get('/:crn', fetchuser, async (req, res) => {
     try {
-        const urn = req.params.urn;
-        const userInfo = await SignUpdata.findOne({ urn: urn });
+        const crn = req.params.crn;
+        const userInfo = await SignUpdata.findOne({ crn: crn });
         if (!userInfo) {
             return res.status(404).json({ message: 'UserInfo not found' });
         }

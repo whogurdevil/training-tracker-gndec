@@ -19,8 +19,8 @@ const Home = () => {
         const fetchBatchYear = async () => {
             try {
                 const token = localStorage.getItem("authtoken");
-                const urn = decodeAuthToken(token);
-                const url = `${API_URL}api/users/getuser/${urn}`
+                const crn = decodeAuthToken(token);
+                const url = `${API_URL}api/users/getuser/${crn}`
                 const response = await axios.get(url, {
                     headers: {
                         "auth-token": token
@@ -74,8 +74,8 @@ const Home = () => {
     const decodeAuthToken = (token) => {
         try {
             const decodedToken = jwtDecode(token);
-            const urn = decodedToken.urn;
-            return urn;
+            const crn = decodedToken.crn;
+            return crn;
         } catch (error) {
             console.error('Error decoding JWT token:', error);
             return null;

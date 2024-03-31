@@ -29,7 +29,7 @@ export default function Form() {
   const [formData, setFormData] = useState({
     Name: '',
     contact: '',
-    crn: '',
+    urn: '',
     branch: '',
     section: '',
     mentor: '',
@@ -44,15 +44,15 @@ export default function Form() {
   const decodeAuthToken = (token) => {
     try {
       const decodedToken = jwtDecode(token);
-      const urn = decodedToken.urn;
-      return urn;
+      const crn = decodedToken.crn;
+      return crn;
     } catch (error) {
       console.error('Error decoding JWT token:', error);
       return null;
     }
   };
   const token = localStorage.getItem("authtoken");
-  const urn = decodeAuthToken(token);
+  const crn = decodeAuthToken(token);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [admissionYear, setAdmissionYear] = useState(null);
@@ -64,15 +64,20 @@ export default function Form() {
 
       try {
         setLoading(true)
-        const url = `${API_URL}userprofiles/${urn}`;
-        const response = await axios.get(url);
+        const token = localStorage.getItem('authtoken');
+        const url = `${API_URL}userprofiles/${crn}`;
+        const response = await axios.get(url, {
+            headers: {
+                "auth-token": token
+            }
+        });
         const userData = response.data.data;
         // console.log(userData)
         // Check if all fields are filled in the fetched data
         if (
           userData.Name &&
           userData.contact &&
-          userData.crn &&
+          userData.urn &&
           userData.branch &&
           userData.section &&
           userData.mentor &&
@@ -128,9 +133,9 @@ export default function Form() {
         regex = /^\d{10}$/;
         errorMsg = 'Contact must be 10 digits';
         break;
-      case 'crn':
+      case 'urn':
         regex = /^\d{7}$/;
-        errorMsg = 'CRN must be a 7-digit number';
+        errorMsg = 'URN must be a 7-digit number';
         break;
       case 'personalMail':
         let regex = /^\S+@\S+\.\S+$/;
@@ -170,9 +175,9 @@ export default function Form() {
         formErrors.contact = "Contact cannot be blank"
         toast.error(formErrors.contact)
       }
-      else if (!formData.crn) {
-        formErrors.crn = "College Roll number cannot be blank"
-        toast.error(formErrors.crn)
+      else if (!formData.urn) {
+        formErrors.urn = "College Roll number cannot be blank"
+        toast.error(formErrors.urn)
       }
       else if (!formData.father) {
         formErrors.father = "Father's Name cannot be blank"
@@ -202,9 +207,13 @@ export default function Form() {
         setErrors(formErrors);
         return;
       }
-
-      const response = await axios.post(`${API_URL}userprofiles`, { formData, urn: urn });
-      // console.log(response);
+      const token = localStorage.getItem('authtoken');
+      const response = await axios.post(`${API_URL}userprofiles`, { formData, crn: crn },
+       {
+          headers: {
+            "auth-token": token
+          }
+        });      // console.log(response);
       if (response.data.success) {
         toast.success('Form submitted successfully!');
         setIsSubmitting(false);
@@ -373,16 +382,16 @@ export default function Form() {
             </Grid>
             <Grid item xs={12} md={6} >
               <TextField
-                label="College Roll Number"
+                label="University Roll Number"
                 variant="outlined"
                 fullWidth
                 required
                 placeholder='1234567'
-                name="crn"
-                value={formData.crn}
+                name="urn"
+                value={formData.urn}
                 onChange={handleChange}
-                error={!!errors.crn}
-                helperText={errors.crn}
+                error={!!errors.urn}
+                helperText={errors.urn}
                 sx={{ mb: 2 }}
                 disabled={!isEditing || isSubmitting}
               />
