@@ -107,15 +107,7 @@ const CompanyGraph = forwardRef(({ data, years }, ref) => {
                                         },
                                     },
                                 },
-                                datalabels: {
-                                    anchor: 'end',
-                                    align: 'top',
-                                    offset: 4, // Adjust this value to adjust the distance between the label and the bar
-                                    formatter: function (value, context) {
-                                        return data[context.dataIndex].placementData.company;
-                                    },
-                                    color: '#333', // Customize the color of the label
-                                },
+                                
                             },
                         }}
                     />
