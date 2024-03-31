@@ -61,7 +61,7 @@ export default function PlacementForm() {
   const [errors, setErrors] = useState({});
   const [appointmentLetter, setAppointmentLetter] = useState(null);
   const [GateCertificate, setGateCertificate] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditing, setIsEditing] = useState(true);
   const [isLock, setIsLock] = useState(false);
   const [loading, setLoading] = useState(true)

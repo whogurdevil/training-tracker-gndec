@@ -66,19 +66,23 @@ function Navbar() {
         <Box
           sx={{
             position: 'absolute',
+            width: 300,
+            backgroundColor: 'white',
+            borderRadius: 2,
+            boxShadow: 24,
+            padding: 4,
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            bgcolor: 'background.paper',
-            boxShadow: 24,
-            p: 4,
+            textAlign: 'center',
           }}
         >
-          <Typography id="logout-modal-title" variant="h6" component="h2">
-            Are you sure you want to logout?
+          <Typography id="logout-modal-title" variant="h6" component="h2" sx={{marginBlock:3}}>
+            Are you sure ?
           </Typography>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 2 }}>
-            <Button onClick={handleClose} variant="contained" sx={{ mr: 2 }}>
+          <hr/>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 2, gap:2 }}>
+            <Button onClick={handleClose} variant="text">
               Cancel
             </Button>
             <Button onClick={handleLogout} variant="contained">

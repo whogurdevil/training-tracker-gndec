@@ -265,6 +265,7 @@ function Signup() {
             bgcolor: 'background.paper',
             boxShadow: 24,
             p: 4,
+            borderRadius:5
         }}>
           <Typography variant="h6"  fontWeight={'bold'} gutterBottom>
             Confirm data before submitting
