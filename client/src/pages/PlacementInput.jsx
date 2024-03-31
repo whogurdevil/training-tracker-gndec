@@ -7,7 +7,6 @@ import TextField from '@mui/material/TextField';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
 import MenuItem from '@mui/material/MenuItem';
 import FileBase from 'react-file-base64';
 import Grid from '@mui/material/Grid';
@@ -226,11 +225,14 @@ export default function PlacementForm() {
     }
   };
 
-  const handleFileChange = (files, data) => {
-    setFormData({ ...formData, data: files.base64 });
+  const handleAppointmentFileChange = (files) => {
+    setFormData({ ...formData, appointmentLetter: files.base64 });
     setAppointmentLetter(files.base64);
   };
-
+  const handleGateFileChange = (files) => {
+    setFormData({ ...formData, gateCertificate: files.base64 });
+    setGateCertificate(files.base64);
+  };
 
   const handleEdit = () => {
     setIsEditing((prevEditing) => !prevEditing);
@@ -294,7 +296,6 @@ export default function PlacementForm() {
               float: 'left',
             }}
           >
-
             <EditIcon />
           </Button>
         )}
@@ -463,7 +464,8 @@ export default function PlacementForm() {
                 type="file"
                 multiple={false}
 
-                onDone={handleFileChange}
+                onDone={handleAppointmentFileChange}
+
                 disabled={!isEditing || isSubmitting}
               />
 
@@ -538,7 +540,7 @@ export default function PlacementForm() {
           <FileBase
             type="file"
             multiple={false}
-            onDone={() => handleFileChange(GateCertificate)}
+            onDone={handleGateFileChange}
             disabled={!isEditing || isSubmitting}
           />
         </Grid>
