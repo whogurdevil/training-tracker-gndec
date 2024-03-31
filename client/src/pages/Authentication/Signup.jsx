@@ -12,6 +12,7 @@ import Container from '@mui/material/Container';
 import CircularProgress from '@mui/material/CircularProgress'; // Import CircularProgress
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
+import Modal from '@mui/material/Modal';
 
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
 
@@ -31,7 +32,7 @@ function Signup() {
     password: '',
     confirmPassword: '',
   });
-
+  const [showModal, setShowModal] = useState(false);
   const validateField = (fieldName, value) => {
     switch (fieldName) {
       case 'crn':
@@ -79,6 +80,7 @@ function Signup() {
   };
 
   const handleSubmit = async (e) => {
+    setShowModal(false)
     e.preventDefault();
     setLoading(true);
 
@@ -117,6 +119,42 @@ function Signup() {
       setLoading(false);
     }
   };
+ const handleConfirm = async () => {
+    setLoading(true);
+
+    try {
+      const validationErrors = Object.keys(credentials).reduce((acc, key) => {
+        const error = validateField(key, credentials[key]);
+        return error ? { ...acc, [key]: error } : acc;
+      }, {});
+
+      if (Object.keys(validationErrors).length > 0) {
+        setErrors(validationErrors);
+        setLoading(false);
+        return;
+      }
+
+      // Post request
+      const response = await fetch(`${API_URL}api/auth/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials),
+      });
+      const json = await response.json();
+      if (json.success) {
+        toast('Successfully signed up');
+        setTimeout(() => {
+          navigate('/verify', { state: { email: credentials.email } });
+        }, 2000);
+      } else {
+        toast(json.message);
+        setLoading(false);
+      }
+    } catch (error) {
+      toast('Invalid Credentials');
+      setLoading(false);
+    }
+  };
 
   const theme = createTheme();
 
@@ -137,7 +175,7 @@ function Signup() {
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <Box  sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             required
@@ -199,6 +237,7 @@ function Signup() {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
             disabled={loading}
+            onClick={()=>setShowModal(true)}
           >
             {loading ? (
               <CircularProgress size={24} color="primary" /> // Render CircularProgress if loading is true
@@ -216,6 +255,41 @@ function Signup() {
           </Grid>
         </Box>
       </Box>
+      <Modal open={showModal} onClose={() => setShowModal(false)}>
+        <div style={{
+          position: 'absolute',
+          width: 400,
+          backgroundColor: 'white',
+          border: '2px solid #000',
+          boxShadow: 24,
+          padding: 16,
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          textAlign: 'center'
+        }}>
+          <Typography variant="h6" gutterBottom>
+            Confirm data before submitting
+          </Typography>
+          <Typography variant="body1" gutterBottom>
+            Email: {credentials.email}
+          </Typography>
+          <Typography variant="body1" gutterBottom>
+            Password: {credentials.password}
+          </Typography>
+          <Typography variant="body1" gutterBottom>
+            CRN: {credentials.crn}
+          </Typography>
+          <div style={{display:'flex',justifyContent:"center",gap:'10px'}}>
+          <Button variant="contained"  onClick={() => setShowModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="contained"  onClick={handleSubmit}>
+            Confirm
+          </Button>
+          </div>
+        </div>
+      </Modal>
     </Container>
   );
 }
