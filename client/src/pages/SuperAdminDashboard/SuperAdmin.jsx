@@ -86,9 +86,9 @@ const SuperAdminForm = () => {
 
     const columns = useMemo(() => {
         let customColumns = [
-            { accessorKey: "urn", header: "URN" },
+            { accessorKey: "crn", header: "CRN" },
             { accessorKey: "userInfo.Name", header: "Name" },
-            { accessorKey: "userInfo.crn", header: "CRN" },
+            { accessorKey: "userInfo.urn", header: "URN" },
             { accessorKey: "userInfo.mentor", header: "Mentor" },
             { accessorKey: "userInfo.batch", header: "Batch" },
             { accessorKey: "userInfo.section", header: "Section" },
@@ -169,7 +169,7 @@ const SuperAdminForm = () => {
 
     const handleLock = async (row) => {
         try {
-            let successMessage = await changeLock(row.original.urn, row.original[selectedTraining].lock, selectedTraining === 'placementData', selectedTraining);
+            let successMessage = await changeLock(row.original.crn, row.original[selectedTraining].lock, selectedTraining === 'placementData', selectedTraining);
             toast.success(successMessage);
             setRefresh(prevRefresh => !prevRefresh);
         } catch (error) {

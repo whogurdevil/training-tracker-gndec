@@ -28,8 +28,8 @@ const AdminForm = () => {
     const [allBatches, setallBatches] = useState([])
     const [trainingNames, setTrainingNames] = useState(initialTrainingNames);
     const Location = useLocation()
-    const urn = Location.state && Location.state.urn
-    const admintype = urn && urn.length >= 3 ? urn.slice(-3) : urn;
+    const crn = Location.state && Location.state.crn
+    const admintype = crn && crn.length >= 3 ? crn.slice(-3) : crn;
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -78,9 +78,9 @@ const AdminForm = () => {
 
     const columns = useMemo(() => {
         let customColumns = [
-            { accessorKey: "urn", header: "URN" },
+            { accessorKey: "crn", header: "CRN" },
             { accessorKey: "userInfo.Name", header: "Name" },
-            { accessorKey: "userInfo.crn", header: "CRN" },
+            { accessorKey: "userInfo.urn", header: "URN" },
             { accessorKey: "userInfo.mentor", header: "Mentor" },
             { accessorKey: "userInfo.batch", header: "Batch" },
             { accessorKey: "userInfo.section", header: "Section" },
@@ -160,7 +160,7 @@ const AdminForm = () => {
 
     const handleLock = async (row) => {
         try {
-            let successMessage = await changeLock(row.original.urn, row.original[selectedTraining].lock, selectedTraining === 'placementData', selectedTraining);
+            let successMessage = await changeLock(row.original.crn, row.original[selectedTraining].lock, selectedTraining === 'placementData', selectedTraining);
             toast.success(successMessage);
             setRefresh(prevRefresh => !prevRefresh);
         } catch (error) {
