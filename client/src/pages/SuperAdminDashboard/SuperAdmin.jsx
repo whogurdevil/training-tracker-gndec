@@ -60,6 +60,9 @@ const SuperAdminForm = () => {
     const navigateToTrainingNames = (data) => {
         return navigate('/superadmin/trainingNames');
     }
+    const navigateToEditProfile = (data) => {
+        return navigate('/admin/editProfile');
+    }
 
     const filteredUsers = useMemo(() => {
         let filteredData = [...users];
@@ -341,6 +344,9 @@ const SuperAdminForm = () => {
                                     <Button onClick={() => navigateToTrainingNames()} variant="contained" color="primary">
                                         Change Training Names
                                     </Button>
+                                        <Button onClick={navigateToEditProfile} variant="contained">
+                                            Change Student Data
+                                        </Button>
                                 </div>
                             </div>
 
