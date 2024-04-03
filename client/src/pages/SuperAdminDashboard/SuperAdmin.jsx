@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import axios from 'axios';
 import { Card, Modal, Box, Typography, Grid, MenuItem, Select, FormControl, InputLabel, Button, LinearProgress, Skeleton } from '@mui/material';
 import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
@@ -12,9 +11,9 @@ const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE
 import VerifyAllComponent from '../../Components/VerifyAll';
 import UnVerifyAllComponent from '../../Components/UnVerifyAll';
 import { useNavigate } from 'react-router-dom';
-import CircularProgress from '@mui/material/CircularProgress';
 import { fetchTrainingNames, initialTrainingNames } from '../../utils/TrainingNamesApi';
 import { fetchUsers, changeLock, viewCertificate } from '../../utils/AdminFunctions';
+import {TextField} from '@mui/material';
 
 const SuperAdminForm = () => {
     const [users, setUsers] = useState([]);
@@ -219,7 +218,7 @@ const SuperAdminForm = () => {
             {loading ? ( // Render loader if loading is true
                 <>
                     <LinearProgress />
-                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '40px', marginBottom: "100px", width: '100vw', height: '100vh' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '40px', marginBottom: "100px", width: '98vw', height: '100vh' }}>
                         <Box
                             sx={{
                                 width: '90vw',
@@ -232,49 +231,48 @@ const SuperAdminForm = () => {
                         >
                             <Skeleton
                                 animation={'wave'}
-                                sx={{ width: '300px', height: '60px', marginLeft: 2, marginBlock: 1}}
-                                
-                                />
-                            <hr/>
+                                sx={{ width: '300px', height: '60px', marginLeft: 2, marginBlock: 1 }}
+
+                            />
+                            <hr />
 
                             <Box
                                 sx={{
-                                    paddingInline:2,
+                                    paddingInline: 2,
                                     display: 'flex',
                                     flexDirection: 'row',
                                     justifyContent: 'space-between'
                                 }}
                             >
-                            <Skeleton
-                                animation={'wave'}
-                                sx={{
-                                    width: '20vw',
-                                    height: '40px'
-                                }}
-                            />
-                            <Skeleton
-                                animation={'wave'}
-                                sx={{
-                                    width: '20vw',
-                                    height: '40px'
-                                }}
-                            />
-                            <Skeleton
-                                animation={'wave'}
-                                sx={{
-                                    width: '20vw',
-                                    height: '40px'
-                                }}
-                            />
-                            <Skeleton
-                                animation={'wave'}
-                                sx={{
-                                    width: '20vw',
-                                    height: '40px'
-                                }}
-                            />
+                                <Skeleton
+                                    animation={'wave'}
+                                    sx={{
+                                        width: '20vw',
+                                        height: '40px'
+                                    }}
+                                />
+                                <Skeleton
+                                    animation={'wave'}
+                                    sx={{
+                                        width: '20vw',
+                                        height: '40px'
+                                    }}
+                                />
+                                <Skeleton
+                                    animation={'wave'}
+                                    sx={{
+                                        width: '20vw',
+                                        height: '40px'
+                                    }}
+                                />
+                                <Skeleton
+                                    animation={'wave'}
+                                    sx={{
+                                        width: '20vw',
+                                        height: '40px'
+                                    }}
+                                />
                             </Box>
-                            
                         </Box>
                     </div>
                 </>
@@ -284,36 +282,57 @@ const SuperAdminForm = () => {
                     <Grid container spacing={2} justifyContent="space-around">
                         <Grid item style={{ marginBottom: 20 }}>
                             <FormControl style={{ width: 200 }}>
-                                <InputLabel>Batch</InputLabel>
-                                <Select value={selectedBatch} onChange={handleBatchChange} MenuProps={{
-                                    PaperProps: {
-                                        style: {
-                                            maxHeight: 200, // Maximum height for the menu
-                                            width: 'auto',
+                                {/* <InputLabel>Batch</InputLabel> */}
+                                {/* <Select value={selectedBatch} onChange={handleBatchChange}
+                                    label={'Batch'}
+                                    MenuProps={{
+                                        PaperProps: {
+                                            style: {
+                                                maxHeight: 200, // Maximum height for the menu
+                                                width: 'auto',
+                                            },
                                         },
-                                    },
-                                }}
-                                    style={{ height: 50 }} >
-                                    <MenuItem value="">All</MenuItem>
+                                    }}
+                                    style={{ height: 50 }} > */}
+                                    <TextField
+                                        select
+                                        value={selectedBatch}
+                                        label={'Batch'}
+                                        variant="outlined"
+                                        fullWidth
+                                        required
+                                        name="Select Batch"
+                                        onChange={handleBatchChange}
+                                    >
+                                    <MenuItem value="" sx={{maxHeight:'200px'}}>All</MenuItem>
                                     {allBatches.map((data, index) => (
                                         <MenuItem key={index} value={data}>{data}</MenuItem>
                                     ))}
-                                </Select>
+                                    </TextField>
+                                {/* </Select> */}
                             </FormControl>
                         </Grid>
                         <Grid item style={{ marginBottom: 20 }}>
                             <FormControl style={{ width: 200 }}>
-                                <InputLabel>Branch</InputLabel>
-                                <Select value={selectedBranch} onChange={handleBranchChange}>
+                                {/* <InputLabel>Branch</InputLabel> */}
+                                <TextField 
+                                select
+                                name={'Select Branch'}
+                                label={'Branch'}
+
+                                value={selectedBranch} onChange={handleBranchChange}>
                                     <MenuItem value="">All</MenuItem>
                                     <MenuItem value="CSE">Computer Science & Engineering</MenuItem>
-                                </Select>
+                                </TextField>
                             </FormControl>
                         </Grid>
                         <Grid item style={{ marginBottom: 20 }}>
                             <FormControl style={{ width: 200 }}>
-                                <InputLabel>Training</InputLabel>
-                                <Select value={selectedTraining} onChange={handleTrainingChange}>
+                                <TextField value={selectedTraining} 
+                                select
+                                label={'Training'}
+                                
+                                onChange={handleTrainingChange}>
                                     <MenuItem value="">All</MenuItem>
                                     {Array.from({ length: trainingNames[0]["Training_No"] }, (_, index) => {
                                         const trainingNumber = index + 1;
@@ -325,9 +344,19 @@ const SuperAdminForm = () => {
                                         );
                                     })}
                                     <MenuItem value="placementData">{trainingNames[0]["Placement_name"]}</MenuItem>
-                                </Select>
+                                </TextField >
 
                             </FormControl>
+                        </Grid>
+                        <Grid item style={{ marginBottom: 20 }}>
+                            <Button onClick={() => navigateToTrainingNames()} variant="contained" color="primary">
+                                Change Training Names
+                            </Button>
+                        </Grid>                        <Grid item style={{ marginBottom: 20 }}>
+
+                            <Button onClick={navigateToEditProfile} variant="contained">
+                                Change Student Data
+                            </Button>
                         </Grid>
                     </Grid>
                     <Card variant="outlined" style={{ marginBottom: '50px' }}>
@@ -341,12 +370,7 @@ const SuperAdminForm = () => {
                                         </Button>
                                     )}
 
-                                    <Button onClick={() => navigateToTrainingNames()} variant="contained" color="primary">
-                                        Change Training Names
-                                    </Button>
-                                        <Button onClick={navigateToEditProfile} variant="contained">
-                                            Change Student Data
-                                        </Button>
+
                                 </div>
                             </div>
 

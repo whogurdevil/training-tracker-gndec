@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import jsPDF from 'jspdf';
-import { Box, Button, Grid, Typography, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { Box, Button, Grid, Typography, FormControl, InputLabel, Select, MenuItem, TextField } from '@mui/material';
 import { useLocation } from 'react-router-dom';
 import BarGraph from '../../Components/Charts/BarGraph';
 import LineGraph from '../../Components/Charts/genderGraph';
@@ -52,10 +52,7 @@ const PlacementStats = () => {
     };
 
     return (
-        <div style={{marginBottom: "100px"}}>
-            <Typography variant="h4" align="center" gutterBottom>
-                Placement Graphs
-            </Typography>
+        <div style={{ marginBottom: "100px" }}>
             <Box
                 sx={{
                     marginTop: '2rem',
@@ -63,15 +60,19 @@ const PlacementStats = () => {
                     justifyContent: 'center',
                 }}
             >
-                
+
                 <FormControl style={{ width: 200 }}>
-                    <InputLabel>Number of Years</InputLabel>
-                    <Select value={selectedYears} onChange={handleYearsChange}>
+
+                    <TextField value={selectedYears}
+                        select
+                        onChange={handleYearsChange}
+                        label="Number of Years"
+                    >
                         <MenuItem value={5}>Last 5 years</MenuItem>
                         <MenuItem value={10}>Last 10 years</MenuItem>
                         <MenuItem value={15}>Last 15 years</MenuItem>
                         <MenuItem value={25}>Last 25 years</MenuItem>
-                    </Select>
+                    </TextField>
                 </FormControl>
             </Box>
 
@@ -128,13 +129,13 @@ const PlacementStats = () => {
                     marginTop: '2rem',
                     display: 'flex',
                     justifyContent: 'center',
-                    gap:'20px'
+                    gap: '20px'
                 }}
             >
                 <Button onClick={handleDownloadPDF} variant="contained" color="primary">
                     Download Statistics (PDF)
                 </Button>
-                <ExportHighestPackageData data={data}/>
+                <ExportHighestPackageData data={data} />
             </Box>
         </div>
     );

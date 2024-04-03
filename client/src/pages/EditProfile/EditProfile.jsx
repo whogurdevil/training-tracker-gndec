@@ -9,7 +9,8 @@ import Grid from '@mui/material/Grid';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import MenuItem from '@mui/material/MenuItem'; 
+import MenuItem from '@mui/material/MenuItem';
+import { CircularProgress, Typography } from '@mui/material';
 // API_URL should point to your backend API endpoint
 const API_URL = 'http://localhost:8000/';
 
@@ -17,12 +18,13 @@ const EditProfile = () => {
     // State variables
     const [showModal, setShowModal] = useState(false); // Controls modal visibility
     const [formData, setFormData] = useState({}); // Stores original fetched data
-    
+
     const [loading, setLoading] = useState(false); // Indicates loading state
     const [fetchError, setFetchError] = useState(false); // Indicates if there's an error fetching data
     const [isEditing, setIsEditing] = useState(false);
     const [crnError, setCrnError] = useState(false); // Indicates if there's an error with the CRN input
     const [crn, setCrn] = useState(''); // Stores the entered CRN
+    const [isChanged, setIsChanged] = useState(false)
 
     // Function to fetch data for a given CRN from the backend
     const fetchData = async () => {
@@ -37,19 +39,19 @@ const EditProfile = () => {
             // Make GET request to fetch data for the given CRN
             const response = await axios.get(`${API_URL}userprofiles/${crn}`, {
                 headers: { 'auth-token': token },
-            }); 
-           
+            });
+
             const data = response.data.data;
             if (data) {
                 setFormData(data);
                 setShowModal(true); // Store fetched data in state
                 setFetchError(false); // Reset fetch error state
             } else {
-                setFetchError(true); 
+                setFetchError(true);
                 setShowModal(true);// Set fetch error state if no data found
             }
         } catch (error) {
-            
+
             console.error('Error fetching data:', error);
             setFetchError(true);
             setShowModal(true); // Set fetch error state in case of error
@@ -61,8 +63,8 @@ const EditProfile = () => {
     // Function to handle edit button click
     const handleEdit = () => {
         // Enable editing mode
-            setIsEditing((prevEditing) => !prevEditing);
-        
+        setIsEditing((prevEditing) => !prevEditing);
+
         // You can implement this functionality based on your requirements
     };
 
@@ -70,7 +72,7 @@ const EditProfile = () => {
     // Function to handle form field changes
     const handleChange = (e) => {
         const { name, value } = e.target;
-
+        setIsChanged(true)
         // Update the formData state directly
         setFormData(prevData => ({
             ...prevData,
@@ -84,7 +86,8 @@ const EditProfile = () => {
         try {
             setLoading(true);
             setFetchError(false)
-            setIsEditing(false);
+            setIsEditing(false)
+            setIsChanged(false)
             const token = localStorage.getItem('authtoken');
             // Make PUT request to update data with editedData
             const response = await axios.post(
@@ -98,14 +101,14 @@ const EditProfile = () => {
                 setLoading(false);
                 setShowModal(false);
                 toast('Succesfully edited data');
-                
+
             } else {
                 toast(json.message);
                 setLoading(false);
                 setShowModal(false);
             }
-          
-             // Close the modal after data is submitted successfully
+
+            // Close the modal after data is submitted successfully
         } catch (error) {
             console.error('Error submitting data:', error);
             toast("Failed to edit data");
@@ -116,7 +119,7 @@ const EditProfile = () => {
     return (
         <Container style={{ marginTop: '100px' }}>
             <Grid container justifyContent="center">
-                <Grid item xs={12} md={4} style={{display:'flex',justifyContent:'center',gap:'10px' , flexDirection:'column'}}>
+                <Grid item xs={12} md={4} style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexDirection: 'column' }}>
                     {/* Input field to enter CRN */}
                     <TextField
                         id="crnInput"
@@ -136,65 +139,78 @@ const EditProfile = () => {
                         }}
                     />
                     {/* Button to trigger fetching data */}
-                    <Button variant="contained" onClick={fetchData}>
-                        Fetch Data
+                    <Button variant="contained" onClick={fetchData} disabled={loading}>
+                        {loading ? <CircularProgress color='inherit' size={24}/> :
+                            <Typography>Fetch Data</Typography>}
                     </Button>
                 </Grid>
             </Grid>
 
             {/* Modal to display fetched data and edit form */}
-            <Modal open={showModal} onClose={() => setShowModal(false)} style={{display:'flex',justifyContent:'center',alignItems:'center'}}>
-                <Box sx={{ width: 'auto', p: 4, bgcolor: 'background.paper', borderRadius: 2 ,maxHeight: '80vh', overflowY: 'auto' }}>
+            <Modal open={showModal} onClose={() => setShowModal(false)} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', }}>
+                <Box sx={{ width: '700px', p: 4, bgcolor: 'background.paper', borderRadius: 2, maxHeight: '80vh', overflowY: 'auto',  }}>
                     {/* Loading indicator while data is being fetched */}
-                    {loading && <LinearProgress />}
+                    {/* {loading && <LinearProgress />} */}
                     {/* Check if there's an error fetching data */}
                     {fetchError ? (
                         <Box sx={{ mb: 2, display: "flex", justifyContent: 'center', flexDirection: 'column' }}>
                             <p>No data found for the provided CRN.</p>
-                       
-                         <Button variant="contained"  onClick={()=>setShowModal(false)} sx={{ mr: 2, mb: 2 }}>
-                                        Cancel
-                                    </Button>
+
+                            <Button variant="contained" onClick={() => setShowModal(false)} sx={{ mr: 2, mb: 2 }}>
+                                Cancel
+                            </Button>
                         </Box>
                     ) : (
                         <>
-                               
-                        <div style={{display:'flex',justifyContent:"space-between"}}>
-                                    <div style={{ display: 'flex', gap:'10px' }}>
-                                    <Button variant="contained" onClick={handleEdit} sx={{ mr: 2, mb: 2 }}>
+
+                            <Box 
+                            sx={{ display: 'flex', justifyContent: "space-between", position: 'relative', height: '50px', bgcolor: 'background.paper' }} >
+                                <div style={{ display: 'flex' }}>
+                                    <Button     
+                                    disabled={loading}
+                                    variant="contained" onClick={handleEdit} sx={{ mr: 2 , mb: 2 }}>
                                         Edit
                                     </Button>
-                                        <Button variant="contained" onClick={() => setShowModal(false)} sx={{ mr: 2, mb: 2 }}>
-                                            Cancel
-                                        </Button>
-                                    </div>
-                                    <Button variant="contained" onClick={handleSubmit} sx={{ mr: 2, mb: 2 }}>
-                                        Submit
+                                    <Button 
+                                    disabled={loading}
+                                    variant="text" onClick={() => {
+                                    setShowModal(false) 
+                                    setIsChanged(false)
+                                    setIsEditing(false)
+                                    }} sx={{ mr: 4, mb: 2 }}>
+                                        Cancel
                                     </Button>
-                        </div>
-                                
-                            {/* Text fields to display and edit fetched data */}
+                                </div>
+                                <Button 
+                                disabled={loading || !isChanged}
+                                variant="contained" onClick={handleSubmit} sx={{ mb: 2 }}>
+                                    {loading ? <CircularProgress size={24} color='inherit'/> : 'Submit'}
+                                </Button>
+                            </Box>
+                            <Box sx={{marginTop: '10px'}}>
+                                <hr/>
+                                {/* Text fields to display and edit fetched data */}
                                 <TextField
                                     label="University Roll Number"
                                     variant="outlined"
-                                    sx={{ mb: 2 }}
+                                    sx={{ mb: 2, marginTop:'20px' }}
                                     fullWidth
                                     placeholder='1234567'
                                     name="urn"
-                                    value={ formData.urn }
+                                    value={formData.urn}
                                     onChange={handleChange}
                                     disabled={!isEditing}
                                 />
-                            <TextField
-                                label="Name"
-                                name="Name"
-                                value={ formData.Name }
-                                onChange={handleChange}
-                                fullWidth
-                                variant="outlined"
-                                sx={{ mb: 2 }}
-                                disabled={!isEditing}
-                            />
+                                <TextField
+                                    label="Name"
+                                    name="Name"
+                                    value={formData.Name}
+                                    onChange={handleChange}
+                                    fullWidth
+                                    variant="outlined"
+                                    sx={{ mb: 2 }}
+                                    disabled={!isEditing}
+                                />
                                 <TextField
                                     label="Mother's Name"
                                     variant="outlined"
@@ -202,7 +218,7 @@ const EditProfile = () => {
                                     fullWidth
                                     placeholder='Mother’s Name'
                                     name="mother"
-                                    value={formData.mother }
+                                    value={formData.mother}
                                     onChange={handleChange}
                                     disabled={!isEditing}
                                 />
@@ -213,7 +229,7 @@ const EditProfile = () => {
                                     fullWidth
                                     placeholder='Father’s Name'
                                     name="father"
-                                    value={ formData.father }
+                                    value={formData.father}
                                     onChange={handleChange}
                                     disabled={!isEditing}
                                 />
@@ -224,7 +240,7 @@ const EditProfile = () => {
                                     fullWidth
                                     placeholder='example@gmail.com'
                                     name="personalMail"
-                                    value={ formData.personalMail }
+                                    value={formData.personalMail}
                                     onChange={handleChange}
                                     disabled={!isEditing}
                                 />
@@ -235,8 +251,8 @@ const EditProfile = () => {
                                     fullWidth
                                     placeholder='9876543210'
                                     name="contact"
-                                    value={ formData.contact }
-                                    onChange={handleChange} 
+                                    value={formData.contact}
+                                    onChange={handleChange}
                                     disabled={!isEditing}
                                 />
 
@@ -246,7 +262,7 @@ const EditProfile = () => {
                                     variant="outlined"
                                     fullWidth
                                     name="section"
-                                    value={ formData.section}
+                                    value={formData.section}
                                     sx={{
                                         mb: 2,
                                         '& .MuiSelect-select': { textAlign: 'left' } // Aligns the selected value to the left
@@ -262,7 +278,7 @@ const EditProfile = () => {
                                     <MenuItem value="D1">D1</MenuItem>
                                     <MenuItem value="D2">D2</MenuItem>
                                 </TextField>
-                                
+
                                 <TextField
                                     select
                                     label="Branch"
@@ -270,7 +286,7 @@ const EditProfile = () => {
                                     sx={{ mb: 2 }}
                                     fullWidth
                                     name="branch"
-                                    value={ formData.branch }
+                                    value={formData.branch}
                                     onChange={handleChange}
                                     disabled={!isEditing}
                                 ><MenuItem value="CSE">Computer Science & Engineering</MenuItem>
@@ -283,7 +299,7 @@ const EditProfile = () => {
                                     required
                                     name="mentor"
                                     placeholder='Your Mentor Name'
-                                    value={ formData.mentor }
+                                    value={formData.mentor}
                                     onChange={handleChange}
                                     disabled={!isEditing}
                                 />
@@ -295,7 +311,7 @@ const EditProfile = () => {
                                     fullWidth
                                     required
                                     name="gender"
-                                    value={ formData.gender }
+                                    value={formData.gender}
                                     onChange={handleChange}
                                     disabled={!isEditing}
                                 >
@@ -309,19 +325,20 @@ const EditProfile = () => {
                                     sx={{ mb: 2 }}
                                     fullWidth
                                     name="admissionType"
-                                    value={ formData.admissionType }
+                                    value={formData.admissionType}
                                     onChange={handleChange}
                                     disabled={!isEditing}
                                 >
                                     <MenuItem value="Non LEET">Non LEET</MenuItem>
                                     <MenuItem value="LEET">LEET</MenuItem>
                                 </TextField>
-                              
+                            </Box>
+
                         </>
                     )}
                 </Box>
             </Modal>
-            <ToastContainer/>
+            <ToastContainer />
         </Container>
     );
 };
