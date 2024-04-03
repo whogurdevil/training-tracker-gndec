@@ -215,7 +215,7 @@ export default function Form() {
             color="primary"
             variant="contained"
             endIcon={<KeyboardArrowRightIcon />}
-            disabled={isSubmitting }
+            disabled={isSubmitting || loading }
             style={{
               position: 'relative',
               float: 'right',

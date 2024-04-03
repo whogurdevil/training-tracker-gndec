@@ -6,6 +6,7 @@ import Admin from '../pages/AdminDashboard/AdminDashboard';
 import Home from '../pages/Home';
 import PlacementStats from '../pages/Placement Graphs/PlacementStats';
 import TrainingNames from '../pages/TrainingNamesController/TrainingNames';
+import EditProfile from '../pages/EditProfile/EditProfile';
 
 const ProtectedRoute = ({ component: Component, path, ...rest }) => {
     const authToken = localStorage.getItem('authtoken');
@@ -32,6 +33,9 @@ const ProtectedRoute = ({ component: Component, path, ...rest }) => {
                 else if(path==='/superadmin/trainingNames'){
                     return <TrainingNames/>
                 }
+                else if(path==='/admin/editProfile'){
+                    return <EditProfile/>
+                }
                 // Redirect superadmin to home if trying to access admin or superadmin route
            else{
                     return <SuperAdmin />;
@@ -39,11 +43,15 @@ const ProtectedRoute = ({ component: Component, path, ...rest }) => {
                
             } else if (userRole === 'admin') {
                 // Redirect admin to home if trying to access superadmin route
-               
-                return <Admin />;
+               if (path === '/admin/editProfile') {
+                return <EditProfile />
+            }else{
+                   return <Admin />;
+            }
+                
             } else {
                 // Redirect to home or another appropriate route if the user doesn't have the required role
-                if (path === '/admin' || path === '/superadmin' || path === '/superadmin/placementStats' || path === '/superadmin/trainingNames') {
+                if (path === '/admin' || path === '/superadmin' || path === '/superadmin/placementStats' || path === '/superadmin/trainingNames' || path==='/admin/editProfile') {
                     return <Home/>;
                 }
                 return <Component {...rest} />;
