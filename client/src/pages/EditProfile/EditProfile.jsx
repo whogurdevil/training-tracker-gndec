@@ -12,7 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import MenuItem from '@mui/material/MenuItem';
 import { CircularProgress, Typography } from '@mui/material';
 // API_URL should point to your backend API endpoint
-const API_URL = 'http://localhost:8000/';
+const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
 
 const EditProfile = () => {
     // State variables
