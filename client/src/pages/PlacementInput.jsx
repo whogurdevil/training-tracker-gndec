@@ -291,6 +291,7 @@ export default function PlacementForm() {
             onClick={handleEdit}
             color="primary"
             variant="contained"
+            disabled={loading}
             style={{
               position: 'relative',
               float: 'left',
@@ -306,7 +307,7 @@ export default function PlacementForm() {
             color="primary"
             variant="contained"
             endIcon={<KeyboardArrowRightIcon />}
-            disabled={isSubmitting}
+            disabled={isSubmitting || loading}
             style={{
               position: 'relative',
               float: 'right',
