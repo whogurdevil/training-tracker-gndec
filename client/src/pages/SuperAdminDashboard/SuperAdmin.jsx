@@ -218,7 +218,7 @@ const SuperAdminForm = () => {
             {loading ? ( // Render loader if loading is true
                 <>
                     <LinearProgress />
-                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '40px', marginBottom: "100px", width: '100vw', height: '100vh' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '40px', marginBottom: "100px", width: '98vw', height: '100vh' }}>
                         <Box
                             sx={{
                                 width: '90vw',
