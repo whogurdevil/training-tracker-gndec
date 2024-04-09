@@ -38,7 +38,7 @@ const Footer = () => {
             onClose={handleTooltipClose}
             title={
               <React.Fragment>
-                <Typography color="inherit">Contributors</Typography>
+                <Typography color="inherit" >Contributors</Typography>
                 <hr/>
                 <Link href={'https://github.com/whogurdevil'} target="_blank">{'Gurdev Singh (2115049)'} <span>
                   <IconButton> <ArrowForwardIosTwoTone fontSize="small" color="primary"/> </IconButton>
@@ -66,6 +66,7 @@ const Footer = () => {
               sx={{
                 color: 'white',
                 textDecoration: 'underline',
+                cursor:'pointer'
 
               }}
               onClick={handleTooltipOpen}
