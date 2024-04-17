@@ -14,7 +14,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { jwtDecode } from "jwt-decode";
-import { Alert, AlertTitle, Grid, LinearProgress } from '@mui/material';
+import { Alert, AlertTitle, Grid, LinearProgress, CircularProgress } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useMediaQuery } from '@mui/material';
 import { convertBatchToDate } from '../utils/DateConvertToFrontend';
@@ -153,6 +153,7 @@ export default function Form() {
   };
 
   const handleSubmit = async (e) => {
+    setLoading(true)
     setShowConfirmation(false)
     e.preventDefault();
     try {
@@ -208,6 +209,7 @@ export default function Form() {
       }
       if (Object.keys(formErrors).length > 0) {
         setErrors(formErrors);
+        setLoading(false)
         return;
       }
       const token = localStorage.getItem('authtoken');
@@ -220,14 +222,17 @@ export default function Form() {
       if (response.data.success) {
         toast.success('Form submitted successfully!');
         setIsSubmitting(true);
+        setLoading(false)
       } else {
         toast.error('Failed to submit form. Please try again later.');
         setIsSubmitting(false);
+        setLoading(false)
       }
     } catch (error) {
       console.error('Error submitting data:', error);
       toast.error('An error occurred while submitting the form.');
       setIsSubmitting(false);
+      setLoading(false)
     }
   };
   const setSection = (value) => {
@@ -501,7 +506,7 @@ export default function Form() {
               Cancel
             </Button>
             <Button variant="contained"  onClick={handleSubmit}>
-              Submit
+              {loading ? <CircularProgress size={24} color='inherit' /> : 'Submit'}
             </Button>
           </div>
         </div>

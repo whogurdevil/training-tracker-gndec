@@ -18,7 +18,7 @@ import { base64toBlob, openBase64NewTab } from '../utils/base64topdf';
 import { technologyStack } from '../utils/technology';
 
 import Autocomplete from '@mui/material/Autocomplete';
-import { LinearProgress } from '@mui/material';
+import { LinearProgress,CircularProgress } from '@mui/material';
 
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : import.meta.env.VITE_DEV_BASE_URL
 
@@ -114,6 +114,7 @@ export default function Form() {
   };
 
   const handleSubmit = async (e) => {
+    setLoading(true)
     e.preventDefault();
     try {
       const formErrors = {};
@@ -144,6 +145,7 @@ export default function Form() {
 
       if (Object.keys(formErrors).length > 0) {
         setErrors(formErrors);
+        setLoading(false)
         return;
       }
 
@@ -160,14 +162,17 @@ export default function Form() {
         toast.success('Form submitted successfully!');
         setIsSubmitting(false);
         setIsEditing(false);
+        setLoading(false)
       } else {
         toast.error('Failed to submit form. Please try again later.');
         setIsSubmitting(false);
+        setLoading(false)
       }
     } catch (error) {
       console.error('Error submitting data:', error);
       toast.error('An error occurred while submitting the form.');
       setIsSubmitting(false);
+      setLoading(false)
     }
   };
 
@@ -221,7 +226,7 @@ export default function Form() {
               float: 'right',
             }}
           >
-            Submit
+              {loading ? <CircularProgress size={24} color='inherit' /> : 'Submit'}
           </Button>
         )}
         {!isEditing && certificate &&  (

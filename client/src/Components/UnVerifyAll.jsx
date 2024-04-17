@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,CircularProgress } from '@mui/material';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -8,6 +8,7 @@ const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE
 
 const UnVerifyAllComponent = ({ selectedTraining , onRefresh, refresh}) => {
     const [open, setOpen] = useState(false);
+        const [loading,setLoading]=useState(false);
     
 
     const handleUnVerifyAll = async () => {
@@ -16,6 +17,7 @@ const UnVerifyAllComponent = ({ selectedTraining , onRefresh, refresh}) => {
 
     const handleConfirmUnVerifyAll = async () => {
         try {
+            setLoading(true)
             const token = localStorage.getItem('authtoken');
             let url = '';
 
@@ -27,6 +29,7 @@ const UnVerifyAllComponent = ({ selectedTraining , onRefresh, refresh}) => {
                 url = `${API_URL}tr${trainingNumber}/unverifyall`;
             } else {
                 console.error('Selected training is not valid.');
+                setLoading(false)
                 return;
             }
 
@@ -40,12 +43,15 @@ const UnVerifyAllComponent = ({ selectedTraining , onRefresh, refresh}) => {
             if (response.data.success) {
                 toast.success('All users unverified successfully!');
                 onRefresh();
+                setLoading(false)
             } else {
                 toast.error('Failed to unverify all users.');
+                setLoading(false)
             }
         } catch (error) {
             console.error('Error unVerifying all users:', error);
             toast.error('Error unVerifying all users.');
+            setLoading(false)
         } finally {
             setOpen(false);
         }
@@ -70,7 +76,7 @@ const UnVerifyAllComponent = ({ selectedTraining , onRefresh, refresh}) => {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleConfirmUnVerifyAll} color="primary">
-                        Yes
+                        {loading ? <CircularProgress size={24} color='inherit' /> : 'Yes'}
                     </Button>
                     <Button onClick={handleClose} color="primary" autoFocus>
                         No

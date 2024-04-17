@@ -17,7 +17,7 @@ import { jwtDecode } from "jwt-decode";
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LinearProgress } from '@mui/material';
+import { LinearProgress , CircularProgress } from '@mui/material';
 
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : import.meta.env.VITE_DEV_BASE_URL
 
@@ -155,6 +155,7 @@ export default function PlacementForm() {
   };
 
   const handleSubmit = async (e) => {
+    setLoading(true)
     e.preventDefault();
     try {
       // Form validation
@@ -196,6 +197,7 @@ export default function PlacementForm() {
 
       if (Object.keys(formErrors).length > 0) {
         setErrors(formErrors);
+        setLoading(false)
         return;
       }
       const token = localStorage.getItem('authtoken');
@@ -214,14 +216,17 @@ export default function PlacementForm() {
         toast.success('Placement details submitted successfully!');
         setIsSubmitting(false);
         setIsEditing(false);
+        setLoading(false)
       } else {
         toast.error('Failed to submit placement details. Please try again later.');
         setIsSubmitting(false);
+        setLoading(false)
       }
     } catch (error) {
       console.error('Error submitting data:', error);
       toast.error('An error occurred while submitting the placement details.');
       setIsSubmitting(false);
+      setLoading(false)
     }
   };
 
@@ -313,7 +318,7 @@ export default function PlacementForm() {
               float: 'right',
             }}
           >
-            Submit
+              {loading ? <CircularProgress size={24} color='inherit' /> : 'Submit'}
           </Button>
         )}
         <div style={{

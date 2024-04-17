@@ -5,7 +5,7 @@ import {
     Tooltip,
     Legend
 } from 'chart.js';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
+// import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { CircularProgress } from '@mui/material';
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -13,7 +13,7 @@ Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 const CompanyGraph = forwardRef(({ data, years }, ref) => {
     const [chartData, setChartData] = useState(null);
     
-    Chart.register(ChartDataLabels);
+    // Chart.register(ChartDataLabels);
 
     useEffect(() => {
         if (data) {
@@ -40,24 +40,29 @@ const CompanyGraph = forwardRef(({ data, years }, ref) => {
                 }
             });
 
-            const labels = Object.keys(batchWiseData);
+            const labels = Object.keys(batchWiseData).sort(); // Sort the labels array
             const maxPackages = labels.map((year) => (batchWiseData[year]?.maxPackage) / 100000 || 0);
+            const companyPackageInfo = labels.map((year) => ({
+                company: batchWiseData[year]?.maxCompany || '',
+                package: batchWiseData[year]?.maxPackage || 0
+            }));
 
             setChartData({
                 labels: labels,
-
                 datasets: [
                     {
                         label: 'Maximum Package',
                         data: maxPackages,
                         backgroundColor: 'rgb(255, 99, 132)',
                         borderColor: 'rgb(255, 99, 132)',
-                        borderWidth: 1
+                        borderWidth: 1,
+                        companyPackageInfo: companyPackageInfo // Embed company and package info
                     }
                 ]
             });
         }
     }, [data, years]);
+
 
     return (
         <div style={{
@@ -65,7 +70,9 @@ const CompanyGraph = forwardRef(({ data, years }, ref) => {
             height: '290px'
         }}>
             {chartData ? (
+                
                 <>
+                    {console.log(chartData)}
                     <Bar
                         ref={ref}
                         data={chartData}
@@ -101,7 +108,10 @@ const CompanyGraph = forwardRef(({ data, years }, ref) => {
                                         label: function (context) {
                                             const label = context.dataset.label || '';
                                             if (label) {
-                                                return [label, `Company: ${data[context.dataIndex].placementData.company}`, `Package: ${data[context.dataIndex].placementData.package}`];
+                                                // Access embedded company and package info from dataset
+                                                const companyPackageInfo = context.dataset.companyPackageInfo[context.dataIndex];
+                                                console.log(companyPackageInfo)
+                                                return [`Company: ${companyPackageInfo.company}`, `Package: ${companyPackageInfo.package}`];
                                             }
                                             return null;
                                         },
