@@ -16,6 +16,7 @@ import PlacementStats from './pages/Placement Graphs/PlacementStats';
 import TrainingNames from './pages/TrainingNamesController/TrainingNames';
 import Footer from './Components/Footer';
 import EditProfile from './pages/EditProfile/EditProfile';
+
 class App extends Component {
   render() {
     return (
