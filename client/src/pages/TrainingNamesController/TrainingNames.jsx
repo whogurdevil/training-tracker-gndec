@@ -14,7 +14,7 @@ const TrainingNames = () => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get(`${API_URL}api/admin/trainingNames`);
+                const response = await axios.get(`${API_URL}admin/trainingNames`);
                 setTrainingNames(response.data.data[0]);
                 setTrainingCount(response.data.data[0]["Training_No"]);
 
@@ -42,7 +42,7 @@ const TrainingNames = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem("authtoken");
-            const url = `${API_URL}api/admin/trainingNames`
+            const url = `${API_URL}admin/trainingNames`
             const response = await axios.post(url, trainingNames, {
                 headers: {
                     "auth-token": token
