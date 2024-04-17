@@ -7,7 +7,7 @@ import axios from 'axios';
 import { fetchTrainingNames, initialTrainingNames } from '../utils/TrainingNamesApi';
 
 
-const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
+const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : import.meta.env.VITE_DEV_BASE_URL
 
 const Home = () => {
     const [batchYear, setBatchYear] = useState(null);
@@ -20,7 +20,7 @@ const Home = () => {
             try {
                 const token = localStorage.getItem("authtoken");
                 const crn = decodeAuthToken(token);
-                const url = `${API_URL}api/users/getuser/${crn}`
+                const url = `${API_URL}users/getuser/${crn}`
                 const response = await axios.get(url, {
                     headers: {
                         "auth-token": token

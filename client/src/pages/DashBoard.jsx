@@ -20,7 +20,7 @@ import { useMediaQuery } from '@mui/material';
 import { convertBatchToDate } from '../utils/DateConvertToFrontend';
 import Modal from '@mui/material/Modal';
 
-const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
+const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : import.meta.env.VITE_DEV_BASE_URL
 
 
 export default function Form() {

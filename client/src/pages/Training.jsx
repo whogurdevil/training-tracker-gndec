@@ -20,7 +20,7 @@ import { technologyStack } from '../utils/technology';
 import Autocomplete from '@mui/material/Autocomplete';
 import { LinearProgress } from '@mui/material';
 
-const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
+const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : import.meta.env.VITE_DEV_BASE_URL
 
 
 export default function Form() {

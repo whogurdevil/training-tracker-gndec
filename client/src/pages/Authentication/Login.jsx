@@ -14,7 +14,7 @@ import Container from '@mui/material/Container';
 import CircularProgress from '@mui/material/CircularProgress'; // Import CircularProgress
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from "react-router-dom";
-const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
+const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : import.meta.env.VITE_DEV_BASE_URL
 
 function Login() {
   const [credentials, setCredentials] = useState({ crn: '', password: '' });
@@ -59,7 +59,7 @@ function Login() {
         return;
       }
 
-      const response = await fetch(`${API_URL}api/auth/login`, {
+      const response = await fetch(`${API_URL}auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials),

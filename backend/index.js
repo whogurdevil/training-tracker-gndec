@@ -28,12 +28,12 @@ const tr104=require('./routes/UserProfileData/Training4')
 const placementData=require('./routes/UserProfileData/PlacementData')
 const adminControl=require('./routes/adminControlRoutes/adminControl')
 
-app.use('/userprofiles', userProfileRoutes);
-app.use('/tr101',tr101)
-app.use('/tr102',tr102)
-app.use('/tr103',tr103)
-app.use('/tr104',tr104)
-app.use('/placement',placementData)
+app.use('/api/userprofiles', userProfileRoutes);
+app.use('/api/tr101',tr101)
+app.use('/api/tr102',tr102)
+app.use('/api/tr103',tr103)
+app.use('/api/tr104',tr104)
+app.use('/api/placement',placementData)
 app.use('/api/auth', authRoute);
 app.use('/api/users', userRoute);
 app.use('/api/validate', validateRoute);

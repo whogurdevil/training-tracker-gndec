@@ -2,11 +2,11 @@
 
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/';
+const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : import.meta.env.VITE_DEV_BASE_URL;
 
 export const fetchTrainingNames = async () => {
     try {
-        const response = await axios.get(`${API_URL}api/admin/trainingNames`);
+        const response = await axios.get(`${API_URL}admin/trainingNames`);
         return response.data.data;
     } catch (error) {
         console.error('Error fetching training names:', error);

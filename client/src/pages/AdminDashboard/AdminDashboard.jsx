@@ -12,7 +12,7 @@ import { useLocation } from 'react-router-dom';
 import VerifyAllComponent from '../../Components/VerifyAll';
 import ExportComponent from '../../Components/ExportData';
 import CircularProgress from '@mui/material/CircularProgress';
-const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
+const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : import.meta.env.VITE_DEV_BASE_URL
 import UnVerifyAllComponent from '../../Components/UnVerifyAll';
 
 import { fetchUsers, changeLock, getTrainingOptions , viewCertificate } from '../../utils/AdminFunctions';

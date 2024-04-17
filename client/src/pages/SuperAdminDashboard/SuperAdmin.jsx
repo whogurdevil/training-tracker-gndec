@@ -7,7 +7,7 @@ import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ExportComponent from '../../Components/ExportData';
-const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/'
+const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : import.meta.env.VITE_DEV_BASE_URL
 import VerifyAllComponent from '../../Components/VerifyAll';
 import UnVerifyAllComponent from '../../Components/UnVerifyAll';
 import { useNavigate } from 'react-router-dom';

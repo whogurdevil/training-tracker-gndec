@@ -1,11 +1,11 @@
 import axios from 'axios';
 import {  openBase64NewTab } from './base64topdf';
-const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : 'http://localhost:8000/';
+const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : import.meta.env.VITE_DEV_BASE_URL;
 
 export const fetchUsers = async () => {
     try {
         const token = localStorage.getItem('authtoken');
-        const response = await axios.get(`${API_URL}api/users/getallusers/`, {
+        const response = await axios.get(`${API_URL}users/getallusers/`, {
             headers: {
                 "auth-token": token
             }
