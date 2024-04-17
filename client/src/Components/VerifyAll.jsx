@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,CircularProgress } from '@mui/material';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -8,12 +8,13 @@ const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE
 
 const VerifyAllComponent = ({ selectedTraining, refresh, onRefresh }) => {
     const [open, setOpen] = useState(false);
-
+    const [loading, setLoading] = useState(false);
     const handleVerifyAll = async () => {
         setOpen(true);
     };
     const handleConfirmVerifyAll = async () => {
         try {
+            setLoading(true);
             const token = localStorage.getItem('authtoken');
             let url = '';
 
@@ -25,6 +26,7 @@ const VerifyAllComponent = ({ selectedTraining, refresh, onRefresh }) => {
                 url = `${API_URL}tr${trainingNumber}/verifyall`;
             } else {
                 console.error('Selected training is not valid.');
+                setLoading(false)
                 return;
             }
 
@@ -38,12 +40,15 @@ const VerifyAllComponent = ({ selectedTraining, refresh, onRefresh }) => {
             if (response.data.success) {
                 toast.success('All users verified successfully!');
                 onRefresh(); // Trigger refresh in the parent component
+                setLoading(false)
             } else {
                 toast.error('Failed to verify all users.');
+                setLoading(false)
             }
         } catch (error) {
             console.error('Error verifying all users:', error);
             toast.error('Error verifying all users.');
+            setLoading(false)
         } finally {
             setOpen(false);
         }
@@ -69,7 +74,7 @@ const VerifyAllComponent = ({ selectedTraining, refresh, onRefresh }) => {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleConfirmVerifyAll} color="primary">
-                        Yes
+                        {loading ? <CircularProgress size={24} color='inherit' /> : 'Yes'}
                     </Button>
                     <Button onClick={handleClose} color="primary" autoFocus>
                         No
