@@ -21,7 +21,7 @@ setInterval(cleanUpExpiredOTPs, 1800000);
 
 // Modified /forgotpassword route
 router.post('/forgotpassword', body('email').custom((value) => {
-  // Check if the email ends with "@gmail.com"
+  // Check if the email ends with "@gndec.ac.in"
   if (!value.endsWith('@gndec.ac.in')) {
     throw new Error('Email must end with @gndec.ac.in');
   }
