@@ -7,9 +7,8 @@ const generateOTP = require('../password/generateotp');
 router.use(express.json());
 const storedOTPs = {};
 router.post('/sendotp', body('email').custom((value) => {
-    // Check if the email ends with "@gmail.com"
     // if (!value.endsWith('@gndec.ac.in')) {
-        if (!value.endsWith('@gmail.com')) {
+        if (!value.endsWith('@gndec.ac.in')) {
         throw new Error('Email must end with @gndec.ac.in');
     }
     return true; // Return true if validation passes
