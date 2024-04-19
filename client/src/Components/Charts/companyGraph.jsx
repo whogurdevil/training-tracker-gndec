@@ -72,7 +72,6 @@ const CompanyGraph = forwardRef(({ data, years }, ref) => {
             {chartData ? (
                 
                 <>
-                    {console.log(chartData)}
                     <Bar
                         ref={ref}
                         data={chartData}
@@ -110,7 +109,6 @@ const CompanyGraph = forwardRef(({ data, years }, ref) => {
                                             if (label) {
                                                 // Access embedded company and package info from dataset
                                                 const companyPackageInfo = context.dataset.companyPackageInfo[context.dataIndex];
-                                                console.log(companyPackageInfo)
                                                 return [`Company: ${companyPackageInfo.company}`, `Package: ${companyPackageInfo.package}`];
                                             }
                                             return null;

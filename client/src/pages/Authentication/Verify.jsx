@@ -34,7 +34,7 @@ function Verify() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}api/validate/sendotp`, {
+      const response = await fetch(`${API_URL}validate/sendotp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: credentials.email }),
@@ -61,7 +61,7 @@ function Verify() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}api/validate/verify`, {
+      const response = await fetch(`${API_URL}validate/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ otp: credentials.otp }),
