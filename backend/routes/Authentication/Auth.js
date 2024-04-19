@@ -11,10 +11,10 @@ router.post('/signup',
   body('password', 'password should have a minimum length of 5').isLength({ min: 5 }),
   body('email').custom((value) => {
     // Check if the email ends with "@gndec.ac.in"
-    const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    const gndecEmailRegex = /^[A-Za-z0-9._%+-]+[0-9]{7}@gndec\.ac\.in$/;
     // if (!emailRegex.test(value) || !value.endsWith('@gndec.ac.in')) {
-    if (!emailRegex.test(value)) {
-      throw new Error('Invalid email format or not a gndec mail');
+    if (!gndecEmailRegex.test(value)) {
+      throw new Error('Invalid email format or not a gndec mail or not having 7 number crn in it');
     }
     return true; // Return true if validation passes
   }),

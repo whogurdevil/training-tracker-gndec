@@ -14,14 +14,11 @@ const ExportHighestPackageData = ({ data }) => {
         // Iterate through the data to find the student with the highest package for each batch
         data.map((student, index) => {
             const batch = student.userInfo.batch;
-            console.log("batch",batch)
             const currentPackage = student.placementData.package;
-            console.log("currentPackage",currentPackage);
             if (
                     !batchMap.has(batch) ||
                     currentPackage > batchMap.get(batch).student.placementData.package
             ) {
-                console.log("hi")
                 batchMap.set(batch, { index, student });
             }
         });

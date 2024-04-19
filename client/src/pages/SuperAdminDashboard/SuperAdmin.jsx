@@ -33,7 +33,6 @@ const SuperAdminForm = () => {
                 const usersData = await fetchUsers();
                 setUsers(usersData.users);
                 setallBatches(usersData.batches)
-                console.log(usersData.batches)
                 setLoading(false);
             } catch (error) {
                 setLoading(false);
@@ -48,7 +47,6 @@ const SuperAdminForm = () => {
             }
         };
 
-        console.log(users)
         loadTrainingNames();
         fetchData();
     }, [refresh]);

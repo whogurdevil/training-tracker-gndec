@@ -26,7 +26,7 @@ function Login() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}api/password/forgotpassword`, {
+      const response = await fetch(`${API_URL}password/forgotpassword`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: credentials.email }),
@@ -52,7 +52,7 @@ function Login() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}api/password/resetpassword`, {
+      const response = await fetch(`${API_URL}password/resetpassword`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
