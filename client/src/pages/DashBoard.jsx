@@ -333,7 +333,7 @@ export default function Form() {
                 variant="outlined"
                 fullWidth
                 required
-                placeholder='example@gmail.com'
+                placeholder='example@gndec.ac.in'
                 name="personalMail"
                 value={formData.personalMail}
                 onChange={handleChange}
