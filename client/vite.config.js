@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     proxy: {
       // Proxy options
-      '/training-tracker/assets': {
+      '/assets': {
         target: 'http://127.0.0.1:5500/',
         changeOrigin: true,
         secure: false,
