@@ -1,21 +1,17 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
 export default defineConfig({
-  plugins: [react()],
-  server: {
-    proxy: {
-      // Proxy options
-      '/assets': {
-        target: 'http://127.0.0.1:5500/',
-        changeOrigin: true,
-        secure: false,
-        headers: {
-          'Access-Control-Allow-Origin': '*', // or specific origin
-          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-          'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization'
-        }
-      }
-    }
-  }
+ base: "/",
+ plugins: [react()],
+ preview: {
+  port: 8080,
+  strictPort: true,
+ },
+ server: {
+  port: 8080,
+  strictPort: true,
+  host: true,
+  origin: "http://0.0.0.0:8080",
+ },
 });
