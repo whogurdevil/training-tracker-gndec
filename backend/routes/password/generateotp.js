@@ -17,17 +17,19 @@ const sendOTP = (email, validate) => {
     });
     const resultBody = validate === "Verification" ? `
     <p>Hello ${frontName}!</p>
-    <p>Welcome to the Training Data Portal! 🎉 Verify your account using the OTP provided below:</p>
-    <p><b>🔒 Verification OTP: ${otp} 🔒</b></p>
+    <p>Welcome to the Training Data Portal! Verify your account using the OTP provided below:</p>
+    <p><b>Verification OTP: ${otp} 🔒</b></p>
     <p>Best regards,</p>
-    <p>Training Co-ordinator Team 🏅</p>` :
+    <p>Training Co-ordinator</p> 
+    <p>GNDEC Ludhiana</p>` : 
     `<p>Hello ${frontName}! </p>
     <p>We received a request to reset your password for your Training Data Portal account. Use the OTP provided below to proceed with the reset:</p>
-    <p><b>🔒 Reset OTP: ${otp} 🔒</b></p>
+    <p><b> Reset OTP: ${otp} </b></p>
     <p>If you didn't request a password reset, please ignore this email. Your account is safe, and no action is required.</p>
     <p>For any assistance, contact [Support Email/Phone]. We're here to help you!</p>
     <p>Best regards,</p>
-    <p>Training Co-ordinator Team, GNDEC</p>`;
+    <p>Training Co-ordinator</p>
+    <p>GNDEC Ludhiana</p>`;
 
     const resultSubject = validate === "Verification" ? "🏅 Training Data Portal: Verify Your Account 🏅" : "🔑 Password Reset: Training Data Portal  🔑"
     const mailOptions = {

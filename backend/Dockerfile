@@ -21,8 +21,8 @@ EXPOSE 8000
 ENV DATABASE='mongodb://mongo:27017/db'
 ENV PORT=8000
 ENV JWT_TOKEN='$Top$Secret$Resume$$Portal'
-ENV PASSWORD='pmuljdxwaedmynac'
-ENV EMAIL='arorasam2109@gmail.com'
+ENV PASSWORD='vnknglpysmgtugod'
+ENV EMAIL='csetraininggndec@gmail.com'
 
 
 # Specify the command to run when the container starts

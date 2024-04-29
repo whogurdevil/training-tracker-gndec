@@ -19,7 +19,7 @@ services:
       context: ./client
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"  # Adjust the port if needed
+      - "3000:3000"  # Adjust the port if needed
     # environment:
     #   - REACT_APP_API_URL=http://backend:3001  # Point to your backend service
 
