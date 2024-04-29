@@ -14,12 +14,17 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : import.meta.env.VITE_DEV_BASE_URL
 
 function Login() {
   const [credentials, setCredentials] = useState({ email: '', otp: '', newPassword: '' });
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [showOtpField, setShowOtpField] = useState(false);
 
   const handleGetOtp = async () => {
@@ -132,18 +137,30 @@ function Login() {
             )}
             {showOtpField && (
               <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="newPassword"
-                label="New Password"
-                type="password"
-                value={credentials.newPassword}
-                onChange={onChange}
-                InputProps={{
-                  sx: { padding: '8px' },
-                }}
-              />
+              margin="normal"
+              required
+              fullWidth
+              name="newPassword"
+              label="New Password"
+              value={credentials.newPassword}
+              type={showPassword ? 'text' : 'password'} // Show password text if showPassword is true
+              onChange={handleChange}
+              error={Boolean(errors.newPassword)}
+              helperText={errors.newPassword}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      onMouseDown={(e) => e.preventDefault()}
+                    >
+                      {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
             )}
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
