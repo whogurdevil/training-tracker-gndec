@@ -44,7 +44,7 @@ async function initializeUsers() {
         const user1 = new SignUp({
             crn: "Tr000",
             email: "superadmin@gmail.com",
-            password: "$2b$10$IbUz.xayDPWiNLcbQoIqqOHucE.5EwPQAfeMSx0JC0IUT.pGeJlHG",
+            password: "$2b$10$Ic1aWmmauO7H.sJqZhD1cO8rSiMOe9tPisZRxsH9IHiwIyTSjogZC",
             role: "superadmin",
             isVerified: true,
             userInfo: {
@@ -61,7 +61,7 @@ async function initializeUsers() {
         const user2 = new SignUp({
             crn: "Tr101",
             email: "training101@gmail.com",
-            password: "$2b$10$3kZDoENoeP/VPHuEm5xWT.sXKz5dGycptnjtLyd8fBLA9hBoiUPu2",
+            password: "$2b$10$aMjiZo7e3QLqF8RZtlXmGeBjOdLuRKeTMhk/4b/9N7Hc5iw/itUkK",
             role: "admin",
             isVerified: true,
             userInfo: {
@@ -78,7 +78,7 @@ async function initializeUsers() {
         const user3 = new SignUp({
             crn: "Tr102",
             email: "training102@gmail.com",
-            password: "$2b$10$YdkjLd1seFbyt6B9/UPdoeSU.YajF8lNC5KWwz6UZu5aP06jqAj3u",
+            password: "$2b$10$NWG7K2Mj7STpFFigLGZcF.XV2szRiZd7bM7t09ASUTkJzqQI65KRy",
             role: "admin",
             isVerified: true,
             userInfo: {
@@ -95,7 +95,7 @@ async function initializeUsers() {
         const user4 = new SignUp({
             crn: "Tr103",
             email: "training103@gmail.com",
-            password: "$2b$10$Gwu4BWavhNVbsB7viAiuv.MYKu2/vNIH0SbiqDjYCH00JoIIDL1c6",
+            password: "$2b$10$Qmoedh5anxn1hVYBoKvMceqlfXL6vjlMuDB.N2MvEBzC0DEkjQe1Sy",
             role: "admin",
             isVerified: true,
             userInfo: {
@@ -112,7 +112,7 @@ async function initializeUsers() {
         const user5 = new SignUp({
             crn: "Tr104",
             email: "training104@gmail.com",
-            password: "$2b$10$TQC/NMdX9JC4tpXJI68MnOk8VH/oevxmAU.sjB56ki/hh4QPLfib2",
+            password: "$2b$10$zZH2klzWP1SJm0e4BCGEIOxymEO4.oCxbuc00mHp/bL/qxR8CdDqS",
             role: "admin",
             isVerified: true,
             userInfo: {
