@@ -70,7 +70,7 @@ function Verify() {
       const json = await response.json();
 
       if (json.success) {
-        toast('Successfully logged in');
+        toast('Verified Successfuly');
         setLoading(false);
 
         setTimeout(() => {
