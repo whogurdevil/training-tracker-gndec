@@ -6,7 +6,7 @@ require('dotenv').config();
 const db = async () => {
     try {
         await mongoose.connect(process.env.DATABASE);
-        console.log("connected to mongodb successfully")
+        console.log("connected mongodb successfully")
 
         const adminControlsCount = await adminControl.countDocuments({});
         if (adminControlsCount === 0) {
