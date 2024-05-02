@@ -144,9 +144,7 @@ function Login() {
               label="New Password"
               value={credentials.newPassword}
               type={showPassword ? 'text' : 'password'} // Show password text if showPassword is true
-              onChange={handleChange}
-              error={Boolean(errors.newPassword)}
-              helperText={errors.newPassword}
+              onChange={onChange}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">

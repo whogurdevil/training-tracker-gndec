@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const signUp = require('../../models/UserInfo').Signup;
+const signUp = require('../../models/UserInfo').SignUp;
 const { body, validationResult } = require('express-validator');
 const generateOTP = require('./generateotp');
 router.use(express.json());
@@ -22,6 +22,7 @@ setInterval(cleanUpExpiredOTPs, 1800000);
 // Modified /forgotpassword route
 router.post('/forgotpassword', body('email').custom((value) => {
   // Check if the email ends with "@gndec.ac.in"
+ 
   if (!value.endsWith('@gndec.ac.in')) {
     throw new Error('Email must end with @gndec.ac.in');
   }
@@ -34,9 +35,9 @@ router.post('/forgotpassword', body('email').custom((value) => {
   }
   try {
     const { email } = req.body;
-    
+ 
       // Check if the user with the provided email exists in your database
-      const user = await signUp.findOne({ email });
+      const user = await signUp.findOne({ email:email });
       if (!user) {
         return res.status(400).json({ success: false, message: "User with this email does not exist" });
       }
