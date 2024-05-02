@@ -166,7 +166,7 @@ function Verify() {
             sx={{ mt: 3, mb: 2 }}
             disabled={loading}
           >
-            {loading ? <CircularProgress size={24} color="primary" /> : 'Go to Mail.Gndec.ac.in'}
+            {'Go to Mail.Gndec.ac.in'}
           </Button>
         </Box>
       </Box>

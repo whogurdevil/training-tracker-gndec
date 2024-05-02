@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const signUp = require('../../models/UserInfo').SignUp;
 const { body, validationResult } = require('express-validator');
 const generateOTP = require('./generateotp');
+const isAdmin = require('../../middleware/isAdmin');
 router.use(express.json());
 const storedOTPs = {};
 
@@ -91,5 +92,43 @@ router.post('/resetpassword', body('password', 'password should have a minimum l
     return res.status(500).json({ success: false, message: "Internal server error occurred" });
   }
 });
+router.post('/updatepassword',isAdmin,
+  body('crn').custom(value => {
+    // Validate CRN format (assuming it's a 7-digit number or starts with 'Tr' followed by 3 digits)
+    if (!/^\d{7}$|^Tr\d{3}$/.test(value)) {
+      throw new Error('Invalid CRN format');
+    }
+    return true;
+  }),
+  body('password', 'Password should have a minimum length of 8').isLength({ min: 8 }),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ success: false, errors: errors.array() });
+      }
 
+      const { crn, password } = req.body;
+
+      // Find user by CRN
+      const user = await signUp.findOne({ crn });
+      if (!user) {
+        return res.status(404).json({ success: false, message: "User not found" });
+      }
+
+      // Hash the new password
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+      // Update user's password
+      user.password = hashedPassword;
+      await user.save();
+
+      return res.status(200).json({ success: true, message: "Password updated successfully" });
+    } catch (error) {
+      console.error("Password update error:", error);
+      return res.status(500).json({ success: false, message: "Internal server error occurred" });
+    }
+  }
+);
 module.exports = router;

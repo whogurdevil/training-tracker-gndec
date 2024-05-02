@@ -338,9 +338,6 @@ export default function PlacementForm() {
           )}
         </div>
       </Container>
-      <Typography variant="h5" gutterBottom>
-        Please fill in your placement details below.
-      </Typography>
 
       <Grid item xs={12} md={6}>
         <TextField
