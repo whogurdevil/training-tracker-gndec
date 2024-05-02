@@ -7,11 +7,12 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"  # Adjust the port if needed
+      - "8443:8443"
     depends_on:
       - mongo
-    # environment:
-    #   - MONGODB_URI=mongodb://mongo:27017/db
+    restart: always
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/db
 
   frontend:
     container_name: frontend
@@ -19,13 +20,18 @@ services:
       context: ./client
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"  # Adjust the port if needed
-    # environment:
-    #   - REACT_APP_API_URL=http://backend:3001  # Point to your backend service
+      - "3000:3000"
+    restart: always
 
   mongo:
     container_name: mongo
     image: mongo
     ports:
-      - "27017:27017"  # Expose MongoDB port
+      - "27017:27017"
+    restart: always
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:
 

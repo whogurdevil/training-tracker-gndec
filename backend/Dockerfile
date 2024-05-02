@@ -16,14 +16,6 @@ COPY . .
 # Expose the port on which the application will run (if needed)
 EXPOSE 8000
 
-# Set environment variables
-# ENV DATABASE='mongodb+srv://arorasam2109:p12n1nkuZ069R9tw@resumeportal.s0562nv.mongodb.net/?retryWrites=true&w=majority&appName=ResumePortal'
-ENV DATABASE='mongodb://mongo:27017/db'
-ENV PORT=8000
-ENV JWT_TOKEN='$Top$Secret$Resume$$Portal'
-ENV PASSWORD='vnknglpysmgtugod'
-ENV EMAIL='csetraininggndec@gmail.com'
-
 
 # Specify the command to run when the container starts
 CMD ["node", "index.js"]
