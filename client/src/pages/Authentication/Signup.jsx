@@ -57,7 +57,7 @@ function Signup() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if(name==="email"){
+    if (name === "email") {
       let crn = '';
       const match = value.match(/\d+/);
       if (match) {
@@ -73,7 +73,7 @@ function Signup() {
         ...prevErrors,
         [name]: validateField(name, crn),
       }));
-    
+
     }
     setCredentials((prevCredentials) => ({
       ...prevCredentials,
@@ -124,7 +124,7 @@ function Signup() {
       setLoading(false);
     }
   };
- const handleConfirm = async () => {
+  const handleConfirm = async () => {
     setLoading(true);
 
     try {
@@ -164,7 +164,7 @@ function Signup() {
   const theme = createTheme();
 
   return (
-    <Container component="main" maxWidth="xs" sx={{ pb: 5 , mt: 5 }} style={{marginBottom:"50px"}}>
+    <Container component="main" maxWidth="xs" sx={{ pb: 5, mt: 5 }} style={{ marginBottom: "50px" }}>
       <CssBaseline />
       <ToastContainer />
       <Box
@@ -180,20 +180,20 @@ function Signup() {
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
-        <Box  sx={{ mt: 1 }}>
+        <Box sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             required
             fullWidth
             id="email"
-          placeholder='nameCRN@gndec.ac.in'
+            placeholder='nameCRN@gndec.ac.in'
             label="Email Address"
             name="email"
             value={credentials.email}
             onChange={handleChange}
             error={Boolean(errors.email)}
             helperText={errors.email}
-           
+
           />
           <TextField
             margin="normal"
@@ -231,7 +231,7 @@ function Signup() {
             onChange={handleChange}
             error={Boolean(errors.confirmPassword)}
             helperText={errors.confirmPassword}
-           
+
           />
           <TextField
             margin="normal"
@@ -254,7 +254,7 @@ function Signup() {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
             disabled={loading}
-            onClick={()=>setShowModal(true)}
+            onClick={() => setShowModal(true)}
           >
             {loading ? (
               <CircularProgress size={24} color="primary" /> // Render CircularProgress if loading is true
@@ -274,16 +274,16 @@ function Signup() {
       </Box>
       <Modal open={showModal} onClose={() => setShowModal(false)}>
         <Box sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            bgcolor: 'background.paper',
-            boxShadow: 24,
-            p: 4,
-            borderRadius:5
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          bgcolor: 'background.paper',
+          boxShadow: 24,
+          p: 4,
+          borderRadius: 5
         }}>
-          <Typography variant="h6"  fontWeight={'bold'} gutterBottom>
+          <Typography variant="h6" fontWeight={'bold'} gutterBottom>
             Confirm data before submitting
           </Typography>
           <Typography variant="body1" >
@@ -296,17 +296,17 @@ function Signup() {
             CRN: {credentials.crn}
           </Typography>
           <Alert
-          sx={{marginTop:5}}
+            sx={{ marginTop: 5 }}
             severity='info'
           >This information will be used for official data storage in future operations</Alert>
-          <hr/>
-          <div style={{display:'flex',justifyContent:"flex-end",gap:25, paddingTop:10}}>
-          <Button variant="contained"  onClick={() => setShowModal(false)}>
-            Cancel
-          </Button>
-          <Button variant="contained"  onClick={handleSubmit}>
-            Confirm
-          </Button>
+          <hr />
+          <div style={{ display: 'flex', justifyContent: "flex-end", gap: 25, paddingTop: 10 }}>
+            <Button variant="contained" onClick={() => setShowModal(false)}>
+              Cancel
+            </Button>
+            <Button variant="contained" onClick={handleSubmit}>
+              Confirm
+            </Button>
           </div>
         </Box>
       </Modal>
