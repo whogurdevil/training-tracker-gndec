@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
-import { Card, Modal, Box, Typography, Grid, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
+import { Card, Modal, Box, Typography, Grid, MenuItem, Select, FormControl, InputLabel, LinearProgress , Skeleton } from '@mui/material';
 import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -14,6 +14,8 @@ import ExportComponent from '../../Components/ExportData';
 import CircularProgress from '@mui/material/CircularProgress';
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : import.meta.env.VITE_DEV_BASE_URL
 import UnVerifyAllComponent from '../../Components/UnVerifyAll';
+import PlacementModal from '../../Components/PlacementModal';
+import ExpandCircleDownIcon from '@mui/icons-material/ExpandCircleDown';
 
 import { fetchUsers, changeLock, getTrainingOptions , viewCertificate } from '../../utils/AdminFunctions';
 
@@ -30,6 +32,9 @@ const AdminForm = () => {
     const Location = useLocation()
     const crn = Location.state && Location.state.crn
     const admintype = crn && crn.length >= 3 ? crn.slice(-3) : crn;
+    const [showModal, setShowModal] = useState(false);
+    const [selectedRowData, setSelectedRowData] = useState(null);
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -86,49 +91,54 @@ const AdminForm = () => {
             { accessorKey: "userInfo.section", header: "Section" },
             { accessorKey: "userInfo.contact", header: "Contact" }
         ];
+        if(selectedTraining){
 
-        if (selectedTraining === 'placementData') {
+            if (selectedTraining === 'placementData') {
+                customColumns.push({
+                    accessorKey: `${selectedTraining}.isPlaced`,
+                    header: "Placement Status",
+                    Cell: ({ row }) => (row.original[selectedTraining].isPlaced ? "Yes" : "No"),
+                });
+                customColumns.push(
+                    { accessorKey: "placementData.highStudy", header: "High Study" },
+                    { accessorKey: "placementData.gateStatus", header: "Gate Status" },
+                    {
+                        accessorKey: "viewMore",
+                        header: "View More",
+                        Cell: ({ row }) => (
+                            <ExpandCircleDownIcon
+                                onClick={() => {
+                                    setSelectedRowData(row.original);
+                                    setShowModal(true);
+                                }}
+                                style={{ cursor: 'pointer' }}
+                            />
+                        ),
+                    }
+                );
+
+                //view more
+            } else  {
             customColumns.push(
-                {
-                    accessorKey: `${selectedTraining}.certificate`, header: "Certificate", Cell: ({ row }) => (
-                        <PictureAsPdfIcon onClick={() => handleViewCertificate(row)} style={{ cursor: 'pointer' }} />
-                    )
-                },
-                { accessorKey: "placementData.package", header: "Package" },
-                { accessorKey: "placementData.appointmentNo", header: "Appointment Number" },
-                { accessorKey: "placementData.company", header: "Company" },
-                { accessorKey: "placementData.highStudy", header: "Higher Studies" }
-            );
-            customColumns.push({
-                accessorKey: `${selectedTraining}.lock`,
-                header: "Verified",
-                Cell: ({ row }) => (row.original[selectedTraining].lock ? "Yes" : "No"),
-            });
-            customColumns.push({
-                accessorKey: `${selectedTraining}.isPlaced`,
-                header: "Placement Status",
-                Cell: ({ row }) => (row.original[selectedTraining].isPlaced ? "Yes" : "No"),
-            });
-        } else if (selectedTraining && selectedTraining !== '') {
-            customColumns.push(
-                {
-                    accessorKey: `${selectedTraining}.certificate`, header: "Certificate", Cell: ({ row }) => (
-                        <PictureAsPdfIcon onClick={() => handleViewCertificate(row)} style={{ cursor: 'pointer' }} />
-                    )
-                },
+              
                 { accessorKey: `${selectedTraining}.technology`, header: "Technology" },
                 { accessorKey: `${selectedTraining}.organization`, header: "Organization" },
                 { accessorKey: `${selectedTraining}.projectName`, header: "Project Name" },
-                { accessorKey: `${selectedTraining}.type`, header: "Type" }
+                { accessorKey: `${selectedTraining}.type`, header: "Type" },
+                {
+                    accessorKey: `${selectedTraining}.certificate`, header: "Certificate", Cell: ({ row }) => (
+                        <PictureAsPdfIcon onClick={() => handleViewCertificate(row)} style={{ cursor: 'pointer' }} />
+                    )
+                },
             );
+           
+        }
             customColumns.push({
                 accessorKey: `${selectedTraining}.lock`,
                 header: "Verified",
                 Cell: ({ row }) => (row.original[selectedTraining].lock ? "Yes" : "No"),
             });
-        }
 
-        if (selectedTraining) {
             customColumns.push({
                 accessorKey: "edit",
                 header: "Mark Verification",
@@ -140,7 +150,8 @@ const AdminForm = () => {
                     />
                 ),
             });
-        }
+        
+    }
 
         return customColumns;
     }, [selectedTraining, editStatus]);
@@ -172,22 +183,10 @@ const AdminForm = () => {
         data: filteredUsers,
         columns
     });
-
-    const [open, setOpen] = useState(false);
-    const [modalContent, setModalContent] = useState(null);
-
-    const handleModalOpen = (content) => {
-        setModalContent(content);
-        setOpen(true);
-    };
     const handleRefresh = () => {
         setRefresh(prevRefresh => !prevRefresh);
     };
 
-
-    const handleModalClose = () => {
-        setOpen(false);
-    };
 
     const handleBatchChange = (event) => {
         setSelectedBatch(event.target.value);
@@ -206,14 +205,71 @@ const AdminForm = () => {
     };
 
     return (
-        <div style={{ padding: '0 20px', marginTop: '20px', marginBottom: "100px" }}>
+        <div>
             {loading ? ( // Render loader if loading is true
+                <>
+                    <LinearProgress />
+                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '40px', marginBottom: "100px", width: '98vw', height: '100vh' }}>
+                        <Box
+                            sx={{
+                                width: '90vw',
+                                height: '50vh',
+                                border: 1,
+                                borderColor: 'lightgray',
+                                borderRadius: 1,
+                                backgroundColor: 'white',
+                            }}
+                        >
+                            <Skeleton
+                                animation={'wave'}
+                                sx={{ width: '300px', height: '60px', marginLeft: 2, marginBlock: 1 }}
 
-                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <CircularProgress />
-                </Box>
+                            />
+                            <hr />
+
+                            <Box
+                                sx={{
+                                    paddingInline: 2,
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    justifyContent: 'space-between'
+                                }}
+                            >
+                                <Skeleton
+                                    animation={'wave'}
+                                    sx={{
+                                        width: '20vw',
+                                        height: '40px'
+                                    }}
+                                />
+                                <Skeleton
+                                    animation={'wave'}
+                                    sx={{
+                                        width: '20vw',
+                                        height: '40px'
+                                    }}
+                                />
+                                <Skeleton
+                                    animation={'wave'}
+                                    sx={{
+                                        width: '20vw',
+                                        height: '40px'
+                                    }}
+                                />
+                                <Skeleton
+                                    animation={'wave'}
+                                    sx={{
+                                        width: '20vw',
+                                        height: '40px'
+                                    }}
+                                />
+                            </Box>
+                        </Box>
+                    </div>
+                </>
+
             ) : (
-                <div style={{ marginTop: '100px', padding: '0 20px' }}>
+                    <div style={{ padding: '0 40px', marginTop: '40px', marginBottom: "100px" }}>
                     <Grid container spacing={2} justifyContent="space-around">
                         <Grid item style={{ marginBottom: 20 }}>
                                 <FormControl style={{ width: 200 }}>
@@ -270,22 +326,14 @@ const AdminForm = () => {
                         </div>
                         <MaterialReactTable table={table} />
                     </Card>
-
-                    <Modal open={open} onClose={handleModalClose}>
-                        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', boxShadow: 24, p: 4 }}>
-                            {modalContent && (
-                                <>
-                                    <Typography variant="h6" gutterBottom>
-                                        {Object.keys(modalContent).map((key) => (
-                                            <div key={key}>
-                                                <strong>{key}: </strong> {modalContent[key]}
-                                            </div>
-                                        ))}
-                                    </Typography>
-                                </>
-                            )}
-                        </Box>
-                    </Modal>
+                        {showModal && (
+                            <PlacementModal
+                                showModal={showModal}
+                                onClose={() => setShowModal(false)}
+                                placementData={selectedRowData}
+                            />
+                        )}
+                   
                     <ToastContainer />
                 </div>
             )}

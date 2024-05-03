@@ -13,11 +13,12 @@ import Grid from '@mui/material/Grid';
 import { openBase64NewTab } from '../utils/base64topdf';
 import EditIcon from '@mui/icons-material/Edit';
 import { convertBackendDateToPickerFormat } from '../utils/DateConvertToFrontend';
-import { jwtDecode } from "jwt-decode";
+import { handleFileErrors,handleFormErrors } from '../utils/ErrorFunctions';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LinearProgress , CircularProgress } from '@mui/material';
+import { decodeAuthToken } from '../utils/AdminFunctions';
 
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : import.meta.env.VITE_DEV_BASE_URL
 
@@ -37,25 +38,12 @@ export default function PlacementForm() {
     highStudyplace: ''
   });
   const [isPlaced, setIsPlaced] = useState("");
+  const [AppointmentDate,SetAppointmentDate]=useState({})
   const [isHighstudy, setHighstudy] = useState("No");
   const [gateStatus, setgateStatus] = useState("No");
+  const [Gatefiledata, setGateFiledata] = useState({})
+  const [Appointmentfiledata, setAppointmentFiledata] = useState({})
   const [highStudyplace, sethighStudyplace] = useState("");
-
-
-  const decodeAuthToken = (token) => {
-    try {
-      if (!token) {
-        throw new Error('Token is null or empty');
-      }
-      const decodedToken = jwtDecode(token);
-      const crn = decodedToken.crn;
-      return crn;
-    } catch (error) {
-      console.error('Error decoding JWT token:', error);
-      return null;
-    }
-  };
-
   const token = localStorage.getItem("authtoken");
   const crn = decodeAuthToken(token);
   const [errors, setErrors] = useState({});
@@ -65,7 +53,7 @@ export default function PlacementForm() {
   const [isEditing, setIsEditing] = useState(true);
   const [isLock, setIsLock] = useState(false);
   const [loading, setLoading] = useState(true)
-
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -83,14 +71,14 @@ export default function PlacementForm() {
         if (userData.highStudy && userData.gateStatus) {
           // Convert the appointment date to date picker format
           const formattedAppointmentDate = convertBackendDateToPickerFormat(userData.appointmentDate);
-
+          
           // Set form data with fetched values
-          setFormData({
-            ...userData,
-            appointmentDate: formattedAppointmentDate,
-            isPlaced: userData.isPlaced ? convertBackendDateToPickerFormat(userData.appointmentDate) : null
-          });
-
+            // setFormData({
+            //   ...userData,
+            //   appointmentDate: formattedAppointmentDate,
+            // });
+            console.log("userdata",userData)
+          SetAppointmentDate(formattedAppointmentDate)
           // Set other state variables
           setIsLock(userData.lock || false);
           setIsPlaced(userData.isPlaced ? "true" : "false");
@@ -100,6 +88,8 @@ export default function PlacementForm() {
           setGateCertificate(userData.gateCertificate);
           setAppointmentLetter(userData.appointmentLetter);
           setIsEditing(false);
+          setFormData({ ...formData, 'isPlaced': userData.isPlaced, 'gateStatus': userData.gateStatus, 'highStudy': userData.highStudy })
+          console.log(formData)
         } else {
           console.error('Error: Fetched data is incomplete.');
         }
@@ -116,6 +106,7 @@ export default function PlacementForm() {
 
   const handleDateChange = (newDate) => {
     // Extract year, month, and day from the selected date
+    SetAppointmentDate(newDate)
     const year = newDate.$y;
     const month = newDate.$M + 1; // Months start from 0, so add 1
     const day = newDate.$D;
@@ -153,53 +144,40 @@ export default function PlacementForm() {
       setErrors({ ...errors, [name]: '' });
     }
   };
-
+  
   const handleSubmit = async (e) => {
     setLoading(true)
     e.preventDefault();
+    setErrors({});
     try {
-      // Form validation
-
-      const formErrors = {};
-      if (formData.isPlaced === true) {
-        if (!formData.company.trim()) {
-          formErrors.company = 'Company name cannot be blank';
-          toast.error(formErrors.company);
-        } else if (!formData.designation) {
-          formErrors.designation = 'Designation cannot be blank';
-          toast.error(formErrors.designation);
-        } else if (!formData.appointmentNo) {
-          formErrors.appointmentNo = 'Appointment No is required ';
-          toast.error(formErrors.appointmentNo);
-        } else if (!formData.appointmentDate) {
-          formErrors.appointmentDate = 'Appointment Date cannot be blank';
-          toast.error(formErrors.appointmentDate);
-        } else if (!formData.appointmentLetter) {
-          formErrors.appointmentLetter = 'Appointment Letter cannot be blank';
-          toast.error(formErrors.appointmentLetter);
-        } else if (!formData.package) {
-          formErrors.package = 'Package cannot be blank';
-          toast.error(formErrors.package);
-        }
-      } else if (formData.isPlaced === null) {
-        formErrors.isPlaced = 'Placed or Not field cannot be blank';
-        toast.error(formErrors.isPlaced);
-      } else if (!formData.highStudy) {
-        formErrors.highStudy = 'High Study field cannot be blank';
-        toast.error(formErrors.highStudy);
-      } else if (isHighstudy === "Yes" && !formData.highStudyplace) {
-        formErrors.highStudyplace = "Place of High Study Cannot be blank";
-        toast.error(formErrors.highStudyplace);
-      } else if (!formData.gateStatus) {
-        formErrors.gateStatus = "Gate Status Field Cannot Be Blank";
-        toast.error(formErrors.gateStatus);
-      }
-
+      const formErrors = handleFormErrors(formData,isHighstudy);
       if (Object.keys(formErrors).length > 0) {
         setErrors(formErrors);
         setLoading(false)
         return;
       }
+
+      // Validate file uploads
+      if(formData.isPlaced!==null ){
+      const fileErrors = handleFileErrors(Appointmentfiledata);
+      if (Object.keys(fileErrors).length > 0) {
+        // Display file-related errors
+        setErrors({ ...errors, ...fileErrors });
+        setLoading(false)
+        return;
+      }
+      }
+      if (formData.gateStatus ==="Yes"){
+        const fileErrors = handleFileErrors( Gatefiledata);
+        if (Object.keys(fileErrors).length > 0) {
+          // Display file-related errors
+          setErrors({ ...errors, ...fileErrors });
+          setLoading(false)
+          return;
+        }
+      }
+      resetValues()
+      console.log("formdata",formData)
       const token = localStorage.getItem('authtoken');
       // Submit form data
       const response = await axios.post(`${API_URL}placement`, {
@@ -217,24 +195,32 @@ export default function PlacementForm() {
         setIsSubmitting(false);
         setIsEditing(false);
         setLoading(false)
+        setGateFiledata({})
+        setAppointmentFiledata({})
       } else {
         toast.error('Failed to submit placement details. Please try again later.');
         setIsSubmitting(false);
         setLoading(false)
+        setGateFiledata({})
+        setAppointmentFiledata({})
       }
     } catch (error) {
       console.error('Error submitting data:', error);
       toast.error('An error occurred while submitting the placement details.');
       setIsSubmitting(false);
       setLoading(false)
+      setGateFiledata({})
+      setAppointmentFiledata({})
     }
   };
 
   const handleAppointmentFileChange = (files) => {
+    setAppointmentFiledata(files)
     setFormData({ ...formData, appointmentLetter: files.base64 });
     setAppointmentLetter(files.base64);
   };
   const handleGateFileChange = (files) => {
+    setGateFiledata(files)
     setFormData({ ...formData, gateCertificate: files.base64 });
     setGateCertificate(files.base64);
   };
@@ -283,6 +269,44 @@ export default function PlacementForm() {
 
     setFormData({ ...formData, [name]: value });
 
+  }; 
+  const resetValues = () => {
+    // Reset form values based on isPlaced state
+    if (formData.isPlaced !== true) {
+      console.log("hello")
+      setFormData({
+        ...formData,
+        company: '',
+        placementType: '',
+        appointmentNo: '',
+        appointmentLetter: null,
+        package: '',
+        designation: '',
+        appointmentDate: '',
+      });
+      setAppointmentFiledata({});
+      setAppointmentLetter(null);
+      SetAppointmentDate({})
+    }
+
+    // Reset form values based on highStudy state
+    if (formData.highStudy !== 'Yes') {
+      setFormData({
+        ...formData,
+        highStudyplace: '',
+      });
+      sethighStudyplace('');
+    }
+
+    // Reset form values based on gateStatus state
+    if (formData.gateStatus !== 'Yes') {
+      setFormData({
+        ...formData,
+        gateCertificate: '',
+      });
+      setGateFiledata({});
+      setGateCertificate(null)
+    }
   };
 
   return (
@@ -397,7 +421,7 @@ export default function PlacementForm() {
                 fullWidth
                 required
                 name="appointmentNo"
-                type="number"
+                type="text"
                 value={formData.appointmentNo}
                 onChange={handleChange}
                 error={!!errors.appointmentNo}
@@ -412,8 +436,7 @@ export default function PlacementForm() {
                   views={['year', 'month', 'day']}
                   renderInput={(params) => <TextField {...params} helperText="Enter starting year only" />}
                   onChange={handleDateChange}
-                  value={formData.appointmentDate}
-
+                  value={AppointmentDate}
                   disabled={!isEditing || isSubmitting}
                 />
               </LocalizationProvider>

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import {  openBase64NewTab } from './base64topdf';
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : import.meta.env.VITE_DEV_BASE_URL;
+import { jwtDecode } from "jwt-decode";
 
 export const fetchUsers = async () => {
     try {
@@ -127,5 +128,20 @@ export const viewCertificate = (row, selectedTraining) => {
         openBase64NewTab(row.original[selectedTraining].certificate);
     } else {
         console.error("Certificate not found for this user or training data is missing.");
+    }
+};
+
+
+export const decodeAuthToken = (token) => {
+    try {
+        if (!token) {
+            throw new Error('Token is null or empty');
+        }
+        const decodedToken = jwtDecode(token);
+        const crn = decodedToken.crn;
+        return crn;
+    } catch (error) {
+        console.error('Error decoding JWT token:', error);
+        return null;
     }
 };

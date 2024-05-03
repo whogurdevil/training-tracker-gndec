@@ -9,7 +9,6 @@ export const convertBackendDateToPickerFormat = (backendDate) => {
 
     // Create a new Day.js object with the extracted date parts
     const formattedDate = dayjs(`${year}-${month}-${day}`);
-    console.log(formattedDate)
 
     return formattedDate.isValid() ? formattedDate : null;
 };
@@ -22,7 +21,6 @@ export const convertBatchToDate = (backendDate) => {
     
     // Create a new Day.js object with the extracted date parts
     const formattedDate = dayjs(year);
-    console.log(formattedDate)
 
     return formattedDate.isValid() ? formattedDate : null;
 };

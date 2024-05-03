@@ -12,11 +12,10 @@ import FileBase from 'react-file-base64';
 import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid';
 import EditIcon from '@mui/icons-material/Edit';
-import { jwtDecode } from "jwt-decode";
 import { useLocation } from 'react-router-dom';
-import { base64toBlob, openBase64NewTab } from '../utils/base64topdf';
+import { base64toBlob, openBase64NewTab} from '../utils/base64topdf';
 import { technologyStack } from '../utils/technology';
-
+import { decodeAuthToken } from '../utils/AdminFunctions';
 import Autocomplete from '@mui/material/Autocomplete';
 import { LinearProgress,CircularProgress } from '@mui/material';
 
@@ -40,6 +39,7 @@ export default function Form() {
   const [certificate, setCertificate] = useState(null);
   let location = useLocation();
   const [loading, setLoading]  = useState(true)
+  const[filedata,selectedFiledata]=useState({})
   const number = location.state && location.state.number
 
   useEffect(() => {
@@ -84,16 +84,6 @@ export default function Form() {
     fetchData();
   }, []);
 
-  const decodeAuthToken = (token) => {
-    try {
-      const decodedToken = jwtDecode(token);
-      const crn = decodedToken.crn;
-      return crn;
-    } catch (error) {
-      console.error('Error decoding JWT token:', error);
-      return null;
-    }
-  };
 
 
   const handleChange = (e) => {
@@ -134,21 +124,31 @@ export default function Form() {
         formErrors.type = 'Training type cannot be blank';
         toast.error(formErrors.type)
       }
-      if (!formData.certificate) {
-        formErrors.certificate = 'Certificate cannot be blank';
-        toast.error("certificate cannot be blank")
+      if (!formData.certificate ) {
+        formErrors.certificate = 'Certificate is blank ';
+        toast.error(formErrors.certificate)
       }
       if (!formData.organizationType.trim()) {
         formErrors.organizationType = 'Organization-Type cannot be blank';
         toast.error("Organization-Type cannot be blank")
       }
+      
 
       if (Object.keys(formErrors).length > 0) {
         setErrors(formErrors);
         setLoading(false)
         return;
       }
-
+      if (filedata.type !== "application/pdf") {
+        toast.error("File is not in PDF format")
+        setLoading(false)
+        return;
+      }
+if(filedata.size>(500*1024)){
+  toast.error("FileSize greater than 500Kb")
+  setLoading(false)
+  return ;
+}
       const token = localStorage.getItem("authtoken");
       const crn = decodeAuthToken(token);
       const url = `${API_URL}tr${number}`
@@ -163,16 +163,19 @@ export default function Form() {
         setIsSubmitting(false);
         setIsEditing(false);
         setLoading(false)
+        selectedFiledata({})
       } else {
         toast.error('Failed to submit form. Please try again later.');
         setIsSubmitting(false);
         setLoading(false)
+        selectedFiledata({})
       }
     } catch (error) {
       console.error('Error submitting data:', error);
       toast.error('An error occurred while submitting the form.');
       setIsSubmitting(false);
       setLoading(false)
+      selectedFiledata({})
     }
   };
 
@@ -189,10 +192,12 @@ export default function Form() {
   };
 
   const handleFileChange = (files) => {
+    selectedFiledata(files)
     setFormData({ ...formData, certificate: files.base64 });
     setCertificate(files.base64);
-  };
-
+   
+    }
+  
   return (
     <>
     {loading && <LinearProgress/>}
@@ -354,6 +359,7 @@ export default function Form() {
         multiple={false}
         onDone={handleFileChange}
         disabled={!isEditing || isSubmitting}
+              accept=".pdf"
       />
         </>
       )}

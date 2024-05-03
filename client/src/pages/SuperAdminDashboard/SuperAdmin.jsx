@@ -14,6 +14,8 @@ import { useNavigate } from 'react-router-dom';
 import { fetchTrainingNames, initialTrainingNames } from '../../utils/TrainingNamesApi';
 import { fetchUsers, changeLock, viewCertificate } from '../../utils/AdminFunctions';
 import {TextField} from '@mui/material';
+import PlacementModal from '../../Components/PlacementModal';
+import ExpandCircleDownIcon from '@mui/icons-material/ExpandCircleDown';
 
 const SuperAdminForm = () => {
     const [users, setUsers] = useState([]);
@@ -25,6 +27,8 @@ const SuperAdminForm = () => {
     const [loading, setLoading] = useState(true); // Loading state
     const [trainingNames, setTrainingNames] = useState(initialTrainingNames);
     const [allBatches, setallBatches] = useState([])
+    const [showModal, setShowModal] = useState(false);
+    const [selectedRowData, setSelectedRowData] = useState(null);
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -94,62 +98,67 @@ const SuperAdminForm = () => {
             { accessorKey: "userInfo.section", header: "Section" },
             { accessorKey: "userInfo.contact", header: "Contact" }
         ];
+if(selectedTraining){
 
         if (selectedTraining === 'placementData') {
-            customColumns.push(
-                {
-                    accessorKey: `${selectedTraining}.certificate`, header: "Certificate", Cell: ({ row }) => (
-                        <PictureAsPdfIcon onClick={() => handleViewCertificate(row)} style={{ cursor: 'pointer' }} />
-                    )
-                },
-                { accessorKey: "placementData.package", header: "Package" },
-                { accessorKey: "placementData.appointmentNo", header: "Appointment Number" },
-                { accessorKey: "placementData.company", header: "Company" },
-                { accessorKey: "placementData.highStudy", header: "Higher Studies" },
-
-            );
-            customColumns.push({
-                accessorKey: `${selectedTraining}.lock`,
-                header: "Verified",
-                Cell: ({ row }) => (row.original[selectedTraining].lock ? "Yes" : "No"),
-            });
             customColumns.push({
                 accessorKey: `${selectedTraining}.isPlaced`,
                 header: "Placement Status",
                 Cell: ({ row }) => (row.original[selectedTraining].isPlaced ? "Yes" : "No"),
             });
-        } else if (selectedTraining && selectedTraining !== '') {
             customColumns.push(
+                { accessorKey: "placementData.highStudy", header: "High Study" },
+                { accessorKey: "placementData.gateStatus", header: "Gate Status" },
+                {
+                    accessorKey: "viewMore",
+                    header: "View More",
+                    Cell: ({ row }) => (
+                        <ExpandCircleDownIcon
+                            onClick={() => {
+                                setSelectedRowData(row.original);
+                                setShowModal(true);
+                            }}
+                            style={{ cursor: 'pointer' }}
+                        />
+                    ),
+                }
+            );
+            
+             //view more
+        } 
+    
+    else{
+            customColumns.push(
+                { accessorKey: `${selectedTraining}.technology`, header: "Technology" },
+                { accessorKey: `${selectedTraining}.organization`, header: "Organization" },
+                { accessorKey: `${selectedTraining}.projectName`, header: "Project Name" },
+                { accessorKey: `${selectedTraining}.type`, header: "Type" },
                 {
                     accessorKey: `${selectedTraining}.certificate`, header: "Certificate", Cell: ({ row }) => (
                         <PictureAsPdfIcon onClick={() => handleViewCertificate(row)} style={{ cursor: 'pointer' }} />
                     )
                 },
-                { accessorKey: `${selectedTraining}.technology`, header: "Technology" },
-                { accessorKey: `${selectedTraining}.organization`, header: "Organization" },
-                { accessorKey: `${selectedTraining}.projectName`, header: "Project Name" },
-                { accessorKey: `${selectedTraining}.type`, header: "Type" }
+               
             );
-            customColumns.push({
-                accessorKey: `${selectedTraining}.lock`,
-                header: "Verified",
-                Cell: ({ row }) => (row.original[selectedTraining].lock ? "Yes" : "No"),
-            });
+            
         }
-
-        if (selectedTraining) {
-            customColumns.push({
-                accessorKey: "edit",
-                header: "Mark Verification",
-                Cell: ({ row }) => (
-                    <VerificationIcon
-                        lockStatus={row.original[selectedTraining].lock}
-                        handleLock={handleLock}
-                        row={row}
-                    />
-                ),
-            });
-        }
+    customColumns.push({
+        accessorKey: `${selectedTraining}.lock`,
+        header: "Verified",
+        Cell: ({ row }) => (row.original[selectedTraining].lock ? "Yes" : "No"),
+    });
+    customColumns.push({
+        accessorKey: "edit",
+        header: "Mark Verification",
+        Cell: ({ row }) => (
+            <VerificationIcon
+                lockStatus={row.original[selectedTraining].lock}
+                handleLock={handleLock}
+                row={row}
+            />
+        ),
+    }); 
+    }
 
         return customColumns;
     }, [selectedTraining, editStatus]);
@@ -182,21 +191,13 @@ const SuperAdminForm = () => {
         columns
     });
 
-    const [open, setOpen] = useState(false);
-    const [modalContent, setModalContent] = useState(null);
-
-    const handleModalOpen = (content) => {
-        setModalContent(content);
-        setOpen(true);
-    };
+    
     // Function to handle refreshing data after verification status change
     const handleRefresh = () => {
         setRefresh(prevRefresh => !prevRefresh);
     };
 
-    const handleModalClose = () => {
-        setOpen(false);
-    };
+    
 
     const handleBatchChange = (event) => {
         setSelectedBatch(event.target.value);
@@ -384,23 +385,15 @@ const SuperAdminForm = () => {
                         <MaterialReactTable table={table} />
                     </Card>
 
+                        {showModal && (
+                            <PlacementModal
+                                showModal={showModal}
+                                onClose={() => setShowModal(false)}
+                                placementData={selectedRowData}
+                            />
+                        )}
 
-
-                    <Modal open={open} onClose={handleModalClose}>
-                        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', boxShadow: 24, p: 4 }}>
-                            {modalContent && (
-                                <>
-                                    <Typography variant="h6" gutterBottom>
-                                        {Object.keys(modalContent).map((key) => (
-                                            <div key={key}>
-                                                <strong>{key}: </strong> {modalContent[key]}
-                                            </div>
-                                        ))}
-                                    </Typography>
-                                </>
-                            )}
-                        </Box>
-                    </Modal>
+                   
                     <ToastContainer />
                 </div>
             )}

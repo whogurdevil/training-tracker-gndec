@@ -16,8 +16,8 @@ router.post('/', fetchuser, async (req, res) => {
         if (!userInfo) {
             return res.status(404).json({ message: 'UserInfo not found' });
         }
-
-
+        
+        
         // Create new placement data
         userInfo.placementData = new placementData({
             company,

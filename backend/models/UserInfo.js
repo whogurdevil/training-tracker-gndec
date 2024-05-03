@@ -59,7 +59,7 @@ const placementDataSchema = new mongoose.Schema({
   isPlaced:{ type: Boolean, default: false },
   company: { type: String },
   placementType: { type: String }, 
-  appointmentNo: { type: Number },
+  appointmentNo: { type: String },
   appointmentLetter: String,
   appointmentDate: {
     type: String,// Example: MM-DD-YYYY
