@@ -65,6 +65,7 @@ useEffect(() => {
             });
             const userData = response.data.data;
             setFormData(userData)
+            console.log(userData)
 
             setIsPlaced(userData.isPlaced);
             if(userData.isPlaced){
@@ -142,7 +143,6 @@ const handleSubmit = async (e) => {
             setLoading(false)
             return;
         }
-        console.log(formData.gateStatus, gateStatus)
         if (formData.isPlaced) {
             const fileErrors = handleFileErrors(Appointmentfiledata);
             if (Object.keys(fileErrors).length > 0) {
@@ -152,7 +152,6 @@ const handleSubmit = async (e) => {
                 return;
             }
         }
-        console.log(formData.gateStatus,gateStatus)
         if (formData.gateStatus===true) {
             const fileErrors = handleFileErrors(Gatefiledata);
             if (Object.keys(fileErrors).length > 0) {
@@ -162,8 +161,7 @@ const handleSubmit = async (e) => {
                 return;
             }
         }
-          await resetValues() //values to be reset
-        console.log(formData)
+     
         const token = localStorage.getItem('authtoken');
         // Submit form data
         const response = await axios.post(`${API_URL}placement`, {
@@ -183,6 +181,7 @@ const handleSubmit = async (e) => {
             setLoading(false)
             setGateFiledata({})
             setAppointmentFiledata({})
+         
         } else {
             toast.error('Failed to submit placement details. Please try again later.');
             setIsSubmitting(false);
@@ -226,56 +225,18 @@ const handleSubmit = async (e) => {
         setFormData({ ...formData, [name]: value });
     };
     const handleIsHighChange = (e) => {
-        // console.log(e.target)
+    
         const { name, value } = e.target;
         setHighstudy(value);
         setFormData({ ...formData, [name]: value });
     };
     const handleIsGateStatusChange = (e) => {
-        // console.log(e.target)
+    
         const { name, value } = e.target;
         setgateStatus(value);
-        console.log(value)
         setFormData({ ...formData, [name]: value });
     };
 
-
-    const resetValues = () => {
-        // Reset form values based on isPlaced state
-        if (formData.isPlaced !== true) {
-            setFormData(prevState => ({
-                ...prevState,
-                company: '',
-                placementType: '',
-                appointmentNo: '',
-                appointmentLetter: null,
-                package: '',
-                designation: '',
-                appointmentDate: '',
-            }));
-            setAppointmentFiledata({});
-            setAppointmentLetter(null);
-            SetAppointmentDate(null);
-        }
-console.log("stage",formData)
-        // Reset form values based on highStudy state
-        if (formData.highStudy !== true) {
-            setFormData(prevState => ({
-                ...prevState,
-                highStudyplace: '',
-            }));
-        }
-
-        // Reset form values based on gateStatus state
-        if (formData.gateStatus !== true) {
-            setFormData(prevState => ({
-                ...prevState,
-                gateCertificate: '',
-            }));
-            setGateFiledata({});
-            setGateCertificate(null);
-        }
-    };
 
 
     return (
@@ -344,6 +305,7 @@ console.log("stage",formData)
                         onChange={handleIsPlacedChange}
                         sx={{ mb: 2 }}
                         disabled={!isEditing || isSubmitting}
+                        InputLabelProps={{ shrink: true }} 
                     >
                         <MenuItem value={true}>Yes</MenuItem>
                         <MenuItem value={false}>No</MenuItem>
@@ -483,6 +445,7 @@ console.log("stage",formData)
                         onChange={handleIsHighChange}
                         sx={{ mb: 2 }}
                         disabled={!isEditing || isSubmitting}
+                        InputLabelProps={{ shrink: true }} 
                     >
                         <MenuItem value={true}>Yes</MenuItem>
                         <MenuItem value={false}>No</MenuItem>
@@ -501,8 +464,9 @@ console.log("stage",formData)
                             onChange={handleChange}
                             sx={{ mb: 2 }}
                             disabled={!isEditing || isSubmitting}
+                            InputLabelProps={{ shrink: true }} 
                         >
-                            // <MenuItem value={""}>Select Any One</MenuItem>
+                            <MenuItem value={""}>Select Any One</MenuItem>
                             <MenuItem value="India">India</MenuItem>
                             <MenuItem value="Outside">Abroad</MenuItem>
                         </TextField>
@@ -522,6 +486,7 @@ console.log("stage",formData)
                         onChange={handleIsGateStatusChange}
                         sx={{ mb: 2 }}
                         disabled={!isEditing || isSubmitting}
+                        InputLabelProps={{ shrink: true }} 
                     >
                         <MenuItem value={true}>Yes</MenuItem>
                         <MenuItem value={false}>No</MenuItem>
