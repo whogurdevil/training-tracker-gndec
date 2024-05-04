@@ -10,7 +10,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useLocation } from 'react-router-dom';
 import VerifyAllComponent from '../../Components/VerifyAll';
-import ExportComponent from '../../Components/ExportData';
+import ExportCsvComponent from '../../Components/ExportCsvData';
+import ExportExcelComponent from '../../Components/ExportExcelData';
 import CircularProgress from '@mui/material/CircularProgress';
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : import.meta.env.VITE_DEV_BASE_URL
 import UnVerifyAllComponent from '../../Components/UnVerifyAll';
@@ -28,10 +29,11 @@ const AdminForm = () => {
     const [refresh, setRefresh] = useState(false); // Refresh state
     const [loading, setLoading] = useState(true);
     const [allBatches, setallBatches] = useState([])
+    const [admintype, Setadmintype] = useState(null)
     const [trainingNames, setTrainingNames] = useState(initialTrainingNames);
     const Location = useLocation()
     const crn = Location.state && Location.state.crn
-    const admintype = crn && crn.length >= 3 ? crn.slice(-3) : crn;
+   
     const [showModal, setShowModal] = useState(false);
     const [selectedRowData, setSelectedRowData] = useState(null);
 
@@ -54,7 +56,8 @@ const AdminForm = () => {
                 console.error('Error loading training names:', error);
             }
         };
-
+        const admin = crn && crn.length >= 3 ? crn.slice(-3) : crn;
+        Setadmintype(admin)
         loadTrainingNames();
         fetchData();
     }, [refresh]);
@@ -313,8 +316,9 @@ const AdminForm = () => {
                     </Grid>
                     <Card variant="outlined" style={{ marginBottom: '50px' }}>
                         <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between' }}>
-                            <div>
-                                <ExportComponent data={filteredUsers} columns={columns} selectedTraining={selectedTraining} />
+                                <div style={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
+                                    <ExportCsvComponent data={filteredUsers} columns={columns} selectedTraining={selectedTraining} />
+                                    <ExportExcelComponent data={filteredUsers} columns={columns} selectedTraining={selectedTraining} />
                             </div>
                                 {selectedTraining && (
                                     <div style={{ marginTop: '10px', marginRight: '10px', display: 'flex', justifyContent: 'space-between', gap: '10px' }}>

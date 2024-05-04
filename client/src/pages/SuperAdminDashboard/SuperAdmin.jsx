@@ -6,7 +6,8 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import ExportComponent from '../../Components/ExportData';
+import ExportExcelComponent from '../../Components/ExportExcelData';
+import ExportCsvComponent from '../../Components/ExportCsvData';
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : import.meta.env.VITE_DEV_BASE_URL
 import VerifyAllComponent from '../../Components/VerifyAll';
 import UnVerifyAllComponent from '../../Components/UnVerifyAll';
@@ -208,7 +209,6 @@ if(selectedTraining){
     };
 
     const handleTrainingChange = (event) => {
-        console.log(event.target.value)
         setSelectedTraining(event.target.value);
     };
 
@@ -360,8 +360,9 @@ if(selectedTraining){
                     </Grid>
                     <Card variant="outlined" style={{ marginBottom: '50px' }}>
                         <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', }}>
-                            <div style={{ display: 'flex', gap: '10px', flexDirection: 'row' }}>
-                                <ExportComponent data={filteredUsers} columns={columns} selectedTraining={selectedTraining} />
+                                <div style={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
+                                    <ExportCsvComponent data={filteredUsers} columns={columns} selectedTraining={selectedTraining} />
+                                    <ExportExcelComponent data={filteredUsers} columns={columns} selectedTraining={selectedTraining} />
                                 <div style={{ marginTop: '10px', display: 'flex', gap: '5px' }}>
                                     {selectedTraining == "placementData" && (
                                         <Button onClick={() => navigateToStats(filteredUsers)} variant="contained" color="primary">
