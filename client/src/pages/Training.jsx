@@ -18,6 +18,7 @@ import { technologyStack } from '../utils/technology';
 import { decodeAuthToken } from '../utils/AdminFunctions';
 import Autocomplete from '@mui/material/Autocomplete';
 import { LinearProgress,CircularProgress } from '@mui/material';
+import { handleFileErrors } from '../utils/ErrorFunctions';
 
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : import.meta.env.VITE_DEV_BASE_URL
 
@@ -139,16 +140,13 @@ export default function Form() {
         setLoading(false)
         return;
       }
-      if (filedata.type !== "application/pdf") {
-        toast.error("File is not in PDF format")
+      const fileErrors = handleFileErrors(filedata);
+      if (Object.keys(fileErrors).length > 0) {
+        // Display file-related errors
+        setErrors({ ...errors, ...fileErrors });
         setLoading(false)
         return;
       }
-if(filedata.size>(500*1024)){
-  toast.error("FileSize greater than 500Kb")
-  setLoading(false)
-  return ;
-}
       const token = localStorage.getItem("authtoken");
       const crn = decodeAuthToken(token);
       const url = `${API_URL}tr${number}`
@@ -351,7 +349,8 @@ if(filedata.size>(500*1024)){
       {isEditing && (
         <>
         <Typography variant="h6" gutterBottom textAlign="left" marginTop={2}>
-        Upload Certificate
+        Upload Certificate <br/> 
+              <Typography style={{fontSize:'14px'}}>(in PDF format only / size less than 500Kb)</Typography>
       </Typography>
 
       <FileBase

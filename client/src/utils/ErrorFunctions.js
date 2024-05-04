@@ -4,7 +4,7 @@ import { ToastContainer, toast } from 'react-toastify';
 export function handleFormErrors(formData,isHighstudy) {
       
       const formErrors = {};
-      if (formData.isPlaced === true) {
+      if (formData.isPlaced) {
         if (!formData.company.trim()) {
           formErrors.company = 'Company name cannot be blank';
           toast.error(formErrors.company);
@@ -27,15 +27,20 @@ export function handleFormErrors(formData,isHighstudy) {
       } else if (formData.isPlaced === null) {
         formErrors.isPlaced = 'Placed or Not field cannot be blank';
         toast.error(formErrors.isPlaced);
-      } else if (!formData.highStudy) {
+      } else if (formData.highStudy === null) {
         formErrors.highStudy = 'High Study field cannot be blank';
         toast.error(formErrors.highStudy);
-      } else if (isHighstudy === "Yes" && !formData.highStudyplace) {
+      } else if (isHighstudy && !formData.highStudyplace) {
         formErrors.highStudyplace = "Place of High Study Cannot be blank";
         toast.error(formErrors.highStudyplace);
-      } else if (!formData.gateStatus) {
+      } else if (formData.gateStatus === null) {
+        console.log("hello")
         formErrors.gateStatus = "Gate Status Field Cannot Be Blank";
         toast.error(formErrors.gateStatus);
+      }
+      else if (formData.gateStatus && !formData.gateCertificate) {
+        formErrors.gateCertificate = "Please upload Gate Admit Card/ ScoreCard";
+        toast.error(formErrors.gateCertificate);
       }
       return formErrors;
     }
