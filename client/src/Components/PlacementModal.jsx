@@ -29,7 +29,8 @@ const PlacementModal = ({ placementData, showModal, onClose }) => {
                     boxShadow: 24,
                     p: 4,
                     borderRadius: 5,
-                    maxWidth: 600,
+                    maxWidth: 800,
+                    minWidth: 400,
                 }}
             >
                 {console.log(data)}
