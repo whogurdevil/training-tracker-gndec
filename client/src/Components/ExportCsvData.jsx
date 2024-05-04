@@ -3,7 +3,7 @@ import { Button, Box } from '@mui/material';
 import { mkConfig, generateCsv, download } from 'export-to-csv';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { base64toBlob } from '../utils/base64topdf'
-const ExportComponent = ({ data, selectedTraining }) => {
+const ExportCsvComponent = ({ data, selectedTraining }) => {
     const csvConfig = mkConfig({
         fieldSeparator: ',',
         decimalSeparator: '.',
@@ -13,39 +13,46 @@ const ExportComponent = ({ data, selectedTraining }) => {
     const handleExportData = () => {
         const filteredData = data.map(row => {
             const filteredRow = {};
-
+            filteredRow['Name'] = row.userInfo.Name;
+            filteredRow['College Email'] = row.email;
+            filteredRow['University Roll Number'] = row.userInfo.urn;
+            filteredRow['College Roll Number'] = row.crn;
+            filteredRow['Gender'] = row.userInfo.gender;
+            filteredRow['Mentor Name'] = row.userInfo.mentor;
+            filteredRow['Batch'] = row.userInfo.batch;
+            filteredRow['Section'] = row.userInfo.section;
+            filteredRow["Mother's Name"] = row.userInfo.mother;
+            filteredRow["Father's Name"] = row.userInfo.father;
+            filteredRow['Contact Number'] = row.userInfo.contact;
+            filteredRow['Admission Type'] = row.userInfo.admissionType;
+            filteredRow['Personal Email'] = row.userInfo.personalMail;
             if (selectedTraining && selectedTraining !== "placementData") {
                 if (row[selectedTraining]) {
-                    filteredRow['URN'] = row.urn;
                     const trainingData = row[selectedTraining];
-                    filteredRow['Organization'] = trainingData.organization;
-                    filteredRow['Technology'] = trainingData.technology.join(', ');
+                    filteredRow['Training Type'] = trainingData.type;
+                    filteredRow['Organization Name'] = trainingData.organization;
                     filteredRow['Project Name'] = trainingData.projectName;
-                    filteredRow['Type'] = trainingData.type;
-                    filteredRow['Lock'] = trainingData.lock ? 'Yes' : 'No';
-
-                    // Convert certificate to data URL
+                    filteredRow['Technology Used'] = trainingData.technology.join(', ');
                     if (trainingData.certificate) {
-                        const certificateBlob = base64toBlob(trainingData.certificate);
-                        const linkcertificate = URL.createObjectURL(certificateBlob)
-                        filteredRow['Certificate'] = linkcertificate;
-
-
+                        const certifiateBlob = base64toBlob(trainingData.certificate);
+                        const certificateUrl = URL.createObjectURL(certifiateBlob);
+                        filteredRow['Training Certificate'] = certificateUrl;
                     } else {
-                        filteredRow['Certificate'] = '';
+                        filteredRow['Training Certificate'] = '';
                     }
                 } else {
                     return {};
                 }
             } else if (selectedTraining && selectedTraining === "placementData") {
                 if (row[selectedTraining]) {
-                    filteredRow['URN'] = row.urn;
                     const trainingData = row[selectedTraining];
+                    filteredRow['Placed Status'] = trainingData.isPlaced;
                     filteredRow['Company'] = trainingData.company;
                     filteredRow['Placement Type'] = trainingData.placementType;
                     filteredRow['Appointment Number'] = trainingData.appointmentNo;
                     filteredRow['Package'] = trainingData.package;
-                    filteredRow['Lock'] = trainingData.lock ? 'Yes' : 'No';
+                    filteredRow['Appointment Date'] = trainingData.appointmentDate;
+                    filteredRow['Designation'] = trainingData.designation;
 
                     // Convert appointment letter to data URL
                     if (trainingData.appointmentLetter) {
@@ -55,22 +62,26 @@ const ExportComponent = ({ data, selectedTraining }) => {
                     } else {
                         filteredRow['Appointment Letter'] = '';
                     }
+                    filteredRow['Higher Study Status'] = trainingData.highStudy;
+                    filteredRow['Higher Study Place'] = trainingData.highStudyplace;
+                    filteredRow['Gate Appeared Status'] = trainingData.gateStatus;
+                    if (trainingData.gateCertificate) {
+                        const gateCertificateBlob = base64toBlob(trainingData.gateCertificate);
+                        filteredRow['Gate Admit Card/ ScoreCard'] = URL.createObjectURL(gateCertificateBlob);
+
+                    } else {
+                        filteredRow['Gate Admit Card/ ScoreCard'] = '';
+                    }
                 } else {
                     return {};
                 }
-            } else {
-                filteredRow['Name'] = row.userInfo.Name;
-                filteredRow['URN'] = row.urn;
-                filteredRow['CRN'] = row.userInfo.crn;
-                filteredRow['Mentor'] = row.userInfo.mentor;
-                filteredRow['Admission Type'] = row.userInfo.admissionType;
-                filteredRow['Batch'] = row.userInfo.Batch;
             }
 
             return filteredRow;
         }).filter(row => Object.keys(row).length > 0);
 
         const csv = generateCsv(csvConfig)(filteredData);
+       
         download(csvConfig)(csv);
     };
 
@@ -87,10 +98,10 @@ const ExportComponent = ({ data, selectedTraining }) => {
                 onClick={handleExportData}
                 startIcon={<FileDownloadIcon />}
             >
-                Export Data
+                Export Data in Csv
             </Button>
         </Box>
     );
 };
 
-export default ExportComponent;
+export default ExportCsvComponent;
