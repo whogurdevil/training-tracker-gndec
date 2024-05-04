@@ -107,9 +107,19 @@ if(selectedTraining){
                 header: "Placement Status",
                 Cell: ({ row }) => (row.original[selectedTraining].isPlaced ? "Yes" : "No"),
             });
+            customColumns.push({
+                accessorKey: `${selectedTraining}.highStudy`,
+                header: "Higher Study",
+                Cell: ({ row }) => (row.original[selectedTraining].highStudy ? "Yes" : "No"),
+            });
+            customColumns.push({
+                accessorKey: `${selectedTraining}.gateStatus`,
+                header: "Gate Status",
+                Cell: ({ row }) => (row.original[selectedTraining].gateStatus ? "Yes" : "No"),
+            });
+           
             customColumns.push(
-                { accessorKey: "placementData.highStudy", header: "High Study" },
-                { accessorKey: "placementData.gateStatus", header: "Gate Status" },
+                
                 {
                     accessorKey: "viewMore",
                     header: "View More",
@@ -128,7 +138,7 @@ if(selectedTraining){
              //view more
         } 
     
-    else{
+    else if(selectedTraining==="placementData"){
             customColumns.push(
                 { accessorKey: `${selectedTraining}.technology`, header: "Technology" },
                 { accessorKey: `${selectedTraining}.organization`, header: "Organization" },
@@ -281,18 +291,6 @@ if(selectedTraining){
                     <Grid container spacing={2} justifyContent="space-around">
                         <Grid item style={{ marginBottom: 20 }}>
                             <FormControl style={{ width: 200 }}>
-                                {/* <InputLabel>Batch</InputLabel> */}
-                                {/* <Select value={selectedBatch} onChange={handleBatchChange}
-                                    label={'Batch'}
-                                    MenuProps={{
-                                        PaperProps: {
-                                            style: {
-                                                maxHeight: 200, // Maximum height for the menu
-                                                width: 'auto',
-                                            },
-                                        },
-                                    }}
-                                    style={{ height: 50 }} > */}
                                     <TextField
                                         select
                                         value={selectedBatch}
@@ -308,12 +306,10 @@ if(selectedTraining){
                                         <MenuItem key={index} value={data}>{data}</MenuItem>
                                     ))}
                                     </TextField>
-                                {/* </Select> */}
                             </FormControl>
                         </Grid>
                         <Grid item style={{ marginBottom: 20 }}>
                             <FormControl style={{ width: 200 }}>
-                                {/* <InputLabel>Branch</InputLabel> */}
                                 <TextField 
                                 select
                                 name={'Select Branch'}
@@ -348,12 +344,12 @@ if(selectedTraining){
                             </FormControl>
                         </Grid>
                         <Grid item style={{ marginBottom: 20 }}>
-                            <Button onClick={() => navigateToTrainingNames()} variant="contained" color="primary">
+                            <Button onClick={() => navigateToTrainingNames()} variant="outlined" color="primary" sx={{py:2}}>
                                 Change Training Names
                             </Button>
                         </Grid>                        <Grid item style={{ marginBottom: 20 }}>
 
-                            <Button onClick={navigateToEditProfile} variant="contained">
+                                <Button onClick={navigateToEditProfile} variant="outlined" sx={{ py: 2 }}>
                                 Change Student Data
                             </Button>
                         </Grid>

@@ -12,6 +12,7 @@ Chart.register(CategoryScale, LinearScale, BarElement, Title,
 
 const LineGraph = forwardRef(({ data, years }, ref) => {
     const [chartData, setChartData] = useState(null);
+    const[maxPlaced, SetmaxPlaced] = useState(10)
 
     useEffect(() => {
         if (data) {
@@ -44,6 +45,10 @@ const LineGraph = forwardRef(({ data, years }, ref) => {
             const labels = Object.keys(batchWiseData);
             const placedMaleStudents = labels.map((year) => maleData[year] || 0);
             const placedFemaleStudents = labels.map((year) => femaleData[year] || 0);
+            const maxPlacedStudentsMale = Math.max(...placedMaleStudents);
+            const maxPlacedStudentsFemale = Math.max(...placedFemaleStudents);
+            const maxPlacedStudents = Math.max(maxPlacedStudentsFemale,maxPlacedStudentsMale);
+            SetmaxPlaced(maxPlacedStudents)
 
             setChartData({
                 labels: labels,
@@ -51,22 +56,16 @@ const LineGraph = forwardRef(({ data, years }, ref) => {
                     {
                         label: 'Male Students',
                         data: placedMaleStudents,
-                        fill: false,
-                        borderColor: 'rgb(255, 99, 132)',
-
-                       
                         tension: 0.1,
-                        backgroundColor: 'rgba(53, 162, 235, 0.5)',
+                        backgroundColor: '#5D6D7E',
 
                        
                     },
                     {
                         label: 'Female Students',
                         data: placedFemaleStudents,
-                        fill: false,
-                        borderColor: 'rgb(54, 162, 235)',
                         tension: 0.1,
-                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                        backgroundColor: '#EC7063',
                     }
                 ]
             });
@@ -97,7 +96,7 @@ const LineGraph = forwardRef(({ data, years }, ref) => {
                                     text: 'Number of Placed Students'
                                 },
                                 beginAtZero: true,
-                                max: 5
+                                max: maxPlaced
                             }
                         },
                         plugins: {

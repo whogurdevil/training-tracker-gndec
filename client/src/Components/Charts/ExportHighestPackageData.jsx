@@ -25,13 +25,16 @@ const ExportHighestPackageData = ({ data }) => {
         // Generate CSV data using the batchMap
         const filteredData = Array.from(batchMap.values()).map(({ index, student }, batchIndex) => {
             const filteredRow = {};
-            filteredRow['S.No'] = batchIndex + 1;
             filteredRow['Batch'] = student.userInfo.batch;
             filteredRow['Student Name'] = student.userInfo.Name;
             filteredRow['Branch'] = student.userInfo.branch;
-            filteredRow['URN'] = student.urn;
+            filteredRow['University Roll Number'] = student.userInfo.urn;
+            filteredRow['College Roll Number'] = student.crn
+            filteredRow['Gender'] = student.userInfo.gender
             filteredRow['Package'] = student.placementData.package;
             filteredRow['Company Name'] = student.placementData.company;
+            filteredRow['Contact']=student.userInfo.contact;
+            filteredRow['Personal Mail']=student.userInfo.personalMail
             return filteredRow;
         });
         // Sort filteredData by batch in descending order

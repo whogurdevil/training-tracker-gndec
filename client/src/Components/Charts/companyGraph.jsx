@@ -12,6 +12,7 @@ Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const CompanyGraph = forwardRef(({ data, years }, ref) => {
     const [chartData, setChartData] = useState(null);
+    const [maxPackageState, setmaxPackageState]=useState(20);
     
     // Chart.register(ChartDataLabels);
 
@@ -42,6 +43,8 @@ const CompanyGraph = forwardRef(({ data, years }, ref) => {
 
             const labels = Object.keys(batchWiseData).sort(); // Sort the labels array
             const maxPackages = labels.map((year) => (batchWiseData[year]?.maxPackage) / 100000 || 0);
+            const maxPackage= Math.max(...maxPackages);
+            setmaxPackageState(maxPackage)
             const companyPackageInfo = labels.map((year) => ({
                 company: batchWiseData[year]?.maxCompany || '',
                 package: batchWiseData[year]?.maxPackage || 0
@@ -53,9 +56,8 @@ const CompanyGraph = forwardRef(({ data, years }, ref) => {
                     {
                         label: 'Maximum Package',
                         data: maxPackages,
-                        backgroundColor: 'rgb(255, 99, 132)',
-                        borderColor: 'rgb(255, 99, 132)',
-                        borderWidth: 1,
+                        backgroundColor: '#76D7C4',
+                        fill:false,
                         companyPackageInfo: companyPackageInfo // Embed company and package info
                     }
                 ]
@@ -93,7 +95,7 @@ const CompanyGraph = forwardRef(({ data, years }, ref) => {
                                         text: 'Package in LPA', // Y-axis label
                                     },
                                     beginAtZero: true,
-                                    max: 20,
+                                    max: maxPackageState,
                                 },
                             },
                             plugins: {

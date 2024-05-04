@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
-import { Card, Modal, Box, Typography, Grid, MenuItem, Select, FormControl, InputLabel, LinearProgress , Skeleton } from '@mui/material';
+import { Card, Modal, Box, Typography, Grid, MenuItem, Select, FormControl, InputLabel, LinearProgress , Skeleton,TextField } from '@mui/material';
 import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -14,6 +14,7 @@ import ExportCsvComponent from '../../Components/ExportCsvData';
 import ExportExcelComponent from '../../Components/ExportExcelData';
 import CircularProgress from '@mui/material/CircularProgress';
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : import.meta.env.VITE_DEV_BASE_URL
+import { decodeAuthToken } from '../../utils/AdminFunctions';
 import UnVerifyAllComponent from '../../Components/UnVerifyAll';
 import PlacementModal from '../../Components/PlacementModal';
 import ExpandCircleDownIcon from '@mui/icons-material/ExpandCircleDown';
@@ -31,9 +32,8 @@ const AdminForm = () => {
     const [allBatches, setallBatches] = useState([])
     const [admintype, Setadmintype] = useState(null)
     const [trainingNames, setTrainingNames] = useState(initialTrainingNames);
-    const Location = useLocation()
-    const crn = Location.state && Location.state.crn
-   
+    const token = localStorage.getItem("authtoken");
+    const crn = decodeAuthToken(token);
     const [showModal, setShowModal] = useState(false);
     const [selectedRowData, setSelectedRowData] = useState(null);
 
@@ -57,6 +57,7 @@ const AdminForm = () => {
             }
         };
         const admin = crn && crn.length >= 3 ? crn.slice(-3) : crn;
+        
         Setadmintype(admin)
         loadTrainingNames();
         fetchData();
@@ -102,9 +103,17 @@ const AdminForm = () => {
                     header: "Placement Status",
                     Cell: ({ row }) => (row.original[selectedTraining].isPlaced ? "Yes" : "No"),
                 });
+                customColumns.push({
+                    accessorKey: `${selectedTraining}.highStudy`,
+                    header: "Higher Study",
+                    Cell: ({ row }) => (row.original[selectedTraining].highStudy ? "Yes" : "No"),
+                });
+                customColumns.push({
+                    accessorKey: `${selectedTraining}.gateStatus`,
+                    header: "Gate Status",
+                    Cell: ({ row }) => (row.original[selectedTraining].gateStatus ? "Yes" : "No"),
+                });
                 customColumns.push(
-                    { accessorKey: "placementData.highStudy", header: "High Study" },
-                    { accessorKey: "placementData.gateStatus", header: "Gate Status" },
                     {
                         accessorKey: "viewMore",
                         header: "View More",
@@ -276,40 +285,34 @@ const AdminForm = () => {
                     <Grid container spacing={2} justifyContent="space-around">
                         <Grid item style={{ marginBottom: 20 }}>
                                 <FormControl style={{ width: 200 }}>
-                                    <InputLabel>Batch</InputLabel>
-                                    <Select value={selectedBatch} onChange={handleBatchChange} MenuProps={{
-                                        PaperProps: {
-                                            style: {
-                                                maxHeight: 200, // Maximum height for the menu
-                                                width: 'auto',
-                                            },
-                                        },
-                                    }}
-                                        style={{ height: 50 }} >
-                                        <MenuItem value="">All</MenuItem>
+                                    <TextField select value={selectedBatch} label={'Batch'} 
+                                    onChange={handleBatchChange}
+                                        variant="outlined"
+                                        fullWidth
+                                        required
+                                        name="Select Batch">
+                                        <MenuItem value="" sx={{ maxHeight: '200px' }} >All</MenuItem>
                                         {allBatches.map((data, index) => (
-                                            <MenuItem key={index} value={data}>{data}</MenuItem>
+                                            <MenuItem key={index}  value={data}>{data}</MenuItem>
                                         ))}
-                                    </Select>
+                                    </TextField>
                                 </FormControl>
                         </Grid>
                         <Grid item style={{ marginBottom: 20 }}>
                             <FormControl style={{ width: 200 }}>
-                                <InputLabel>Branch</InputLabel>
-                                <Select value={selectedBranch} onChange={handleBranchChange}>
+                                <TextField select value={selectedBranch} label="Branch" onChange={handleBranchChange}>
                                     <MenuItem value="">All</MenuItem>
                                     <MenuItem value="CSE">Computer Science & Engineering</MenuItem>
-                                </Select>
+                                </TextField>
                             </FormControl>
                         </Grid>
                         <Grid item style={{ marginBottom: 20 }}>
                             <FormControl style={{ width: 200 }}>
-                                <InputLabel>Training</InputLabel>
-                                <Select value={selectedTraining} onChange={handleTrainingChange}>
+                                <TextField select label={'Select Training'} value={selectedTraining} onChange={handleTrainingChange}>
                                     {getAdminTrainingOptions().map((option) => (
                                         <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
                                     ))}
-                                </Select>
+                                </TextField>
                             </FormControl>
 
                         </Grid>

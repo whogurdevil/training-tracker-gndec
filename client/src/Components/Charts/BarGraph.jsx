@@ -12,6 +12,7 @@ import { CircularProgress } from '@mui/material';
 
 const BarGraph = forwardRef(({ data, years }, ref) => {
     const [chartData, setChartData] = useState(null);
+    const [maxPlaced,SetmaxPlaced] =useState(10)
     useEffect(() => {
         if (data) {
             const batchWiseData = {};
@@ -31,6 +32,8 @@ const BarGraph = forwardRef(({ data, years }, ref) => {
 
             const labels = Object.keys(batchWiseData);
             const placedStudents = labels.map((year) => batchWiseData[year]?.placed || 0);
+            const maxPlacedStudents = Math.max(...placedStudents);
+            SetmaxPlaced(maxPlacedStudents)
 
             setChartData({
                 labels: labels,
@@ -38,8 +41,7 @@ const BarGraph = forwardRef(({ data, years }, ref) => {
                     {
                         label: 'Number of Placed Students',
                         data: placedStudents,
-                        backgroundColor: 'rgb(54, 162, 235)',
-                        borderColor: 'rgb(54, 162, 235)',
+                        backgroundColor: '#5499C7',
                         borderWidth: 1
                     }
                 ]
@@ -79,7 +81,7 @@ const BarGraph = forwardRef(({ data, years }, ref) => {
                                         text: 'Number of Placed Students', // Y-axis label
                                     },
                                     beginAtZero: true,
-                                    max: 5
+                                    max: maxPlaced
                                 },
 
                             },
