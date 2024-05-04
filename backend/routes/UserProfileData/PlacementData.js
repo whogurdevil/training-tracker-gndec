@@ -6,46 +6,50 @@ const fetchuser = require('../../middleware/fetchUser');
 const isAdmin = require('../../middleware/isAdmin');
 
 // Route to create or update a user's placement data
-
 router.post('/', fetchuser, async (req, res) => {
     try {
-        const { company, placementType, highStudy, appointmentNo, appointmentLetter, package, isPlaced, gateStatus, gateCertificate, designation, appointmentDate, highStudyplace } = req.body.formData;
-        const crn = req.body.crn;
+        const { formData, crn } = req.body;
         let userInfo = await SignUpdata.findOne({ crn: crn });
 
         if (!userInfo) {
             return res.status(404).json({ message: 'UserInfo not found' });
         }
-        
-        
+
+        // Reset specific fields based on conditions
+        if (formData.isPlaced !== true) {
+            formData.company = '';
+            formData.placementType = '';
+            formData.appointmentNo = '';
+            formData.appointmentLetter = null;
+            formData.package = '';
+            formData.designation = '';
+            formData.appointmentDate = '';
+        }
+
+        if (formData.highStudy !== true) {
+            formData.highStudyplace = '';
+        }
+
+        if (formData.gateStatus !== true) {
+            formData.gateCertificate = '';
+        }
+
         // Create new placement data
-        userInfo.placementData = new placementData({
-            company,
-            placementType,
-            highStudy,
-            appointmentNo,
-            appointmentLetter,
-            package,
-            isPlaced,
-            gateStatus,
-            gateCertificate,
-            appointmentDate,
-            designation,
-            highStudyplace
-        });
+        const newPlacementData = new placementData(formData);
 
+        // Assign the new placement data to user's placementData property
+        userInfo.placementData = newPlacementData;
 
-        // console.log(await userInfo.save())
-        // Save the updated user info
+        // Save the updated user information
         const savedUserInfo = await userInfo.save();
 
-        // console.log(savedUserInfo)
         // Respond with the saved userInfo
         res.status(201).json({ success: true, data: savedUserInfo });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 });
+
 
 // Route to update lock status
 router.post('/updatelock', fetchuser, isAdmin, async (req, res) => {
