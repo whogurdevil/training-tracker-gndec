@@ -28,72 +28,74 @@ const PlacementModal = ({ placementData, showModal, onClose }) => {
                     bgcolor: 'background.paper',
                     boxShadow: 24,
                     p: 4,
-                    borderRadius: 5,
                     maxWidth: 800,
                     minWidth: 400,
+                    maxHeight:500,
+                    overflowY:"auto"
                 }}
             >
-                {console.log(data)}
                 <Typography variant="h6" fontWeight="bold" gutterBottom>
                     Placement Details
                 </Typography>
+                <hr/>
                 <Typography variant="body1" gutterBottom>
-                    Placement Status: {data.isPlaced ? 'Yes' : 'No'}
+                    <strong>Placement Status:</strong> {data.isPlaced ? 'Yes' : 'No'}
                 </Typography>
                 {data.isPlaced === true && (
                     <>
                         <Typography variant="body1" gutterBottom>
-                            Company: {data.company}
+                            <strong>Company:</strong>  {data.company}
                         </Typography>
                         <Typography variant="body1" gutterBottom>
-                            Placement Type: {data.placementType}
+                            <strong>Placement Type:</strong>  {data.placementType}
                         </Typography>
                         <Typography variant="body1" gutterBottom>
-                            Appointment No: {data.appointmentNo}
+                            <strong>Appointment No:</strong>   {data.appointmentNo}
                         </Typography>
                         <Typography variant="body1" gutterBottom>
-                            Appointment Date: {data.appointmentDate}
+                            <strong>Appointment Date:</strong> {data.appointmentDate}
                         </Typography>
                         <Typography variant="body1" gutterBottom>
-                            Designation: {data.designation}
+                            <strong>Designation:</strong> {data.designation}
                         </Typography>
                         <Typography variant="body1" gutterBottom>
-                            Package: {data.package}
+                            <strong>Package:</strong> {data.package}
                         </Typography>
 
                         <Typography variant="body1" gutterBottom>
-                            Appointment Letter: <Button onClick={() => handleViewCertificate(data.appointmentLetter)} variant="outlined" color="primary" >
+                            <strong>Appointment Letter: &nbsp;</strong> <a onClick={() => handleViewCertificate(data.appointmentLetter)} style={{ cursor: 'pointer', textDecoration: 'underline', color:'#900000'}} >
                                 View
-                            </Button>
+                            </a>
                         </Typography>
                     </>
                 )}
 
                 <Typography variant="body1" gutterBottom>
-                    High Study: {data.highStudy}
-                    {console.log(data.highStudy)}
+                    <strong>Higher Study:</strong> {data.highStudy ?"Yes" : "No"}
                 </Typography>
-                {data.highStudy === "Yes" && (
+                {data.highStudy  && (
                     <Typography variant="body1" gutterBottom>
-                        High Study Place: {data.highStudyplace}
+                        <strong> Higher Study Preference:</strong> {data.highStudyplace}
                     </Typography>
                 )}
 
                 <Typography variant="body1" gutterBottom>
-                    Gate Status: {data.gateStatus}
+                    <strong>Gate Status:</strong> {data.gateStatus ? "Yes":"No"}
                 </Typography>
-                {data.gateStatus === "Yes" && (
+                {data.gateStatus && (
                     <>
                         <Typography variant="body1" gutterBottom>
-                            Gate Admit Card/Scorecard: <Button onClick={() => handleViewCertificate(data.gateCertificate)} variant="outlined" color="primary" >
+                           
+                            <strong>Gate Admit Card/Scorecard: &nbsp;</strong>  <a onClick={() => handleViewCertificate(data.gateCertificate)} style={{ cursor: 'pointer', textDecoration: 'underline', color: '#900000' }} >
                                 View
-                            </Button>
+                            </a>
                         </Typography>
                     </>
                 )}
                 <Alert severity="info" sx={{ marginTop: 2 }}>
                     This information is stored officially
                 </Alert>
+                <hr/>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 20 }}>
                     <Button variant="contained" onClick={onClose}>
                         Close

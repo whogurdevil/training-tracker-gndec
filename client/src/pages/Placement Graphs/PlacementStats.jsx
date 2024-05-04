@@ -37,9 +37,9 @@ const PlacementStats = () => {
 
             // Add canvas images to PDF
             doc.text('Batch-wise Placed Student Percentages', 130, 40);
-            doc.addImage(canvas1.toDataURL('image/png'), 'PNG', 40, 80, 300, 150);
-            doc.addImage(canvas2.toDataURL('image/png'), 'PNG', 40, 280, 300, 150);
-            doc.addImage(canvas3.toDataURL('image/png'), 'PNG', 40, 430, 300, 150);
+            doc.addImage(canvas1.toDataURL('image/png'), 'PNG', 75, 80, 300, 150);
+            doc.addImage(canvas2.toDataURL('image/png'), 'PNG', 75, 260, 300, 150);
+            doc.addImage(canvas3.toDataURL('image/png'), 'PNG', 75, 430, 300, 150);
 
             // Save PDF
             doc.save('placement_graph.pdf');
