@@ -143,6 +143,7 @@ function Login() {
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
+            InputLabelProps={{ shrink: true }}
             margin="normal"
             required
             fullWidth
@@ -158,6 +159,7 @@ function Login() {
            
           />
           <TextField
+          InputLabelProps={{ shrink: true }}
             margin="normal"
             required
             fullWidth

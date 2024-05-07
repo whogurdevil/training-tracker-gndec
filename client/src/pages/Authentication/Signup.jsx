@@ -181,7 +181,7 @@ function Signup() {
           Sign up
         </Typography>
         <Box sx={{ mt: 1 }}>
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             margin="normal"
             required
             fullWidth
@@ -195,7 +195,7 @@ function Signup() {
             helperText={errors.email}
 
           />
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             margin="normal"
             required
             fullWidth
@@ -220,7 +220,7 @@ function Signup() {
               ),
             }}
           />
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             margin="normal"
             required
             fullWidth
@@ -233,7 +233,7 @@ function Signup() {
             helperText={errors.confirmPassword}
 
           />
-          <TextField
+          <TextField InputLabelProps={{ shrink: true }}
             margin="normal"
             required
             fullWidth
