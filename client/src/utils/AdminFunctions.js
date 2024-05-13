@@ -82,23 +82,25 @@ export const getTrainingOptions = (adminType, trainingNames) => {
     const trainingNumber = trainingNames[0]["Training_No"];
 
     if (adminType === "104") {
-        
             options.push({
-                value: `tr10${i}`,
+                value: `tr104`,
                 label: ` ${trainingNames[0][`Training4_name`]}`
             });
         
         options.push({ value: "placementData", label: "Placement Data" });
     } else if (adminType === "103") {
+   
             options.push({
-                value: `tr10${i}`,
+                value: `tr103`,
                 label: ` ${trainingNames[0][`Training3_name`]}`
             });
+        
     } else if (adminType === "102") {
             options.push({
-                value: `tr10${i}`,
+                value: `tr102`,
                 label: ` ${trainingNames[0][`Training2_name`]}`
             });
+        
     } else if (adminType === "101") {
         if (trainingNumber >= 1) {
             options.push({

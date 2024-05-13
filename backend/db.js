@@ -106,7 +106,7 @@ async function initializeUsers() {
         const user4 = new SignUp({
             crn: "Tr103",
             email: "training103@gmail.com",
-            password: "$2b$10$Qmoedh5anxn1hVYBoKvMceqlfXL6vjlMuDB.N2MvEBzC0DEkjQe1Sy",
+            password: "$2b$10$6IkHglNOJYUjumeMiA9A1Op3AokqYgoQesdDaki0UUkRtDFGfY2Ta",
             role: "admin",
             isVerified: true,
             userInfo: {
