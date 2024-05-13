@@ -82,27 +82,25 @@ export const getTrainingOptions = (adminType, trainingNames) => {
     const trainingNumber = trainingNames[0]["Training_No"];
 
     if (adminType === "104") {
-        for (let i = 1; i <= trainingNumber && i <= 4; i++) {
             options.push({
-                value: `tr10${i}`,
-                label: ` ${trainingNames[0][`Training${i}_name`]}`
+                value: `tr104`,
+                label: ` ${trainingNames[0][`Training4_name`]}`
             });
-        }
+        
         options.push({ value: "placementData", label: "Placement Data" });
     } else if (adminType === "103") {
-        for (let i = 1; i <= trainingNumber && i <= 3; i++) {
+   
             options.push({
-                value: `tr10${i}`,
-                label: ` ${trainingNames[0][`Training${i}_name`]}`
+                value: `tr103`,
+                label: ` ${trainingNames[0][`Training3_name`]}`
             });
-        }
+        
     } else if (adminType === "102") {
-        for (let i = 1; i <= trainingNumber && i <= 2; i++) {
             options.push({
-                value: `tr10${i}`,
-                label: ` ${trainingNames[0][`Training${i}_name`]}`
+                value: `tr102`,
+                label: ` ${trainingNames[0][`Training2_name`]}`
             });
-        }
+        
     } else if (adminType === "101") {
         if (trainingNumber >= 1) {
             options.push({
