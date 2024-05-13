@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Expose the port on which the application will run (if needed)
-EXPOSE 8000
+EXPOSE 8443
 
 
 # Specify the command to run when the container starts
