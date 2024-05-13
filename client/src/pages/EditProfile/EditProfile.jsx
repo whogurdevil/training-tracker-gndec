@@ -46,7 +46,7 @@ const EditProfile = () => {
         setShowModal2(true);
     }
     // Function to fetch data for a given CRN from the backend
-    const fetchData =  () => {
+    const fetchData =  async() => {
         if (/^Tr\d{3}$/.test(crn)) {
             toast.error("Admin Can Only Change Own Password")
             setCrnError(true); // Set CRN error if it's not 7 digits
@@ -60,7 +60,7 @@ const EditProfile = () => {
         
         setLoading(true); // Set loading state to true
         setFetchError(false); // Reset fetch error state
-        Data();
+        await Data();
         setShowModal(true); 
        
     };
@@ -77,14 +77,17 @@ const EditProfile = () => {
                 setFormData(data);
                 // Store fetched data in state
                 setFetchError(false); // Reset fetch error state
+                setLoading(false)
             } else {
                 setFetchError(true);
                 // Set fetch error state if no data found
+                setLoading(false)
             }
         } catch (error) {
 
             console.error('Error fetching data:', error);
             setFetchError(true);
+            setLoading(false)
           // Set fetch error state in case of error
         } finally {
             setLoading(false); // Set loading state to false after data is fetched
@@ -242,8 +245,7 @@ const EditProfile = () => {
                             <Typography>Change User Info</Typography>}
                     </Button>
                     <Button variant="contained" onClick={handlePassword} disabled={loading}>
-                        {loading ? <CircularProgress color='inherit' size={24} /> :
-                            <Typography>Change Password</Typography>}
+                            <Typography>Change Password</Typography>
                     </Button>
                 </Grid>
             </Grid>
@@ -302,6 +304,7 @@ const EditProfile = () => {
                                     value={formData.urn}
                                     onChange={handleChange}
                                     disabled={!isEditing}
+                                    InputLabelProps={{shrink:true}}
                                 />
                                 <TextField
                                     label="Name"
@@ -312,6 +315,7 @@ const EditProfile = () => {
                                     variant="outlined"
                                     sx={{ mb: 2 }}
                                     disabled={!isEditing}
+                                        InputLabelProps={{ shrink: true }}
                                 />
                                 <TextField
                                     label="Mother's Name"
@@ -323,6 +327,7 @@ const EditProfile = () => {
                                     value={formData.mother}
                                     onChange={handleChange}
                                     disabled={!isEditing}
+                                        InputLabelProps={{ shrink: true }}
                                 />
                                 <TextField
                                     label="Father's Name"
@@ -334,6 +339,7 @@ const EditProfile = () => {
                                     value={formData.father}
                                     onChange={handleChange}
                                     disabled={!isEditing}
+                                        InputLabelProps={{ shrink: true }}
                                 />
                                 <TextField
                                     label="Personal Mail"
@@ -345,6 +351,7 @@ const EditProfile = () => {
                                     value={formData.personalMail}
                                     onChange={handleChange}
                                     disabled={!isEditing}
+                                        InputLabelProps={{ shrink: true }}
                                 />
                                 <TextField
                                     label="Contact"
@@ -356,6 +363,7 @@ const EditProfile = () => {
                                     value={formData.contact}
                                     onChange={handleChange}
                                     disabled={!isEditing}
+                                        InputLabelProps={{ shrink: true }}
                                 />
 
                                 <TextField
@@ -370,6 +378,7 @@ const EditProfile = () => {
                                         '& .MuiSelect-select': { textAlign: 'left' } // Aligns the selected value to the left
                                     }}
                                     disabled={!isEditing}
+                                        InputLabelProps={{ shrink: true }}
                                 >
                                     <MenuItem value="A1" >A1</MenuItem>
                                     <MenuItem value="A2">A2</MenuItem>
@@ -391,6 +400,7 @@ const EditProfile = () => {
                                     value={formData.branch}
                                     onChange={handleChange}
                                     disabled={!isEditing}
+                                        InputLabelProps={{ shrink: true }}
                                 ><MenuItem value="CSE">Computer Science & Engineering</MenuItem>
                                 </TextField>
                                 <TextField
@@ -404,6 +414,7 @@ const EditProfile = () => {
                                     value={formData.mentor}
                                     onChange={handleChange}
                                     disabled={!isEditing}
+                                        InputLabelProps={{ shrink: true }}
                                 />
                                 <TextField
                                     select
@@ -416,6 +427,7 @@ const EditProfile = () => {
                                     value={formData.gender}
                                     onChange={handleChange}
                                     disabled={!isEditing}
+                                        InputLabelProps={{ shrink: true }}
                                 >
                                     <MenuItem value="Male">Male</MenuItem>
                                     <MenuItem value="Female">Female</MenuItem>
@@ -430,6 +442,7 @@ const EditProfile = () => {
                                     value={formData.admissionType}
                                     onChange={handleChange}
                                     disabled={!isEditing}
+                                        InputLabelProps={{ shrink: true }}
                                 >
                                     <MenuItem value="Non LEET">Non LEET</MenuItem>
                                     <MenuItem value="LEET">LEET</MenuItem>
@@ -493,6 +506,7 @@ const EditProfile = () => {
                                     type={showPassword ? 'text' : 'password'} // Show password text if showPassword is true
                                     onChange={handleChange}
                                     disabled={!isEditing}
+                                        InputLabelProps={{ shrink: true }}
                             helperText={errors.password}
                             error={Boolean(errors.password)}
                                     InputProps={{
@@ -519,6 +533,7 @@ const EditProfile = () => {
                             value={formData.confirmPassword}
                             type="password"
                             onChange={handleChange}
+                                        InputLabelProps={{ shrink: true }}
                             disabled={!isEditing}
                             error={Boolean(errors.confirmPassword)}
                             helperText={errors.confirmPassword}

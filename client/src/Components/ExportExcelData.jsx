@@ -117,7 +117,8 @@ const ExportExcelComponent = ({ data, selectedTraining }) => {
 
         // Generate Excel file and download
         const buffer = await workbook.xlsx.writeBuffer();
-        const excelBlob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const excelBlob = new Blob([s2ab(wbout)], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      
         saveAs(excelBlob, 'training_data.xlsx');
     };
 

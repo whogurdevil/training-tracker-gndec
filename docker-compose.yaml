@@ -30,7 +30,7 @@ services:
       - "27017:27017"
     restart: always
     volumes:
-      - mongodb_data:/data/db
+      - mongodb_data:/data/db  
 
 volumes:
   mongodb_data:
