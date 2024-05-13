@@ -138,7 +138,7 @@ if(selectedTraining){
              //view more
         } 
     
-    else if(selectedTraining==="placementData"){
+    else if(selectedTraining!=="placementData"){
             customColumns.push(
                 { accessorKey: `${selectedTraining}.technology`, header: "Technology" },
                 { accessorKey: `${selectedTraining}.organization`, header: "Organization" },
