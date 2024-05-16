@@ -10,11 +10,12 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import MenuItem from "@mui/material/MenuItem";
-import { CircularProgress, Typography } from "@mui/material";
+import { CircularProgress, Typography, Alert, AlertTitle } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import DeleteIcon from '@mui/icons-material/Delete';
 // API_URL should point to your backend API endpoint
 const API_URL =
   import.meta.env.VITE_ENV === "production"
@@ -25,6 +26,7 @@ const EditProfile = () => {
   // State variables
   const [showModal, setShowModal] = useState(false); // Controls modal visibility
   const [formData, setFormData] = useState({}); // Stores original fetched data
+  const [userInfo, setuserInfo] = useState({}); 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false); // Indicates loading state
   const [fetchError, setFetchError] = useState(false); // Indicates if there's an error fetching data
@@ -33,20 +35,27 @@ const EditProfile = () => {
   const [crn, setCrn] = useState(""); // Stores the entered CRN
   const [isChanged, setIsChanged] = useState(false);
   const [showModal2, setShowModal2] = useState(false);
+  const [showModal3, setShowModal3] = useState(false);
   const [errors, setErrors] = useState({
     password: "",
     confirmPassword: "",
   });
 
-  const handlePassword = () => {
+  const handleCheck = async (value) => {
+    console.log('hello')
     if (!/^\d{7}$|^Tr\d{3}$/.test(crn)) {
       toast.error("Invalid CRN ");
       setCrnError(true); // Set CRN error if it's not 7 digits
       return;
     }
-
-    Data();
-    setShowModal2(true);
+    await Data();
+    if(value==="password"){
+      setShowModal2(true);
+    }
+    if(value==="deleteUser"){
+      setShowModal3(true);
+    }
+    
   };
   // Function to fetch data for a given CRN from the backend
   const fetchData = async () => {
@@ -69,13 +78,15 @@ const EditProfile = () => {
     try {
       const token = localStorage.getItem("authtoken");
       // Make GET request to fetch data for the given CRN
-      const response = await axios.get(`${API_URL}userprofiles/${crn}`, {
+      const response = await axios.get(`${API_URL}users/getuser/${crn}`, {
         headers: { "auth-token": token },
       });
 
       const data = response.data.data;
+      const userInfoData=response.data.data.userInfo
       if (data) {
         setFormData(data);
+        setuserInfo(userInfoData)
         // Store fetched data in state
         setFetchError(false); // Reset fetch error state
         setLoading(false);
@@ -168,11 +179,20 @@ const EditProfile = () => {
       setFetchError(false);
       setIsEditing(false);
       setIsChanged(false);
+      const updatedFormData = {
+        ...formData,
+        userInfo: {
+          ...formData.userInfo, // Preserve existing userInfo properties
+          ...userInfo, // Update userInfo with new values from state
+        },
+      };
+
+      console.log(updatedFormData);
       const token = localStorage.getItem("authtoken");
       // Make PUT request to update data with editedData
-      const response = await axios.post(
-        `${API_URL}userprofiles`,
-        { formData, crn: crn },
+      const response = await axios.put(
+        `${API_URL}users/updateUser/${crn}`,
+        { updatedFormData },
         {
           headers: { "auth-token": token },
         },
@@ -200,14 +220,59 @@ const EditProfile = () => {
     setIsEditing((prevEditing) => !prevEditing);
 
     // You can implement this functionality based on your requirements
+  }; 
+  const handleDeleteStudent = async () => {
+    try {
+      setLoading(true);
+      setFetchError(false);
+      setIsChanged(false);
+      const token = localStorage.getItem("authtoken");
+
+      const response = await axios.delete(`${API_URL}auth/deleteUser`, {
+        headers: {
+          "auth-token": token
+        },
+        data: {
+          crn: crn // Pass the crn value as part of the request body
+        }
+      });
+
+      if (response.data.success) {
+        setLoading(false);
+        setShowModal3(false);
+        setShowModal(false);
+        toast("Successfully Deleted User");
+      } else {
+        toast(response.data.message); // Use response.data.message to show the error message from the server
+        setLoading(false);
+        setShowModal3(false);
+      }
+    } catch (error) {
+      console.error("Error deleting User:", error);
+      toast("Failed to Delete User");
+      setLoading(false); // Set loading state to false in case of error
+    }
   };
+
 
   // Function to handle form field changes
   // Function to handle form field changes
-  const handleChange = (e) => {
+  const handleChangeformData = (e) => {
     const { name, value } = e.target;
     setIsChanged(true);
     setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: validateField(name, value),
+    }));
+  };
+  const handleChangeuserInfo = (e) => {
+    const { name, value } = e.target;
+    setIsChanged(true);
+    setuserInfo((prevData) => ({
       ...prevData,
       [name]: value,
     }));
@@ -259,11 +324,12 @@ const EditProfile = () => {
           </Button>
           <Button
             variant="contained"
-            onClick={handlePassword}
+            onClick={() => handleCheck("password")}
             disabled={loading}
           >
             <Typography>Change Password</Typography>
           </Button>
+         
         </Grid>
       </Grid>
 
@@ -329,6 +395,7 @@ const EditProfile = () => {
                   >
                     Edit
                   </Button>
+                   
                   <Button
                     disabled={loading}
                     variant="text"
@@ -342,6 +409,16 @@ const EditProfile = () => {
                     Cancel
                   </Button>
                 </div>
+                  <div style={{ display: "flex" }}>
+                    <IconButton
+                      variant="contained"
+                      color="primary"
+                      onClick={() => setShowModal3(true)}
+                      disabled={loading}
+                      sx={{ mr: 2, mb: 2 }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
                 <Button
                   disabled={loading || !isChanged}
                   variant="contained"
@@ -354,27 +431,70 @@ const EditProfile = () => {
                     "Submit"
                   )}
                 </Button>
+                </div>
               </Box>
               <Box sx={{ marginTop: "10px" }}>
                 <hr />
-
-                <TextField
-                  label="University Roll Number"
-                  variant="outlined"
-                  sx={{ mb: 2, marginTop: "20px" }}
-                  fullWidth
-                  placeholder="1234567"
-                  name="urn"
-                  value={formData.urn}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  InputLabelProps={{ shrink: true }}
-                />
+                  <TextField
+                    label="Email"
+                    variant="outlined"
+                    sx={{ mb: 2, marginTop: "20px" }}
+                    fullWidth
+                    placeholder="NameCrn@gndec.ac.in"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChangeformData}
+                    disabled={!isEditing}
+                    InputLabelProps={{ shrink: true }}
+                  /> 
+                  <TextField
+                    label="College Roll Number"
+                    variant="outlined"
+                    sx={{ mb: 2 }}
+                    fullWidth
+                    placeholder="1234567"
+                    name="crn"
+                    value={formData.crn}
+                    onChange={handleChangeformData}
+                    disabled={!isEditing}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                  <TextField
+                    select
+                    label="Verification Status"
+                    variant="outlined"
+                    fullWidth
+                    name="isVerified"
+                    value={formData.isVerified}
+                    onChange={handleChangeformData}
+                    sx={{
+                      mb: 2,
+                      "& .MuiSelect-select": { textAlign: "left" }, // Aligns the selected value to the left
+                    }}
+                    disabled={!isEditing}
+                    InputLabelProps={{ shrink: true }}
+                  >
+                    <MenuItem value={true}>true</MenuItem>
+                    <MenuItem value={false}>false</MenuItem>
+                    
+                  </TextField>
+                  <TextField
+                    label="University Roll Number"
+                    variant="outlined"
+                    sx={{ mb: 2 }}
+                    fullWidth
+                    placeholder="1234567"
+                    name="urn"
+                    value={userInfo?.urn|| null}
+                    onChange={handleChangeuserInfo}
+                    disabled={!isEditing}
+                    InputLabelProps={{ shrink: true }}
+                  />
                 <TextField
                   label="Name"
                   name="Name"
-                  value={formData.Name}
-                  onChange={handleChange}
+                    value={userInfo?.Name}
+                    onChange={handleChangeuserInfo}
                   fullWidth
                   variant="outlined"
                   sx={{ mb: 2 }}
@@ -388,8 +508,8 @@ const EditProfile = () => {
                   fullWidth
                   placeholder="Mother’s Name"
                   name="mother"
-                  value={formData.mother}
-                  onChange={handleChange}
+                    value={userInfo?.mother}
+                    onChange={handleChangeuserInfo}
                   disabled={!isEditing}
                   InputLabelProps={{ shrink: true }}
                 />
@@ -400,8 +520,8 @@ const EditProfile = () => {
                   fullWidth
                   placeholder="Father’s Name"
                   name="father"
-                  value={formData.father}
-                  onChange={handleChange}
+                    value={userInfo?.father}
+                    onChange={handleChangeuserInfo}
                   disabled={!isEditing}
                   InputLabelProps={{ shrink: true }}
                 />
@@ -412,8 +532,8 @@ const EditProfile = () => {
                   fullWidth
                   placeholder="example@gndec.ac.in"
                   name="personalMail"
-                  value={formData.personalMail}
-                  onChange={handleChange}
+                    value={userInfo?.personalMail}
+                    onChange={handleChangeuserInfo}
                   disabled={!isEditing}
                   InputLabelProps={{ shrink: true }}
                 />
@@ -424,8 +544,8 @@ const EditProfile = () => {
                   fullWidth
                   placeholder="9876543210"
                   name="contact"
-                  value={formData.contact}
-                  onChange={handleChange}
+                    value={userInfo?.contact}
+                    onChange={handleChangeuserInfo}
                   disabled={!isEditing}
                   InputLabelProps={{ shrink: true }}
                 />
@@ -436,7 +556,8 @@ const EditProfile = () => {
                   variant="outlined"
                   fullWidth
                   name="section"
-                  value={formData.section}
+                    value={userInfo?.section}
+                    onChange={handleChangeuserInfo}
                   sx={{
                     mb: 2,
                     "& .MuiSelect-select": { textAlign: "left" }, // Aligns the selected value to the left
@@ -461,8 +582,8 @@ const EditProfile = () => {
                   sx={{ mb: 2 }}
                   fullWidth
                   name="branch"
-                  value={formData.branch}
-                  onChange={handleChange}
+                    value={userInfo?.branch}
+                    onChange={handleChangeuserInfo}
                   disabled={!isEditing}
                   InputLabelProps={{ shrink: true }}
                 >
@@ -478,8 +599,8 @@ const EditProfile = () => {
                   required
                   name="mentor"
                   placeholder="Your Mentor Name"
-                  value={formData.mentor}
-                  onChange={handleChange}
+                    value={userInfo?.mentor}
+                    onChange={handleChangeuserInfo}
                   disabled={!isEditing}
                   InputLabelProps={{ shrink: true }}
                 />
@@ -491,8 +612,8 @@ const EditProfile = () => {
                   fullWidth
                   required
                   name="gender"
-                  value={formData.gender}
-                  onChange={handleChange}
+                    value={userInfo?.gender}
+                    onChange={handleChangeuserInfo}
                   disabled={!isEditing}
                   InputLabelProps={{ shrink: true }}
                 >
@@ -506,8 +627,8 @@ const EditProfile = () => {
                   sx={{ mb: 2 }}
                   fullWidth
                   name="admissionType"
-                  value={formData.admissionType}
-                  onChange={handleChange}
+                    value={userInfo?.admissionType}
+                    onChange={handleChangeuserInfo}
                   disabled={!isEditing}
                   InputLabelProps={{ shrink: true }}
                 >
@@ -616,7 +737,7 @@ const EditProfile = () => {
                   label="Set New Password"
                   value={formData.password}
                   type={showPassword ? "text" : "password"} // Show password text if showPassword is true
-                  onChange={handleChange}
+                  onChange={handleChangeformData}
                   disabled={!isEditing}
                   InputLabelProps={{ shrink: true }}
                   helperText={errors.password}
@@ -648,7 +769,7 @@ const EditProfile = () => {
                   label="Confirm Password"
                   value={formData.confirmPassword}
                   type="password"
-                  onChange={handleChange}
+                    onChange={handleChangeuserInfo}
                   InputLabelProps={{ shrink: true }}
                   disabled={!isEditing}
                   error={Boolean(errors.confirmPassword)}
@@ -658,6 +779,71 @@ const EditProfile = () => {
             </>
           )}
         </Box>
+      </Modal>
+      <Modal 
+      open={showModal3}
+      onClose={() => setShowModal3(false)}
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}>
+        <Box
+          sx={{
+            width: "700px",
+            p: 4,
+            bgcolor: "background.paper",
+            borderRadius: 2,
+            maxHeight: "80vh",
+            overflowY: "auto",
+          }}
+        >
+       {fetchError ? (
+            <Box
+              sx={{
+                mb: 2,
+                display: "flex",
+                justifyContent: "center",
+                flexDirection: "column",
+              }}
+            >
+              <p>No data found for the provided CRN.</p>
+
+              <Button
+                variant="contained"
+                onClick={() => setShowModal3(false)}
+                sx={{ mr: 2, mb: 2 }}
+              >
+                Cancel
+              </Button>
+            </Box>
+          ):(
+            <>
+          <Alert
+            severity='warning'
+          >
+           Are you Sure you want to delete this Student data
+          </Alert>
+          <hr />
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 16, paddingBlock: 6 }}>
+              <Button
+                variant="contained"
+                onClick={() => setShowModal3(false)}
+                sx={{ mr: 2, mb: 2 }}
+              >
+                Cancel
+              </Button>
+            <Button variant="contained" onClick={handleDeleteStudent} 
+                    sx={{ mr: 2, mb: 2 }}>
+              {loading ? <CircularProgress size={24} color='inherit' /> : 'Submit'}
+            </Button>
+          </div>
+            </>
+          )
+        }
+        
+   </Box>
+    
       </Modal>
       <ToastContainer />
     </Container>

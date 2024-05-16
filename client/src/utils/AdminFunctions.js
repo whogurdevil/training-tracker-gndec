@@ -89,12 +89,12 @@ export const getTrainingOptions = (adminType, trainingNames) => {
         
         options.push({ value: "placementData", label: "Placement Data" });
     } else if (adminType === "103") {
-   
+        for (let i = 1; i <= trainingNumber && i <= 3; i++) {
             options.push({
                 value: `tr103`,
                 label: ` ${trainingNames[0][`Training3_name`]}`
             });
-        
+        }
     } else if (adminType === "102") {
             options.push({
                 value: `tr102`,
