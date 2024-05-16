@@ -140,8 +140,22 @@ export default function Form() {
         errorMsg = 'URN must be a 7-digit number';
         break;
       case 'personalMail':
-        let regex = /^\S+@\S+\.\S+$/;
-        let errorMsg = 'Invalid email address';
+        regex = /^\S+@\S+\.\S+$/;
+        errorMsg = 'Invalid email address';
+        break;
+      case 'name':
+        regex = /^[A-Za-z]+$/;
+        errorMsg = 'Invalid Name format';
+        break;
+      case 'mother':
+        regex = /^[A-Za-z]+$/;
+        errorMsg = "Invalid Mother name format";
+        break;
+      case 'father':
+        regex = /^[A-Za-z]+$/;
+        errorMsg = "Invalid Father name format";
+        break;
+    
       default:
         break;
     }
