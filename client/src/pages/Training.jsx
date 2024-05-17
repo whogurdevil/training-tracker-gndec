@@ -112,26 +112,33 @@ export default function Form() {
       if (formData.organization.length === 0) {
         formErrors.organization = 'Organization cannot be blank';
         toast.error(formErrors.organization)
+        return;
       }
       if (formData.technology.length === 0) {
         formErrors.technology = 'Technology cannot be blank';
         toast.error(formErrors.technology)
+        return;
       }
       if (!formData.projectName.trim()) {
         formErrors.projectName = 'Project Title cannot be blank';
         toast.error(formErrors.projectName)
+        return;
       }
       if (!formData.type.trim()) {
         formErrors.type = 'Training type cannot be blank';
         toast.error(formErrors.type)
+        return;
+
       }
       if (!formData.certificate ) {
         formErrors.certificate = 'Certificate is blank ';
         toast.error(formErrors.certificate)
+        return;
       }
       if (!formData.organizationType.trim()) {
         formErrors.organizationType = 'Organization-Type cannot be blank';
         toast.error("Organization-Type cannot be blank")
+        return;
       }
       
 

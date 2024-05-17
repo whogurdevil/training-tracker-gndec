@@ -91,6 +91,7 @@ function Signup() {
     setLoading(true);
 
     try {
+
       const validationErrors = Object.keys(credentials).reduce((acc, key) => {
         const error = validateField(key, credentials[key]);
         return error ? { ...acc, [key]: error } : acc;
@@ -101,7 +102,6 @@ function Signup() {
         setLoading(false);
         return;
       }
-
       // Post request
       const response = await fetch(`${API_URL}auth/signup`, {
         method: 'POST',
@@ -110,17 +110,17 @@ function Signup() {
       });
       const json = await response.json();
       if (json.success) {
-        toast('Successfully signed up');
+        toast.success('Successfully signed up');
         setTimeout(() => {
           // console.log(credentials.email);
           navigate('/verify', { state: { email: credentials.email } });
         }, 2000);
       } else {
-        toast(json.message);
+        toast.error(json.message);
         setLoading(false);
       }
     } catch (error) {
-      toast('Invalid Credentials');
+      toast.error('Invalid Credentials');
       setLoading(false);
     }
   };
