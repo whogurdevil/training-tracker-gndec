@@ -43,14 +43,14 @@ function Verify() {
       const json = await response.json();
 
       if (json.success) {
-        toast('OTP sent successfully');
+        toast.success('OTP sent successfully');
         setShowOTPField(true); // Show OTP field after successful OTP request
       } else {
-        toast('🚫 ' + json.message);
+        toast.error( json.message);
       }
     } catch (error) {
       console.error(error);
-      toast('🚫 An error occurred');
+      toast.error('An error occurred');
     } finally {
       setLoading(false);
     }

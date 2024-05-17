@@ -77,7 +77,7 @@ function Login() {
       // console.log(json);
       if (json.success) {
         if (json.message === "verify") {
-          toast("Please verify your account");
+          toast.warning("Please verify your account");
           setTimeout(() => {
             navigate("/verify");
           }, 2000);
@@ -85,29 +85,29 @@ function Login() {
           localStorage.setItem("authtoken", json.authtoken);
           // console.log(json.authtoken)
           if (json.body.user.role === "superadmin") {
-            toast("Successfully logged in");
+            toast.success("Successfully logged in");
             setTimeout(() => {
               navigate("/superadmin");
             }, 1000);
           } else if (json.body.user.role === "admin") {
-            toast("Successfully logged in");
+            toast.success("Successfully logged in");
             setTimeout(() => {
               navigate("/admin", { state: { crn: credentials.crn } });
             }, 1000);
           } else {
-            toast("Successfully logged in");
+            toast.success("Successfully logged in");
             setTimeout(() => {
               navigate("/home");
             }, 1000);
           }
         }
       } else {
-        toast("🚫 " + json.message);
+        toast.error( json.message);
         setLoading(false);
       }
     } catch (error) {
       console.error(error);
-      toast("🚫 An error occurred");
+      toast.error("An error occurred");
       setLoading(false);
     }
   };

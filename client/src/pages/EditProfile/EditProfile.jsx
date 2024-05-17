@@ -135,14 +135,14 @@ const EditProfile = () => {
       if (response.ok) {
         setLoading(false);
         setShowModal2(false);
-        toast("Succesfully edited data");
+        toast.success("Succesfully Changed Password");
         setFormData({});
         setErrors({
           password: "",
           confirmPassword: "",
         });
       } else {
-        toast(json.message);
+        toast.error(json.message);
         setLoading(false);
         setShowModal2(false);
       }
@@ -150,7 +150,7 @@ const EditProfile = () => {
       // Close the modal after data is submitted successfully
     } catch (error) {
       console.error("Error submitting data:", error);
-      toast("Failed to edit data");
+      toast.error("Failed to Change Password");
       setLoading(false); // Set loading state to false in case of error
     }
   };
@@ -201,9 +201,9 @@ const EditProfile = () => {
       if (response.data.success) {
         setLoading(false);
         setShowModal(false);
-        toast("Succesfully edited data");
+        toast.success("Succesfully edited data");
       } else {
-        toast(json.message);
+        toast.error(json.message);
         setLoading(false);
         setShowModal(false);
       }
@@ -211,7 +211,7 @@ const EditProfile = () => {
       // Close the modal after data is submitted successfully
     } catch (error) {
       console.error("Error submitting data:", error);
-      toast("Failed to edit data");
+      toast.error("Failed to edit data");
       setLoading(false); // Set loading state to false in case of error
     }
   };
@@ -241,15 +241,15 @@ const EditProfile = () => {
         setLoading(false);
         setShowModal3(false);
         setShowModal(false);
-        toast("Successfully Deleted User");
+        toast.success("Successfully Deleted User");
       } else {
-        toast(response.data.message); // Use response.data.message to show the error message from the server
+        toast.error(response.data.message); // Use response.data.message to show the error message from the server
         setLoading(false);
         setShowModal3(false);
       }
     } catch (error) {
       console.error("Error deleting User:", error);
-      toast("Failed to Delete User");
+      toast.error("Failed to Delete User");
       setLoading(false); // Set loading state to false in case of error
     }
   };
