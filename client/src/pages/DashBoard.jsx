@@ -443,7 +443,7 @@ export default function Form() {
               </TextField>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
-                  label="Admission Year"
+                  label="Batch Start Year"
                   
                   views={['year']}
                   renderInput={(params) => <TextField {...params} helperText="Enter starting year only" />}

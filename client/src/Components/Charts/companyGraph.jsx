@@ -42,7 +42,7 @@ const CompanyGraph = forwardRef(({ data, years }, ref) => {
             });
 
             const labels = Object.keys(batchWiseData).sort(); // Sort the labels array
-            const maxPackages = labels.map((year) => (batchWiseData[year]?.maxPackage) / 100000 || 0);
+            const maxPackages = labels.map((year) => (batchWiseData[year]?.maxPackage) || 0);
             const maxPackage= Math.max(...maxPackages);
             setmaxPackageState(maxPackage)
             const companyPackageInfo = labels.map((year) => ({
