@@ -7,6 +7,7 @@ import Home from '../pages/Home';
 import PlacementStats from '../pages/Placement Graphs/PlacementStats';
 import TrainingNames from '../pages/TrainingNamesController/TrainingNames';
 import EditProfile from '../pages/EditProfile/EditProfile';
+import ImportCsv from '../pages/ImportCsv/ImportCsv';
 
 const ProtectedRoute = ({ component: Component, path, ...rest }) => {
     const authToken = localStorage.getItem('authtoken');
@@ -25,6 +26,11 @@ const ProtectedRoute = ({ component: Component, path, ...rest }) => {
             if (path === '/login' && userRole) {
                 return <Navigate to="/home" replace />;
             }
+            if (userRole === 'superadmin' || userRole === 'admin') {
+                if (path === '/admin/editProfile') {
+                    return <EditProfile />
+                }
+            }
             // Check if the user is authenticated and has the required role
             if (userRole === 'superadmin') {
                 if(path==='/superadmin/placementStats'){
@@ -33,9 +39,10 @@ const ProtectedRoute = ({ component: Component, path, ...rest }) => {
                 else if(path==='/superadmin/trainingNames'){
                     return <TrainingNames/>
                 }
-                else if(path==='/admin/editProfile'){
-                    return <EditProfile/>
+                 else if (path ==='/admin/ImportCsv'){
+                    return <ImportCsv/>
                 }
+            
                 // Redirect superadmin to home if trying to access admin or superadmin route
            else{
                     return <SuperAdmin />;

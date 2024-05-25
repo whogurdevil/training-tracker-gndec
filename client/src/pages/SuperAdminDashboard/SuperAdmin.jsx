@@ -17,6 +17,7 @@ import { fetchUsers, changeLock, viewCertificate } from '../../utils/AdminFuncti
 import {TextField} from '@mui/material';
 import PlacementModal from '../../Components/PlacementModal';
 import ExpandCircleDownIcon from '@mui/icons-material/ExpandCircleDown';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 const SuperAdminForm = () => {
     const [users, setUsers] = useState([]);
@@ -53,7 +54,9 @@ const SuperAdminForm = () => {
         };
 
         loadTrainingNames();
+      if(!users){
         fetchData();
+      }
     }, [refresh]);
 
     const navigateToStats = (data) => {
@@ -64,6 +67,9 @@ const SuperAdminForm = () => {
     }
     const navigateToEditProfile = (data) => {
         return navigate('/admin/editProfile');
+    }
+    const navigateToImportCsv = (data) => {
+        return navigate('/admin/ImportCsv');
     }
 
     const filteredUsers = useMemo(() => {
@@ -140,7 +146,11 @@ if(selectedTraining){
     
     else if(selectedTraining!=="placementData"){
             customColumns.push(
-                { accessorKey: `${selectedTraining}.technology`, header: "Technology" },
+                {
+                    accessorKey: `${selectedTraining}.technology`,
+                    header: "Technology",
+                    Cell: ({ row }) => row.original[selectedTraining].technology.join(" , ")
+                },
                 { accessorKey: `${selectedTraining}.organization`, header: "Organization" },
                 { accessorKey: `${selectedTraining}.projectName`, header: "Project Name" },
                 { accessorKey: `${selectedTraining}.type`, header: "Type" },
@@ -343,15 +353,23 @@ if(selectedTraining){
 
                             </FormControl>
                         </Grid>
-                        <Grid item style={{ marginBottom: 20 }}>
+                        <Grid item style={{ marginBottom: 20, display:'flex',gap:'10px'  }}>
                             <Button onClick={() => navigateToTrainingNames()} variant="outlined" color="primary" sx={{py:2}}>
                                 Change Training Names
                             </Button>
-                        </Grid>                        <Grid item style={{ marginBottom: 20 }}>
+                      
 
                                 <Button onClick={navigateToEditProfile} variant="outlined" sx={{ py: 2 }}>
                                 Change Student Data
                             </Button>
+                                <Button
+                                    variant="outlined"
+                                    sx={{ py: 2 }}
+                                    startIcon={<CloudUploadIcon />}
+                                    onClick={navigateToImportCsv}
+                                >
+                                    <Typography variant="button">Import</Typography>
+                                </Button>
                         </Grid>
                     </Grid>
                     <Card variant="outlined" style={{ marginBottom: '50px' }}>
@@ -365,13 +383,8 @@ if(selectedTraining){
                                             View Placement Stats
                                         </Button>
                                     )}
-
-
                                 </div>
                             </div>
-
-
-
                             {selectedTraining && (
                                 <div style={{ marginTop: '10px', marginRight: '10px', display: 'flex', justifyContent: 'space-between', gap: '10px' }}>
                                     <VerifyAllComponent selectedTraining={selectedTraining} refresh={refresh} onRefresh={handleRefresh} />
@@ -381,7 +394,6 @@ if(selectedTraining){
                         </div>
                         <MaterialReactTable table={table} />
                     </Card>
-
                         {showModal && (
                             <PlacementModal
                                 showModal={showModal}
@@ -389,8 +401,6 @@ if(selectedTraining){
                                 placementData={selectedRowData}
                             />
                         )}
-
-                   
                     <ToastContainer />
                 </div>
             )}

@@ -16,6 +16,7 @@ import PlacementStats from './pages/Placement Graphs/PlacementStats';
 import TrainingNames from './pages/TrainingNamesController/TrainingNames';
 import Footer from './Components/Footer';
 import EditProfile from './pages/EditProfile/EditProfile';
+import ImportCsv from './pages/ImportCsv/ImportCsv';
 class App extends Component {
   render() {
     return (
@@ -32,6 +33,7 @@ class App extends Component {
             <Route path='/placement' element={<ProtectedRoute path="/placement" component={PlacementForm} />} />
             <Route path='/superadmin/trainingNames' element={<ProtectedRoute path="/superadmin/trainingNames" component={TrainingNames} />} />
             <Route path='/admin/editProfile' element={<ProtectedRoute path="/admin/editProfile" component={EditProfile} />} />
+            <Route path='/admin/ImportCsv' element={<ProtectedRoute path="/admin/ImportCsv" component={ImportCsv} />} />
             <Route path='/tr' element={<ProtectedRoute path="/tr" component={Training101} />} />
             <Route path="/superadmin" element={<ProtectedRoute path="/superadmin" component={SuperAdminForm} />} />
             <Route path="/superadmin/placementStats" element={<ProtectedRoute path="/superadmin/placementStats" component={PlacementStats} />} />

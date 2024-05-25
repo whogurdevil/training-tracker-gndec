@@ -11,7 +11,8 @@ const {
     DB_NAME,
   } = process.env;
 
-const URI = `mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?authSource=admin`
+// const URI = `mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?authSource=admin`
+const URI=process.env.DATABASE
 
 const db = async () => {
     try {
