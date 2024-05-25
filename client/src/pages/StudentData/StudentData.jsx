@@ -12,8 +12,7 @@ import {
   Button,
   LinearProgress,
   Skeleton,
-  
-  CircularProgress
+  CircularProgress,
 } from "@mui/material";
 import {
   MaterialReactTable,
@@ -42,18 +41,19 @@ import {
   changeLock,
   viewCertificate,
   getTrainingOptions,
+  fetchBatches,
 } from "../../utils/AdminFunctions";
 import { TextField } from "@mui/material";
 import PlacementModal from "../../Components/PlacementModal";
 import ExpandCircleDownIcon from "@mui/icons-material/ExpandCircleDown";
-import { decodeUserRole , decodeAuthToken} from "../../utils/AdminFunctions";
+import { decodeUserRole, decodeAuthToken } from "../../utils/AdminFunctions";
 
 const SuperAdminForm = () => {
   const [users, setUsers] = useState([]);
   const [selectedBatch, setSelectedBatch] = useState("");
   const [selectedBranch, setSelectedBranch] = useState("");
   const [selectedTraining, setSelectedTraining] = useState("");
-  const [admintype, Setadmintype] = useState(null)
+  const [admintype, Setadmintype] = useState(null);
   const [editStatus, setEditStatus] = useState({});
   const [refresh, setRefresh] = useState(false); // Refresh state
   const [loading, setLoading] = useState(true); // Loading state
@@ -64,17 +64,18 @@ const SuperAdminForm = () => {
   const [verificationStatus, setVerificationStatus] = useState({});
   const [selectedRowData, setSelectedRowData] = useState(null);
   const navigate = useNavigate();
-  
-  const [role,setRole]=useState("")
+
+  const [role, setRole] = useState("");
   useEffect(() => {
-    const token = localStorage.getItem('authtoken');
-    const role = decodeUserRole(token)
-    setRole(role)
+    const token = localStorage.getItem("authtoken");
+    const role = decodeUserRole(token);
+    setRole(role);
     const fetchData = async () => {
       try {
         const usersData = await fetchUsers();
-        setUsers(usersData.users);
-        setallBatches(usersData.batches);
+        //setUsers(usersData.users);
+        const batches = await fetchBatches();
+        setallBatches(batches);
         setLoading(false);
       } catch (error) {
         setLoading(false);
@@ -84,7 +85,7 @@ const SuperAdminForm = () => {
     const crn = decodeAuthToken(token);
     const admin = crn && crn.length >= 3 ? crn.slice(-1) : crn;
 
-    Setadmintype(admin)
+    Setadmintype(admin);
   }, [refresh]);
 
   const navigateToStats = (data) => {
@@ -168,7 +169,8 @@ const SuperAdminForm = () => {
           {
             accessorKey: `${selectedTraining}.technology`,
             header: "Technology",
-            Cell: ({ row }) => row.original[selectedTraining].technology.join(" , ")
+            Cell: ({ row }) =>
+              row.original[selectedTraining].technology.join(" , "),
           },
           {
             accessorKey: `${selectedTraining}.organization`,
@@ -210,12 +212,15 @@ const SuperAdminForm = () => {
     }
 
     return customColumns;
-  }, [selectedTraining, editStatus , verificationStatus]);
+  }, [selectedTraining, editStatus, verificationStatus]);
 
   const VerificationIcon = ({ lockStatus, handleLock, row }) => {
     const [loading, setLoading] = useState(false);
     const crn = row.original.crn;
-    const currentStatus = verificationStatus[crn] !== undefined ? verificationStatus[crn] : lockStatus;
+    const currentStatus =
+      verificationStatus[crn] !== undefined
+        ? verificationStatus[crn]
+        : lockStatus;
 
     const handleClick = async () => {
       setLoading(true);
@@ -227,22 +232,36 @@ const SuperAdminForm = () => {
       return <CircularProgress size={24} />;
     }
     return currentStatus ? (
-      <CheckCircleIcon style={{ color: 'green', cursor: 'pointer' }} onClick={handleClick} />
+      <CheckCircleIcon
+        style={{ color: "green", cursor: "pointer" }}
+        onClick={handleClick}
+      />
     ) : (
-      <QuestionMarkIcon style={{ color: 'red', cursor: 'pointer' }} onClick={handleClick} />
+      <QuestionMarkIcon
+        style={{ color: "red", cursor: "pointer" }}
+        onClick={handleClick}
+      />
     );
   };
 
   const handleLock = async (row) => {
     try {
       const crn = row.original.crn;
-      const currentStatus = verificationStatus[crn] !== undefined ? verificationStatus[crn] : row.original[selectedTraining].lock;
+      const currentStatus =
+        verificationStatus[crn] !== undefined
+          ? verificationStatus[crn]
+          : row.original[selectedTraining].lock;
       const newStatus = !currentStatus;
-      let successMessage = await changeLock(crn, currentStatus, selectedTraining === 'placementData', selectedTraining);
+      let successMessage = await changeLock(
+        crn,
+        currentStatus,
+        selectedTraining === "placementData",
+        selectedTraining,
+      );
       if (successMessage) {
-        setVerificationStatus(prevStatus => ({
+        setVerificationStatus((prevStatus) => ({
           ...prevStatus,
-          [crn]: newStatus
+          [crn]: newStatus,
         }));
         toast.success("User Data Verification Changed");
         return true;
@@ -250,7 +269,6 @@ const SuperAdminForm = () => {
         toast.error("Error in Status Changing");
         return false;
       }
-
     } catch (error) {
       toast.error(error.message);
     }
@@ -404,53 +422,59 @@ const SuperAdminForm = () => {
                 </TextField>
               </FormControl>
             </Grid>
-            {role==="superadmin" && 
-                <Grid item style={{ marginBottom: 20 }}>
-                  <FormControl style={{ width: 200 }}>
-                    <TextField
-                      value={selectedTraining}
-                      select
-                      label={"Training"}
-                      onChange={handleTrainingChange}
-                    >
-                      <MenuItem value="">All</MenuItem>
-                      {Array.from(
-                        { length: trainingNames[0]["Training_No"] },
-                        (_, index) => {
-                          const trainingNumber = index + 1;
-                          const trainingName =
-                            trainingNames[0][`Training${trainingNumber}_name`];
-                          return (
-                            <MenuItem
-                              key={`tr${trainingNumber}`}
-                              value={`tr10${trainingNumber}`}
-                            >
-                              {trainingName}
-                            </MenuItem>
-                          );
-                        },
-                      )}
-                      <MenuItem value="placementData">
-                        {trainingNames[0]["Placement_name"]}
-                      </MenuItem>
-                    </TextField>
-                  </FormControl>
-                </Grid>
-                 
-            }
-            {role==="admin" && 
-            <Grid item style={{ marginBottom: 20 }}>
+            {role === "superadmin" && (
+              <Grid item style={{ marginBottom: 20 }}>
                 <FormControl style={{ width: 200 }}>
-                  <TextField select label={'Select Training'} value={selectedTraining} onChange={handleTrainingChange}>
+                  <TextField
+                    value={selectedTraining}
+                    select
+                    label={"Training"}
+                    onChange={handleTrainingChange}
+                  >
+                    <MenuItem value="">All</MenuItem>
+                    {Array.from(
+                      { length: trainingNames[0]["Training_No"] },
+                      (_, index) => {
+                        const trainingNumber = index + 1;
+                        const trainingName =
+                          trainingNames[0][`Training${trainingNumber}_name`];
+                        return (
+                          <MenuItem
+                            key={`tr${trainingNumber}`}
+                            value={`tr10${trainingNumber}`}
+                          >
+                            {trainingName}
+                          </MenuItem>
+                        );
+                      },
+                    )}
+                    <MenuItem value="placementData">
+                      {trainingNames[0]["Placement_name"]}
+                    </MenuItem>
+                  </TextField>
+                </FormControl>
+              </Grid>
+            )}
+            {role === "admin" && (
+              <Grid item style={{ marginBottom: 20 }}>
+                <FormControl style={{ width: 200 }}>
+                  <TextField
+                    select
+                    label={"Select Training"}
+                    value={selectedTraining}
+                    onChange={handleTrainingChange}
+                  >
                     {getAdminTrainingOptions().map((option) => (
-                      <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
                     ))}
                   </TextField>
                 </FormControl>
-                </Grid>
-            }
-            </Grid>
-         
+              </Grid>
+            )}
+          </Grid>
+
           <Card variant="outlined" style={{ marginBottom: "50px" }}>
             <div
               style={{
