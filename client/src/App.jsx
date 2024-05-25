@@ -17,25 +17,7 @@ import TrainingNames from "./pages/TrainingNamesController/TrainingNames";
 import Footer from "./Components/Footer";
 import EditProfile from "./pages/EditProfile/EditProfile";
 import StudentData from "./pages/StudentData/StudentData";
-import React, { Component } from "react";
-import Signup from "./pages/Authentication/Signup";
-import DashBoard from "./pages/DashBoard";
-import Home from "./pages/Home";
-import Login from "./pages/Authentication/Login";
-import Verify from "./pages/Authentication/Verify";
-import ForgotPassword from "./pages/Authentication/Forgotpassword";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import SuperAdminForm from "./pages/SuperAdminDashboard/SuperAdmin";
-import Navbar from "./Components/Navbar/Navbar";
-import PlacementForm from "./pages/PlacementInput";
-import Training101 from "./pages/Training";
-import ProtectedRoute from "./Components/ProtectedRoute";
-import Admin from "./pages/AdminDashboard/AdminDashboard";
-import PlacementStats from "./pages/Placement Graphs/PlacementStats";
-import TrainingNames from "./pages/TrainingNamesController/TrainingNames";
-import Footer from "./Components/Footer";
-import EditProfile from "./pages/EditProfile/EditProfile";
-import StudentData from "./pages/StudentData/StudentData";
+
 class App extends Component {
   render() {
     return (

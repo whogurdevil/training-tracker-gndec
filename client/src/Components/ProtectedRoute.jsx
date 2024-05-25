@@ -1,5 +1,4 @@
 import React from "react";
-import React from "react";
 import { jwtDecode } from "jwt-decode";
 import { Navigate } from "react-router-dom";
 import SuperAdmin from "../pages/SuperAdminDashboard/SuperAdmin";
@@ -49,8 +48,7 @@ const ProtectedRoute = ({ component: Component, path, ...rest }) => {
                 } 
             
                 // Redirect superadmin to home if trying to access admin or superadmin route
-                else {
-                else {
+           else {
                     return <SuperAdmin />;
                 }
             
