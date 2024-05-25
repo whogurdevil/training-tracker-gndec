@@ -70,16 +70,16 @@ function Login() {
       const json = await response.json();
 
       if (json.success) {
-        toast('Password reset successful');
+        toast.success('Password reset successful');
         setLoading(false);
         // Optionally, redirect the user to the login page or another route
       } else {
-        toast('🚫 ' + json.message);
+        toast.error( json.message);
         setLoading(false);
       }
     } catch (error) {
       console.error(error);
-      toast('🚫 An error occurred');
+      toast.error('An error occurred');
       setLoading(false);
     }
   };

@@ -6,6 +6,8 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt');
 const JWT_Token = process.env.JWT_TOKEN;
 router.use(express.json());
+const fetchuser = require('../../middleware/fetchUser');
+const isAdmin = require('../../middleware/isAdmin');
 
 router.post('/signup',
   body('password', 'password should have a minimum length of 5').isLength({ min: 5 }),
@@ -133,5 +135,20 @@ router.post('/login', body('password', 'Password should have a minimum length of
   return res.status(400).json({ success: false, message: "Please try to login with the correct credentials" });
 });
 
+
+
+router.delete('/deleteUser',fetchuser,isAdmin,  async (req, res) => {
+  try {
+    const { crn } = req.body;
+    const deletedUser = await SignUp.findOneAndDelete({ crn });
+    if (!deletedUser) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    return res.status(200).json({ success: true, message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    return res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+});
 
 module.exports = router;

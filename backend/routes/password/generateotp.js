@@ -43,7 +43,7 @@ const sendOTP = (email, validate) => {
         if (error) {
             reject({ success: false, response: "Failed to send OTP." });
         } else {
-            resolve({ success: true, response: info.response, otp }); // Include otp in the resolved object
+            resolve({ success: true, response: info.response}); // Include otp in the resolved object
         }
     });
     });

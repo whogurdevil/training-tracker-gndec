@@ -140,8 +140,22 @@ export default function Form() {
         errorMsg = 'URN must be a 7-digit number';
         break;
       case 'personalMail':
-        let regex = /^\S+@\S+\.\S+$/;
-        let errorMsg = 'Invalid email address';
+        regex = /^\S+@\S+\.\S+$/;
+        errorMsg = 'Invalid email address';
+        break;
+      case 'name':
+        regex = /^[A-Za-z]+$/;
+        errorMsg = 'Invalid Name format';
+        break;
+      case 'mother':
+        regex = /^[A-Za-z]+$/;
+        errorMsg = "Invalid Mother name format";
+        break;
+      case 'father':
+        regex = /^[A-Za-z]+$/;
+        errorMsg = "Invalid Father name format";
+        break;
+    
       default:
         break;
     }
@@ -162,50 +176,62 @@ export default function Form() {
       if (!formData.Name) {
         formErrors.Name = 'Name cannot be blank';
         toast.error(formErrors.Name)
+        return;
       }
       else if (!formData.admissionType) {
         formErrors.admissionType = "Admission Type cannot be blank"
         toast.error(formErrors.admissionType)
+        return;
       }
       else if (!formData.batch) {
         formErrors.batch = "Batch cannot be blank"
         toast.error(formErrors.batch)
+        return;
       }
       else if (!formData.branch) {
         formErrors.branch = "Branch cannot be blank"
         toast.error(formErrors.branch)
+        return;
       }
       else if (!formData.contact) {
         formErrors.contact = "Contact cannot be blank"
         toast.error(formErrors.contact)
+        return;
       }
       else if (!formData.urn) {
         formErrors.urn = "College Roll number cannot be blank"
         toast.error(formErrors.urn)
+        return;
       }
       else if (!formData.father) {
         formErrors.father = "Father's Name cannot be blank"
         toast.error(formErrors.father)
+        return;
       }
       else if (!formData.gender) {
         formErrors.gender = "Gender cannot be blank"
         toast.error(formErrors.gender)
+        return;
       }
       else if (!formData.mentor.trim()) {
         formErrors.mentor = "Mentor cannot be blank"
         toast.error(formErrors.mentor)
+        return;
       }
       else if (!formData.mother.trim()) {
         formErrors.mother = "Mother's Name cannot be blank"
         toast.error(formErrors.mother)
+        return;
       }
       else if (!formData.personalMail.trim()) {
         formErrors.personalMail = "Personal Mail cannot be blank"
         toast.error(formErrors.personalMail)
+        return;
       }
       else if (!formData.section) {
         formErrors.section = "Section cannot be blank"
         toast.error(formErrors.section)
+        return;
       }
       if (Object.keys(formErrors).length > 0) {
         setErrors(formErrors);
@@ -417,7 +443,7 @@ export default function Form() {
               </TextField>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
-                  label="Admission Year"
+                  label="Batch Start Year"
                   
                   views={['year']}
                   renderInput={(params) => <TextField {...params} helperText="Enter starting year only" />}
