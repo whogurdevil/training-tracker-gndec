@@ -26,6 +26,17 @@ const ProtectedRoute = ({ component: Component, path, ...rest }) => {
             if (path === "/login" && userRole) {
                 return <Navigate to="/home" replace />;
             }
+            if (userRole === 'superadmin' || userRole === 'admin') {
+                if(path==='/superadmin'){
+                    return <SuperAdmin />;
+                }
+                if (path === '/admin/editProfile') {
+                    return <EditProfile />
+                }
+                if (path === '/superadmin/studentData'){
+                    return <StudentData />
+                }
+            }
             // Check if the user is authenticated and has the required role
             if (userRole === "superadmin") {
                 if (path === "/superadmin/placementStats") {
@@ -34,21 +45,13 @@ const ProtectedRoute = ({ component: Component, path, ...rest }) => {
                     return <TrainingNames />;
                 } else if (path === "/admin/editProfile") {
                     return <EditProfile />;
-                } else if (path === "/superadmin/studentData") {
-                    console.log("meao");
-                    return <StudentData />;
-                }
+                } 
+            
                 // Redirect superadmin to home if trying to access admin or superadmin route
-                else {
+           else {
                     return <SuperAdmin />;
                 }
-            } else if (userRole === "admin") {
-                // Redirect admin to home if trying to access superadmin route
-                if (path === "/admin/editProfile") {
-                    return <EditProfile />;
-                } else {
-                    return <Admin />;
-                }
+            
             } else {
                 // Redirect to home or another appropriate route if the user doesn't have the required role
                 if (

@@ -18,6 +18,7 @@ import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import { decodeUserRole } from "../../utils/AdminFunctions";
 
 const API_URL =
   import.meta.env.VITE_ENV === "production"
@@ -83,18 +84,14 @@ function Login() {
           }, 2000);
         } else {
           localStorage.setItem("authtoken", json.authtoken);
+          const role=decodeUserRole(json.authtoken)
           // console.log(json.authtoken)
-          if (json.body.user.role === "superadmin") {
+          if (role === "superadmin" || role==="admin") {
             toast.success("Successfully logged in");
             setTimeout(() => {
               navigate("/superadmin");
             }, 1000);
-          } else if (json.body.user.role === "admin") {
-            toast.success("Successfully logged in");
-            setTimeout(() => {
-              navigate("/admin", { state: { crn: credentials.crn } });
-            }, 1000);
-          } else {
+          }  else {
             toast.success("Successfully logged in");
             setTimeout(() => {
               navigate("/home");

@@ -19,6 +19,7 @@ import { useTheme } from '@mui/material/styles';
 import { useMediaQuery } from '@mui/material';
 import { convertBatchToDate } from '../utils/DateConvertToFrontend';
 import Modal from '@mui/material/Modal';
+import { decodeAuthToken } from '../utils/AdminFunctions';
 
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : import.meta.env.VITE_DEV_BASE_URL
 
@@ -41,16 +42,7 @@ export default function Form() {
     personalMail: ''
 
   });
-  const decodeAuthToken = (token) => {
-    try {
-      const decodedToken = jwtDecode(token);
-      const crn = decodedToken.crn;
-      return crn;
-    } catch (error) {
-      console.error('Error decoding JWT token:', error);
-      return null;
-    }
-  };
+  
   const token = localStorage.getItem("authtoken");
   const crn = decodeAuthToken(token);
   const [isSubmitting, setIsSubmitting] = useState(true);

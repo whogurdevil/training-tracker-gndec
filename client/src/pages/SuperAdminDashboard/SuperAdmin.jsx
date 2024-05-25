@@ -4,6 +4,8 @@ import { Edit, School, ViewList } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { Grid, Button, Paper, Typography } from "@mui/material";
 import { styled } from "@mui/system";
+import { useState , useEffect } from "react";
+import { decodeUserRole } from "../../utils/AdminFunctions";
 
 const API_URL =
     import.meta.env.VITE_ENV === "production"
@@ -35,30 +37,40 @@ const CardContainer = styled(Paper)({
 });
 
 const SuperAdminForm = () => {
+    const [role, setRole] = useState("")
+    
     const navigate = useNavigate();
     const navigateToTrainingNames = () => navigate("/superadmin/trainingNames");
     const navigateToEditProfile = () => navigate("/admin/editProfile");
     const navigateToStudentData = () => navigate("/superadmin/studentData");
+    useEffect(() => {
+        const token = localStorage.getItem('authtoken');
+        const decodedRole = decodeUserRole(token)
+        setRole(decodedRole)
+    }, [])
 
     return (
         <div
             style={{ padding: "0 40px", marginTop: "40px", marginBottom: "100px" }}
         >
             <Grid container columnSpacing={20} rowSpacing={4} jhstifyContent="center">
-                <Grid item xs={12} sm={6} md={4}>
-                    <CardContainer>
-                        <CardButton
-                            color="primary"
-                            variant="contained"
-                            onClick={navigateToTrainingNames}
-                        >
-                            <Edit fontSize="large" />
-                            <Typography variant="h6" sx={{ mt: 2 }}>
-                                Change Training Names
-                            </Typography>
-                        </CardButton>
-                    </CardContainer>
-                </Grid>
+            {role==="superadmin" && 
+                    <Grid item xs={12} sm={6} md={4}>
+                        <CardContainer>
+                            <CardButton
+                                color="primary"
+                                variant="contained"
+                                onClick={navigateToTrainingNames}
+                            >
+                                <Edit fontSize="large" />
+                                <Typography variant="h6" sx={{ mt: 2 }}>
+                                    Change Training Names
+                                </Typography>
+                            </CardButton>
+                        </CardContainer>
+                    </Grid>
+            }
+                
                 <Grid item xs={12} sm={6} md={4}>
                     <CardContainer>
                         <CardButton variant="contained" onClick={navigateToEditProfile}>

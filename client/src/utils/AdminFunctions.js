@@ -63,11 +63,9 @@ export const changeLock = async (crn, lockStatus, isPlacement , selectedTraining
                 'auth-token': token
             }
         });
-        if (response.data.success) {
-            return 'Verification Status Change successfully!';
-        } else {
-            throw new Error('Failed to update verified status.');
-        }
+        
+            return response.data.success;
+        
     } catch (error) {
         throw new Error('Error updating verification status:', error);
     }
@@ -80,34 +78,21 @@ export const getTrainingOptions = (adminType, trainingNames) => {
     ];
 
     const trainingNumber = trainingNames[0]["Training_No"];
-
-    if (adminType === "104") {
+console.log(trainingNumber)
+console.log(adminType)
+    if (adminType == trainingNumber) {
             options.push({
-                value: `tr104`,
-                label: ` ${trainingNames[0][`Training4_name`]}`
+                value: `tr10${adminType}`,
+                label: ` ${trainingNames[0][`Training${adminType}_name`]}`
             });
         
         options.push({ value: "placementData", label: "Placement Data" });
-    } else if (adminType === "103") {
-        for (let i = 1; i <= trainingNumber && i <= 3; i++) {
-            options.push({
-                value: `tr103`,
-                label: ` ${trainingNames[0][`Training3_name`]}`
-            });
-        }
-    } else if (adminType === "102") {
-            options.push({
-                value: `tr102`,
-                label: ` ${trainingNames[0][`Training2_name`]}`
-            });
+    } else  {
         
-    } else if (adminType === "101") {
-        if (trainingNumber >= 1) {
             options.push({
-                value: "tr101",
-                label: ` ${trainingNames[0]["Training1_name"]}`
+                value: `tr10${adminType}`,
+                label: ` ${trainingNames[0][`Training${adminType}_name`]}`
             });
-        }
     }
 
     return options;
@@ -138,6 +123,19 @@ export const decodeAuthToken = (token) => {
         const decodedToken = jwtDecode(token);
         const crn = decodedToken.crn;
         return crn;
+    } catch (error) {
+        console.error('Error decoding JWT token:', error);
+        return null;
+    }
+};
+export const decodeUserRole = (token) => {
+    try {
+        if (!token) {
+            throw new Error('Token is null or empty');
+        }
+        const decodedToken = jwtDecode(token);
+        const role = decodedToken.user.role;
+        return role;
     } catch (error) {
         console.error('Error decoding JWT token:', error);
         return null;

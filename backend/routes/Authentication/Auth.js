@@ -126,7 +126,7 @@ router.post('/login', body('password', 'Password should have a minimum length of
 
     if (user.isVerified === true) {
       const authToken = jwt.sign(data, JWT_Token);
-      return res.status(200).json({ success: true, authtoken: authToken, body: data });
+      return res.status(200).json({ success: true, authtoken: authToken });
     } else {
       return res.status(200).json({ success: true, message: "verify" });
     }

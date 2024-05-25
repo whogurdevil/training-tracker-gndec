@@ -63,13 +63,13 @@ router.post('/updatelock', fetchuser, isAdmin, async (req, res) => {
         );
 
         if (!userData) {
-            return res.status(404).json({ message: 'User data not found' });
+            return res.status(404).json({ success: false,  message: 'User data not found' });
         }
 
         // Respond with the updated user data
         res.status(200).json({ success: true });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        res.status(400).json({ success: false,  message: error.message });
     }
 });
 
@@ -84,8 +84,18 @@ router.post('/verifyall', fetchuser, isAdmin, async (req, res) => {
 
         // Update the lock status for all users
         const updatedUsers = await Promise.all(usersToUpdate.map(async (user) => {
-            user.placementData.lock = true; // Set lock status to true (or whatever your logic is)
-            return await user.save();
+            try {
+                if (user.placementData) {
+                    user.placementData.lock = true; // Set lock status to true
+                    await user.save();
+                } else {
+                    console.log(`User with CRN ${user.crn} does not have tr101 field.`);
+                }
+                return user;
+            } catch (err) {
+                console.error(`Error updating user with CRN ${user.crn}: ${err.message}`);
+                throw err; // Propagate error to stop execution
+            }
         }));
 
         // Respond with the updated user data
@@ -105,8 +115,18 @@ router.post('/unverifyall', fetchuser, isAdmin, async (req, res) => {
 
         // Update the lock status for all users
         const updatedUsers = await Promise.all(usersToUpdate.map(async (user) => {
-            user.placementData.lock = false; // Set lock status to true (or whatever your logic is)
-            return await user.save();
+            try {
+                if (user.placementData) {
+                    user.placementData.lock = false; // Set lock status to true
+                    await user.save();
+                } else {
+                    console.log(`User with CRN ${user.crn} does not have tr101 field.`);
+                }
+                return user;
+            } catch (err) {
+                console.error(`Error updating user with CRN ${user.crn}: ${err.message}`);
+                throw err; // Propagate error to stop execution
+            }
         }));
 
         // Respond with the updated user data
