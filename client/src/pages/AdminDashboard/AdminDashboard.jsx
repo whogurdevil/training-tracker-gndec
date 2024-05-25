@@ -58,7 +58,7 @@ const AdminForm = () => {
                 console.error('Error loading training names:', error);
             }
         };
-        const admin = crn && crn.length >= 3 ? crn.slice(-3) : crn;
+        const admin = crn && crn.length >= 3 ? crn.slice(-1) : crn;
         
         Setadmintype(admin)
         loadTrainingNames();
