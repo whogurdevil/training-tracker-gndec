@@ -11,8 +11,7 @@ services:
     depends_on:
       - mongo
     restart: always
-    environment:
-      MONGODB_URI: mongodb://mongo:27017/db
+    
 
   frontend:
     container_name: frontend
