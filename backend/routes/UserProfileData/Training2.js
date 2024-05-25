@@ -46,15 +46,12 @@ router.post('/updatelock', fetchuser, isAdmin, async (req, res) => {
             { new: true }
         );
         if (!userData) {
-            return res.status(404).json({ message: 'User data not found' });
+            return res.status(404).json({ success:false, message: 'User data not found' });
         }
-     
-
-
         // Respond with the updated user data
         res.status(200).json({ success: true });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        res.status(400).json({ success: false, message: error.message });
     }
 });
 router.get('/:crn', fetchuser, async (req, res) => {

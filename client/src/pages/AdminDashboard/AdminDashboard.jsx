@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
-import { Card, Modal, Box, Typography, Grid, MenuItem, Select, FormControl, InputLabel, LinearProgress , Skeleton,TextField } from '@mui/material';
+import { Card, Modal, Box, Typography, Grid, MenuItem, Select, FormControl, InputLabel, LinearProgress , Skeleton,TextField , Button , CircularProgress } from '@mui/material';
 import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -8,16 +8,16 @@ import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import { fetchTrainingNames, initialTrainingNames } from '../../utils/TrainingNamesApi';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import VerifyAllComponent from '../../Components/VerifyAll';
 import ExportCsvComponent from '../../Components/ExportCsvData';
 import ExportExcelComponent from '../../Components/ExportExcelData';
-import CircularProgress from '@mui/material/CircularProgress';
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : import.meta.env.VITE_DEV_BASE_URL
 import { decodeAuthToken } from '../../utils/AdminFunctions';
 import UnVerifyAllComponent from '../../Components/UnVerifyAll';
 import PlacementModal from '../../Components/PlacementModal';
 import ExpandCircleDownIcon from '@mui/icons-material/ExpandCircleDown';
+
 
 import { fetchUsers, changeLock, getTrainingOptions , viewCertificate } from '../../utils/AdminFunctions';
 
@@ -31,11 +31,13 @@ const AdminForm = () => {
     const [loading, setLoading] = useState(true);
     const [allBatches, setallBatches] = useState([])
     const [admintype, Setadmintype] = useState(null)
+    const [verificationStatus, setVerificationStatus] = useState({});
     const [trainingNames, setTrainingNames] = useState(initialTrainingNames);
     const token = localStorage.getItem("authtoken");
     const crn = decodeAuthToken(token);
     const [showModal, setShowModal] = useState(false);
     const [selectedRowData, setSelectedRowData] = useState(null);
+    const navigate = useNavigate()
 
     useEffect(() => {
         const fetchData = async () => {
@@ -60,7 +62,10 @@ const AdminForm = () => {
         
         Setadmintype(admin)
         loadTrainingNames();
-        fetchData();
+       
+
+            fetchData();
+        
     }, [refresh]);
 
     const filteredUsers = useMemo(() => {
@@ -133,7 +138,11 @@ const AdminForm = () => {
             } else  {
             customColumns.push(
               
-                { accessorKey: `${selectedTraining}.technology`, header: "Technology" },
+                {
+                    accessorKey: `${selectedTraining}.technology`,
+                    header: "Technology",
+                    Cell: ({ row }) => row.original[selectedTraining].technology.join(" , ")
+                },
                 { accessorKey: `${selectedTraining}.organization`, header: "Organization" },
                 { accessorKey: `${selectedTraining}.projectName`, header: "Project Name" },
                 { accessorKey: `${selectedTraining}.type`, header: "Type" },
@@ -166,26 +175,48 @@ const AdminForm = () => {
     }
 
         return customColumns;
-    }, [selectedTraining, editStatus]);
+    }, [selectedTraining, editStatus,verificationStatus]);
 
 
     const VerificationIcon = ({ lockStatus, handleLock, row }) => {
-        const handleClick = () => {
-            handleLock(row);
+        const [loading, setLoading] = useState(false);
+        const crn = row.original.crn;
+        const currentStatus = verificationStatus[crn] !== undefined ? verificationStatus[crn] : lockStatus;
+        
+        const handleClick = async () => {
+            setLoading(true);
+            await handleLock(row);
+            setLoading(false);
         };
 
-        return lockStatus ? (
+        if (loading) {
+            return <CircularProgress size={24} />;
+        }
+        return currentStatus ? (
             <CheckCircleIcon style={{ color: 'green', cursor: 'pointer' }} onClick={handleClick} />
         ) : (
             <QuestionMarkIcon style={{ color: 'red', cursor: 'pointer' }} onClick={handleClick} />
         );
-    }
+    };
 
     const handleLock = async (row) => {
         try {
-            let successMessage = await changeLock(row.original.crn, row.original[selectedTraining].lock, selectedTraining === 'placementData', selectedTraining);
-            toast.success(successMessage);
-            setRefresh(prevRefresh => !prevRefresh);
+            const crn = row.original.crn;
+            const currentStatus = verificationStatus[crn] !== undefined ? verificationStatus[crn] : row.original[selectedTraining].lock;
+            const newStatus = !currentStatus;
+            let successMessage = await changeLock(crn, currentStatus, selectedTraining === 'placementData', selectedTraining);
+            if (successMessage) {
+                setVerificationStatus(prevStatus => ({
+                    ...prevStatus,
+                    [crn]: newStatus
+                }));
+                toast.success("User Data Verification Changed");
+                return true;
+            } else {
+                toast.error("Error in Status Changing");
+                return false;
+            }
+            
         } catch (error) {
             toast.error(error.message);
         }
@@ -215,6 +246,9 @@ const AdminForm = () => {
     const getAdminTrainingOptions = () => {
         return getTrainingOptions(admintype,trainingNames);
     };
+    const navigateToEditProfile = (data) => {
+        return navigate('/admin/editProfile');
+    }
 
     return (
         <div>
@@ -316,6 +350,12 @@ const AdminForm = () => {
                             </FormControl>
 
                         </Grid>
+                            <Grid item style={{ marginBottom: 20 }}>
+
+                                <Button onClick={navigateToEditProfile} variant="outlined" sx={{ py: 2 }}>
+                                    Change Student Data
+                                </Button>
+                                </Grid>
                     </Grid>
                     <Card variant="outlined" style={{ marginBottom: '50px' }}>
                         <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between' }}>

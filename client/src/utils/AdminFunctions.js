@@ -63,11 +63,9 @@ export const changeLock = async (crn, lockStatus, isPlacement , selectedTraining
                 'auth-token': token
             }
         });
-        if (response.data.success) {
-            return 'Verification Status Change successfully!';
-        } else {
-            throw new Error('Failed to update verified status.');
-        }
+        
+            return response.data.success;
+        
     } catch (error) {
         throw new Error('Error updating verification status:', error);
     }
@@ -138,6 +136,19 @@ export const decodeAuthToken = (token) => {
         const decodedToken = jwtDecode(token);
         const crn = decodedToken.crn;
         return crn;
+    } catch (error) {
+        console.error('Error decoding JWT token:', error);
+        return null;
+    }
+};
+export const decodeUserRole = (token) => {
+    try {
+        if (!token) {
+            throw new Error('Token is null or empty');
+        }
+        const decodedToken = jwtDecode(token);
+        const role = decodedToken.roleSpecificData.role;
+        return role;
     } catch (error) {
         console.error('Error decoding JWT token:', error);
         return null;

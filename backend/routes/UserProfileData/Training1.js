@@ -49,13 +49,13 @@ router.post('/updatelock', fetchuser,isAdmin, async (req, res) => {
         );
 
         if (!userData) {
-            return res.status(404).json({ message: 'User data not found' });
+            return res.status(404).json({ success: false,  message: 'User data not found' });
         }
 
         // Respond with the updated user data
-        res.status(200).json({ success: true });
+        res.status(200).json({ success: true  });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        res.status(400).json({ success: false,  message: error.message });
     }
 });
 router.get('/:crn', fetchuser, async (req, res) => {
@@ -77,7 +77,6 @@ router.post('/verifyall', fetchuser, isAdmin, async (req, res) => {
     try {
         // Get all users with the role "user"
         const usersToUpdate = await SignUpdata.find({ role: 'user' });
-
         if (!usersToUpdate) {
             return res.status(404).json({ message: 'No users found' });
         }
@@ -87,6 +86,7 @@ router.post('/verifyall', fetchuser, isAdmin, async (req, res) => {
             user.tr101.lock = true; // Set lock status to true (or whatever your logic is)
             return await user.save();
         }));
+        console.log("hello")
 
         // Respond with the updated user data
         res.status(200).json({ success: true});
@@ -98,7 +98,6 @@ router.post('/unverifyall', fetchuser, isAdmin, async (req, res) => {
     try {
         // Get all users with the role "user"
         const usersToUpdate = await SignUpdata.find({ role: 'user' });
-
         if (!usersToUpdate) {
             return res.status(404).json({ message: 'No users found' });
         }
@@ -112,7 +111,7 @@ router.post('/unverifyall', fetchuser, isAdmin, async (req, res) => {
         // Respond with the updated user data
         res.status(200).json({ success: true });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        res.status(500).json({ message: error.message });
     }
 });
 
