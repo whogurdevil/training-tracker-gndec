@@ -1,23 +1,17 @@
-const mongoose = require('mongoose');
-const adminControl = require('./models/adminControl');
-const { SignUp } = require('./models/UserInfo');
-require('dotenv').config();
+const mongoose = require("mongoose");
+const adminControl = require("./models/adminControl");
+const { SignUp } = require("./models/UserInfo");
+require("dotenv").config();
 
-const {
-    DB_USER,
-    DB_PASSWORD,
-    DB_HOST,
-    DB_PORT,
-    DB_NAME,
-  } = process.env;
+const { DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME } = process.env;
 
-const URI = `mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?authSource=admin`
-
+// const URI = `mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?authSource=admin`
+const URI = process.env.DATABASE;
 const db = async () => {
     try {
-        console.log(URI)
+        console.log(URI);
         await mongoose.connect(URI);
-        console.log("connected mongodb successfully")
+        console.log("connected mongodb successfully");
 
         const adminControlsCount = await adminControl.countDocuments({});
         if (adminControlsCount === 0) {
@@ -28,12 +22,10 @@ const db = async () => {
         if (usersCount === 0) {
             await initializeUsers();
         }
-
-
     } catch (error) {
-        console.log("Some error occured", error)
+        console.log("Some error occured", error);
     }
-}
+};
 async function initializeAdminControls() {
     try {
         const adminControls = new adminControl({
@@ -42,7 +34,7 @@ async function initializeAdminControls() {
             Training2_name: "Training 102",
             Training3_name: "Training 103",
             Training4_name: "Training 104",
-            Placement_name: "Placement Data"
+            Placement_name: "Placement Data",
         });
         await adminControls.save();
         console.log("Initialized admincontrols collection with a document");
@@ -60,13 +52,13 @@ async function initializeUsers() {
             isVerified: true,
             userInfo: {
                 urn: 1111111,
-                branch: "Computer Science & Enginnering"
+                branch: "Computer Science & Enginnering",
             },
             tr101: { technology: [], lock: false },
             tr102: { technology: [], lock: false },
             tr103: { technology: [], lock: false },
             tr104: { technology: [], lock: false },
-            placementData: { lock: false }
+            placementData: { lock: false },
         });
         await user1.save();
         const user2 = new SignUp({
@@ -77,13 +69,13 @@ async function initializeUsers() {
             isVerified: true,
             userInfo: {
                 urn: 1111112,
-                branch: "Computer Science & Enginnering"
+                branch: "Computer Science & Enginnering",
             },
             tr101: { technology: [], lock: false },
             tr102: { technology: [], lock: false },
             tr103: { technology: [], lock: false },
             tr104: { technology: [], lock: false },
-            placementData: { lock: false }
+            placementData: { lock: false },
         });
         await user2.save();
         const user3 = new SignUp({
@@ -94,13 +86,13 @@ async function initializeUsers() {
             isVerified: true,
             userInfo: {
                 urn: 1111113,
-                branch: "Computer Science & Enginnering"
+                branch: "Computer Science & Enginnering",
             },
             tr101: { technology: [], lock: false },
             tr102: { technology: [], lock: false },
             tr103: { technology: [], lock: false },
             tr104: { technology: [], lock: false },
-            placementData: { lock: false }
+            placementData: { lock: false },
         });
         await user3.save();
         const user4 = new SignUp({
@@ -111,13 +103,13 @@ async function initializeUsers() {
             isVerified: true,
             userInfo: {
                 urn: 1111114,
-                branch: "Computer Science & Engineering"
+                branch: "Computer Science & Engineering",
             },
             tr101: { technology: [], lock: false },
             tr102: { technology: [], lock: false },
             tr103: { technology: [], lock: false },
             tr104: { technology: [], lock: false },
-            placementData: { lock: false }
+            placementData: { lock: false },
         });
         await user4.save();
         const user5 = new SignUp({
@@ -128,13 +120,13 @@ async function initializeUsers() {
             isVerified: true,
             userInfo: {
                 urn: 1111115,
-                branch: "Computer Science & Engineering"
+                branch: "Computer Science & Engineering",
             },
             tr101: { technology: [], lock: false },
             tr102: { technology: [], lock: false },
             tr103: { technology: [], lock: false },
             tr104: { technology: [], lock: false },
-            placementData: { lock: false }
+            placementData: { lock: false },
         });
         await user5.save();
 
