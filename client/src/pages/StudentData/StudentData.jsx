@@ -72,8 +72,6 @@ const SuperAdminForm = () => {
     setRole(role);
     const fetchData = async () => {
       try {
-        // const usersData = await fetchUsers();
-        // setUsers(usersData.users);
         const batches = await fetchBatches();
         setallBatches(batches.batches);
         setLoading(false);
@@ -90,13 +88,17 @@ const SuperAdminForm = () => {
 
   useEffect(() => {
     fetchUserDetails();
-  }, [selectedBatch, selectedTraining, selectedBranch]);
- 
+  }, [selectedBatch, selectedTraining, selectedBranch, refresh]);
+
   const fetchUserDetails = async () => {
     if (selectedBatch && selectedTraining && selectedBranch) {
       try {
         setLoading(true);
-        console.log("Fetching user details for:", { selectedBatch, selectedTraining, selectedBranch });
+        console.log("Fetching user details for:", {
+          selectedBatch,
+          selectedTraining,
+          selectedBranch,
+        });
         const usersData = await fetchUsers(selectedBatch, selectedTraining);
         if (usersData && usersData.users) {
           console.log("Fetched users data:", usersData.users);
@@ -106,20 +108,19 @@ const SuperAdminForm = () => {
           setUsers([]);
         }
       } catch (error) {
-        console.error('Error fetching user details:', error);
+        console.error("Error fetching user details:", error);
         setUsers([]); // Reset users state or handle as needed
       } finally {
         console.log("users", users);
         setLoading(false);
-        console.log('Fetch user details process completed.');
+        console.log("Fetch user details process completed.");
       }
     } else {
       setUsers([]);
-      console.warn('Batch, training, or branch selection is missing.');
+      console.warn("Batch, training, or branch selection is missing.");
     }
   };
 
- 
   const navigateToStats = (data) => {
     return navigate("/superadmin/placementStats", { state: { data } });
   };
@@ -127,106 +128,110 @@ const SuperAdminForm = () => {
     viewCertificate(row, selectedTraining);
   };
 
-const columns = useMemo(() => {
-  let customColumns = [
-    { accessorKey: "crn", header: "CRN" },
-    { accessorKey: "userInfo.Name", header: "Name" },
-    { accessorKey: "userInfo.urn", header: "URN" },
-    { accessorKey: "userInfo.mentor", header: "Mentor" },
-    { accessorKey: "userInfo.batch", header: "Batch" },
-    { accessorKey: "userInfo.section", header: "Section" },
-    { accessorKey: "userInfo.contact", header: "Contact" },
-  ];
+  const columns = useMemo(() => {
+    let customColumns = [
+      { accessorKey: "crn", header: "CRN" },
+      { accessorKey: "userInfo.Name", header: "Name" },
+      { accessorKey: "userInfo.urn", header: "URN" },
+      { accessorKey: "userInfo.mentor", header: "Mentor" },
+      { accessorKey: "userInfo.batch", header: "Batch" },
+      { accessorKey: "userInfo.section", header: "Section" },
+      { accessorKey: "userInfo.contact", header: "Contact" },
+    ];
 
-  if (selectedTraining) {
-    if (selectedTraining === "placementData") {
+    if (selectedTraining) {
+      if (selectedTraining === "placementData") {
+        customColumns.push(
+          {
+            accessorKey: `${selectedTraining}.isPlaced`,
+            header: "Placement Status",
+            Cell: ({ row }) =>
+              row.original[selectedTraining]?.isPlaced ? "Yes" : "No",
+          },
+          {
+            accessorKey: `${selectedTraining}.highStudy`,
+            header: "Higher Study",
+            Cell: ({ row }) =>
+              row.original[selectedTraining]?.highStudy ? "Yes" : "No",
+          },
+          {
+            accessorKey: `${selectedTraining}.gateStatus`,
+            header: "Gate Status",
+            Cell: ({ row }) =>
+              row.original[selectedTraining]?.gateStatus ? "Yes" : "No",
+          },
+          {
+            accessorKey: "viewMore",
+            header: "View More",
+            Cell: ({ row }) => (
+              <ExpandCircleDownIcon
+                onClick={() => {
+                  setSelectedRowData(row.original);
+                  setShowModal(true);
+                }}
+                style={{ cursor: "pointer" }}
+              />
+            ),
+          },
+        );
+      }
+      if (selectedTraining !== "placementData") {
+        customColumns.push(
+          {
+            accessorKey: `${selectedTraining}.technology`,
+            header: "Technology",
+            Cell: ({ row }) =>
+              row.original[selectedTraining]?.technology.join(" , "),
+          },
+          {
+            accessorKey: `${selectedTraining}.organization`,
+            header: "Organization",
+          },
+          {
+            accessorKey: `${selectedTraining}.projectName`,
+            header: "Project Name",
+          },
+          {
+            accessorKey: `${selectedTraining}.type`,
+            header: "Type",
+          },
+          {
+            accessorKey: `${selectedTraining}.certificate`,
+            header: "Certificate",
+            Cell: ({ row }) => (
+              <PictureAsPdfIcon
+                onClick={() => handleViewCertificate(row)}
+                style={{ cursor: "pointer" }}
+              />
+            ),
+          },
+        );
+      }
+
+      // Add the "Verified" and "Mark Verification" columns at the end
       customColumns.push(
         {
-          accessorKey: `${selectedTraining}.isPlaced`,
-          header: "Placement Status",
-          Cell: ({ row }) => (row.original[selectedTraining]?.isPlaced ? "Yes" : "No"),
+          accessorKey: `${selectedTraining}.lock`,
+          header: "Verified",
+          Cell: ({ row }) =>
+            row.original[selectedTraining]?.lock ? "Yes" : "No",
         },
         {
-          accessorKey: `${selectedTraining}.highStudy`,
-          header: "Higher Study",
-          Cell: ({ row }) => (row.original[selectedTraining]?.highStudy ? "Yes" : "No"),
-        },
-        {
-          accessorKey: `${selectedTraining}.gateStatus`,
-          header: "Gate Status",
-          Cell: ({ row }) => (row.original[selectedTraining]?.gateStatus ? "Yes" : "No"),
-        },
-        {
-          accessorKey: "viewMore",
-          header: "View More",
+          accessorKey: "edit",
+          header: "Mark Verification",
           Cell: ({ row }) => (
-            <ExpandCircleDownIcon
-              onClick={() => {
-                setSelectedRowData(row.original);
-                setShowModal(true);
-              }}
-              style={{ cursor: "pointer" }}
+            <VerificationIcon
+              lockStatus={row.original[selectedTraining]?.lock}
+              handleLock={handleLock}
+              row={row}
             />
           ),
-        }
-      );
-    } 
-    if (selectedTraining !== "placementData") {
-      customColumns.push(
-        {
-          accessorKey: `${selectedTraining}.technology`,
-          header: "Technology",
-          Cell: ({ row }) => row.original[selectedTraining]?.technology.join(" , "),
         },
-        {
-          accessorKey: `${selectedTraining}.organization`,
-          header: "Organization",
-        },
-        {
-          accessorKey: `${selectedTraining}.projectName`,
-          header: "Project Name",
-        },
-        {
-          accessorKey: `${selectedTraining}.type`,
-          header: "Type",
-        },
-        {
-          accessorKey: `${selectedTraining}.certificate`,
-          header: "Certificate",
-          Cell: ({ row }) => (
-            <PictureAsPdfIcon
-              onClick={() => handleViewCertificate(row)}
-              style={{ cursor: "pointer" }}
-            />
-          ),
-        }
       );
     }
 
-    // Add the "Verified" and "Mark Verification" columns at the end
-    customColumns.push(
-      {
-        accessorKey: `${selectedTraining}.lock`,
-        header: "Verified",
-        Cell: ({ row }) => (row.original[selectedTraining]?.lock ? "Yes" : "No"),
-      },
-      {
-        accessorKey: "edit",
-        header: "Mark Verification",
-        Cell: ({ row }) => (
-          <VerificationIcon
-            lockStatus={row.original[selectedTraining]?.lock}
-            handleLock={handleLock}
-            row={row}
-          />
-        ),
-      }
-    );
-  }
-
-  return customColumns;
-}, [selectedTraining, users, editStatus, verificationStatus]);
-
+    return customColumns;
+  }, [selectedTraining, users, editStatus, verificationStatus, refresh]);
 
   const VerificationIcon = ({ lockStatus, handleLock, row }) => {
     const [loading, setLoading] = useState(false);
@@ -290,11 +295,12 @@ const columns = useMemo(() => {
 
   const table = useMaterialReactTable({
     data: users,
-    columns
+    columns,
   });
 
   // Function to handle refreshing data after verification status change
   const handleRefresh = () => {
+    console.log("handle refresh called");
     setRefresh((prevRefresh) => !prevRefresh);
   };
 
@@ -314,9 +320,107 @@ const columns = useMemo(() => {
 
   return (
     <div>
+      {loading && <LinearProgress />}
+      <Grid
+        container
+        spacing={2}
+        justifyContent="space-around"
+        sx={{ padding: "0 40px", marginTop: "40px" }}
+      >
+        <Grid item style={{ marginBottom: 20 }}>
+          <FormControl style={{ width: 200 }}>
+            <TextField
+              select
+              value={selectedBatch}
+              label={"Batch"}
+              variant="outlined"
+              fullWidth
+              required
+              name="Select Batch"
+              onChange={handleBatchChange}
+            >
+              <MenuItem value="" sx={{ maxHeight: "200px" }}>
+                All
+              </MenuItem>
+              {allBatches.map((data, index) => (
+                <MenuItem key={index} value={data}>
+                  {data}
+                </MenuItem>
+              ))}
+            </TextField>
+          </FormControl>
+        </Grid>
+        <Grid item style={{ marginBottom: 20 }}>
+          <FormControl style={{ width: 200 }}>
+            <TextField
+              required
+              select
+              name={"Select Branch"}
+              label={"Branch"}
+              value={selectedBranch}
+              onChange={handleBranchChange}
+            >
+              <MenuItem value="">All</MenuItem>
+              <MenuItem value="CSE">Computer Science & Engineering</MenuItem>
+            </TextField>
+          </FormControl>
+        </Grid>
+        {role === "superadmin" && (
+          <Grid item style={{ marginBottom: 20 }}>
+            <FormControl style={{ width: 200 }}>
+              <TextField
+                required
+                value={selectedTraining}
+                select
+                label={"Training"}
+                onChange={handleTrainingChange}
+              >
+                <MenuItem value="">All</MenuItem>
+                {Array.from(
+                  { length: trainingNames[0]["Training_No"] },
+                  (_, index) => {
+                    const trainingNumber = index + 1;
+                    const trainingName =
+                      trainingNames[0][`Training${trainingNumber}_name`];
+                    return (
+                      <MenuItem
+                        key={`tr${trainingNumber}`}
+                        value={`tr10${trainingNumber}`}
+                      >
+                        {trainingName}
+                      </MenuItem>
+                    );
+                  },
+                )}
+                <MenuItem value="placementData">
+                  {trainingNames[0]["Placement_name"]}
+                </MenuItem>
+              </TextField>
+            </FormControl>
+          </Grid>
+        )}
+        {role === "admin" && (
+          <Grid item style={{ marginBottom: 20 }}>
+            <FormControl style={{ width: 200 }}>
+              <TextField
+                select
+                label={"Select Training"}
+                value={selectedTraining}
+                onChange={handleTrainingChange}
+              >
+                {getAdminTrainingOptions().map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </FormControl>
+          </Grid>
+        )}
+      </Grid>
+
       {loading ? ( // Render loader if loading is true
         <>
-          <LinearProgress />
           <div
             style={{
               display: "flex",
@@ -392,103 +496,9 @@ const columns = useMemo(() => {
         <div
           style={{
             padding: "0 40px",
-            marginTop: "40px",
             marginBottom: "100px",
           }}
         >
-          <Grid container spacing={2} justifyContent="space-around">
-            <Grid item style={{ marginBottom: 20 }}>
-              <FormControl style={{ width: 200 }}>
-                <TextField
-                  select
-                  value={selectedBatch}
-                  label={"Batch"}
-                  variant="outlined"
-                  fullWidth
-                  required
-                  name="Select Batch"
-                  onChange={handleBatchChange}
-                >
-                  <MenuItem value="" sx={{ maxHeight: "200px" }}>
-                    All
-                  </MenuItem>
-                  {allBatches.map((data, index) => (
-                    <MenuItem key={index} value={data}>
-                      {data}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </FormControl>
-            </Grid>
-            <Grid item style={{ marginBottom: 20 }}>
-              <FormControl style={{ width: 200 }}>
-                <TextField
-                  select
-                  name={"Select Branch"}
-                  label={"Branch"}
-                  value={selectedBranch}
-                  onChange={handleBranchChange}
-                >
-                  <MenuItem value="">All</MenuItem>
-                  <MenuItem value="CSE">
-                    Computer Science & Engineering
-                  </MenuItem>
-                </TextField>
-              </FormControl>
-            </Grid>
-            {role === "superadmin" && (
-              <Grid item style={{ marginBottom: 20 }}>
-                <FormControl style={{ width: 200 }}>
-                  <TextField
-                    value={selectedTraining}
-                    select
-                    label={"Training"}
-                    onChange={handleTrainingChange}
-                  >
-                    <MenuItem value="">All</MenuItem>
-                    {Array.from(
-                      { length: trainingNames[0]["Training_No"] },
-                      (_, index) => {
-                        const trainingNumber = index + 1;
-                        const trainingName =
-                          trainingNames[0][`Training${trainingNumber}_name`];
-                        return (
-                          <MenuItem
-                            key={`tr${trainingNumber}`}
-                            value={`tr10${trainingNumber}`}
-                          >
-                            {trainingName}
-                          </MenuItem>
-                        );
-                      },
-                    )}
-                    <MenuItem value="placementData">
-                      {trainingNames[0]["Placement_name"]}
-                    </MenuItem>
-                  </TextField>
-                </FormControl>
-              </Grid>
-            )}
-            {role === "admin" && (
-              <Grid item style={{ marginBottom: 20 }}>
-                <FormControl style={{ width: 200 }}>
-                  <TextField
-                    select
-                    label={"Select Training"}
-                    value={selectedTraining}
-                    onChange={handleTrainingChange}
-                  >
-                    {getAdminTrainingOptions().map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </FormControl>
-              </Grid>
-            )}
-          </Grid>
-
           <Card variant="outlined" style={{ marginBottom: "50px" }}>
             <div
               style={{
