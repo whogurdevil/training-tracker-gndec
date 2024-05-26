@@ -91,27 +91,27 @@ const SuperAdminForm = () => {
   useEffect(() => {
     fetchUserDetails();
   }, [selectedBatch, selectedTraining, selectedBranch]);
- 
+
   const fetchUserDetails = async () => {
     if (selectedBatch && selectedTraining && selectedBranch) {
       try {
         setLoading(true);
-        console.log("Fetching user details for:", { selectedBatch, selectedTraining, selectedBranch });
+     
         const usersData = await fetchUsers(selectedBatch, selectedTraining);
         if (usersData && usersData.users) {
-          console.log("Fetched users data:", usersData.users);
+         
           setUsers(usersData.users);
         } else {
-          console.log("No users data received");
+       
           setUsers([]);
         }
       } catch (error) {
         console.error('Error fetching user details:', error);
         setUsers([]); // Reset users state or handle as needed
       } finally {
-        console.log("users", users);
+        
         setLoading(false);
-        console.log('Fetch user details process completed.');
+      
       }
     } else {
       setUsers([]);
@@ -119,7 +119,7 @@ const SuperAdminForm = () => {
     }
   };
 
- 
+
   const navigateToStats = (data) => {
     return navigate("/superadmin/placementStats", { state: { data } });
   };
@@ -127,105 +127,105 @@ const SuperAdminForm = () => {
     viewCertificate(row, selectedTraining);
   };
 
-const columns = useMemo(() => {
-  let customColumns = [
-    { accessorKey: "crn", header: "CRN" },
-    { accessorKey: "userInfo.Name", header: "Name" },
-    { accessorKey: "userInfo.urn", header: "URN" },
-    { accessorKey: "userInfo.mentor", header: "Mentor" },
-    { accessorKey: "userInfo.batch", header: "Batch" },
-    { accessorKey: "userInfo.section", header: "Section" },
-    { accessorKey: "userInfo.contact", header: "Contact" },
-  ];
+  const columns = useMemo(() => {
+    let customColumns = [
+      { accessorKey: "crn", header: "CRN" },
+      { accessorKey: "userInfo.Name", header: "Name" },
+      { accessorKey: "userInfo.urn", header: "URN" },
+      { accessorKey: "userInfo.mentor", header: "Mentor" },
+      { accessorKey: "userInfo.batch", header: "Batch" },
+      { accessorKey: "userInfo.section", header: "Section" },
+      { accessorKey: "userInfo.contact", header: "Contact" },
+    ];
 
-  if (selectedTraining) {
-    if (selectedTraining === "placementData") {
+    if (selectedTraining) {
+      if (selectedTraining === "placementData") {
+        customColumns.push(
+          {
+            accessorKey: `${selectedTraining}.isPlaced`,
+            header: "Placement Status",
+            Cell: ({ row }) => (row.original[selectedTraining]?.isPlaced ? "Yes" : "No"),
+          },
+          {
+            accessorKey: `${selectedTraining}.highStudy`,
+            header: "Higher Study",
+            Cell: ({ row }) => (row.original[selectedTraining]?.highStudy ? "Yes" : "No"),
+          },
+          {
+            accessorKey: `${selectedTraining}.gateStatus`,
+            header: "Gate Status",
+            Cell: ({ row }) => (row.original[selectedTraining]?.gateStatus ? "Yes" : "No"),
+          },
+          {
+            accessorKey: "viewMore",
+            header: "View More",
+            Cell: ({ row }) => (
+              <ExpandCircleDownIcon
+                onClick={() => {
+                  setSelectedRowData(row.original);
+                  setShowModal(true);
+                }}
+                style={{ cursor: "pointer" }}
+              />
+            ),
+          }
+        );
+      }
+      if (selectedTraining !== "placementData") {
+        customColumns.push(
+          {
+            accessorKey: `${selectedTraining}.technology`,
+            header: "Technology",
+            Cell: ({ row }) => row.original[selectedTraining]?.technology.join(" , "),
+          },
+          {
+            accessorKey: `${selectedTraining}.organization`,
+            header: "Organization",
+          },
+          {
+            accessorKey: `${selectedTraining}.projectName`,
+            header: "Project Name",
+          },
+          {
+            accessorKey: `${selectedTraining}.type`,
+            header: "Type",
+          },
+          {
+            accessorKey: `${selectedTraining}.certificate`,
+            header: "Certificate",
+            Cell: ({ row }) => (
+              <PictureAsPdfIcon
+                onClick={() => handleViewCertificate(row)}
+                style={{ cursor: "pointer" }}
+              />
+            ),
+          }
+        );
+      }
+
+      // Add the "Verified" and "Mark Verification" columns at the end
       customColumns.push(
         {
-          accessorKey: `${selectedTraining}.isPlaced`,
-          header: "Placement Status",
-          Cell: ({ row }) => (row.original[selectedTraining]?.isPlaced ? "Yes" : "No"),
+          accessorKey: `${selectedTraining}.lock`,
+          header: "Verified",
+          Cell: ({ row }) => (row.original[selectedTraining]?.lock ? "Yes" : "No"),
         },
         {
-          accessorKey: `${selectedTraining}.highStudy`,
-          header: "Higher Study",
-          Cell: ({ row }) => (row.original[selectedTraining]?.highStudy ? "Yes" : "No"),
-        },
-        {
-          accessorKey: `${selectedTraining}.gateStatus`,
-          header: "Gate Status",
-          Cell: ({ row }) => (row.original[selectedTraining]?.gateStatus ? "Yes" : "No"),
-        },
-        {
-          accessorKey: "viewMore",
-          header: "View More",
+          accessorKey: "edit",
+          header: "Mark Verification",
           Cell: ({ row }) => (
-            <ExpandCircleDownIcon
-              onClick={() => {
-                setSelectedRowData(row.original);
-                setShowModal(true);
-              }}
-              style={{ cursor: "pointer" }}
-            />
-          ),
-        }
-      );
-    } 
-    if (selectedTraining !== "placementData") {
-      customColumns.push(
-        {
-          accessorKey: `${selectedTraining}.technology`,
-          header: "Technology",
-          Cell: ({ row }) => row.original[selectedTraining]?.technology.join(" , "),
-        },
-        {
-          accessorKey: `${selectedTraining}.organization`,
-          header: "Organization",
-        },
-        {
-          accessorKey: `${selectedTraining}.projectName`,
-          header: "Project Name",
-        },
-        {
-          accessorKey: `${selectedTraining}.type`,
-          header: "Type",
-        },
-        {
-          accessorKey: `${selectedTraining}.certificate`,
-          header: "Certificate",
-          Cell: ({ row }) => (
-            <PictureAsPdfIcon
-              onClick={() => handleViewCertificate(row)}
-              style={{ cursor: "pointer" }}
+            <VerificationIcon
+              lockStatus={row.original[selectedTraining]?.lock}
+              handleLock={handleLock}
+              row={row}
             />
           ),
         }
       );
     }
 
-    // Add the "Verified" and "Mark Verification" columns at the end
-    customColumns.push(
-      {
-        accessorKey: `${selectedTraining}.lock`,
-        header: "Verified",
-        Cell: ({ row }) => (row.original[selectedTraining]?.lock ? "Yes" : "No"),
-      },
-      {
-        accessorKey: "edit",
-        header: "Mark Verification",
-        Cell: ({ row }) => (
-          <VerificationIcon
-            lockStatus={row.original[selectedTraining]?.lock}
-            handleLock={handleLock}
-            row={row}
-          />
-        ),
-      }
-    );
-  }
-
-  return customColumns;
-}, [selectedTraining, users, editStatus, verificationStatus]);
+    return customColumns;
+  }, [selectedTraining, users, editStatus, verificationStatus]);
 
 
   const VerificationIcon = ({ lockStatus, handleLock, row }) => {

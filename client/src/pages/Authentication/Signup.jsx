@@ -19,6 +19,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
+
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : import.meta.env.VITE_DEV_BASE_URL
 
 
@@ -112,7 +113,6 @@ function Signup() {
       if (json.success) {
         toast.success('Successfully signed up');
         setTimeout(() => {
-          // console.log(credentials.email);
           navigate('/verify', { state: { email: credentials.email } });
         }, 2000);
       } else {

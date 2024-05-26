@@ -48,7 +48,6 @@ const PlacementStats = () => {
 
     const handleYearsChange = (event) => {
         setSelectedYears(event.target.value);
-        // console.log(event.target.value + 4);
     };
 
     return (
