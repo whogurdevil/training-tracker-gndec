@@ -16,6 +16,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import DeleteIcon from '@mui/icons-material/Delete';
+import { validateField,errorMessages } from "../../utils/ErrorFunctions";
 // API_URL should point to your backend API endpoint
 const API_URL =
   import.meta.env.VITE_ENV === "production"
@@ -154,27 +155,40 @@ const EditProfile = () => {
       setLoading(false); // Set loading state to false in case of error
     }
   };
-  const validateField = (fieldName, value) => {
-    switch (fieldName) {
-      case "password":
-        return value.length >= 8
-          ? ""
-          : "Password must be at least 8 characters long";
-      case "confirmPassword":
-        return value === formData.password ? "" : "Passwords do not match";
 
-      case "crn":
-        return /^\d{7}$|^Tr\d{3}$/.test(value) ? true : false;
-
-      default:
-        return "";
-    }
-  };
   // Function to handle edit button click
 
   // Function to handle submit button click
   const handleSubmit = async () => {
     try {
+      // Validate form data
+      const formDataErrors = Object.keys(formData).reduce((acc, key) => {
+        const error = validateField(key, formData[key]);
+        return error ? { ...acc, [key]: error } : acc;
+      }, {});
+
+      // Validate userInfo
+      const userInfoErrors = Object.keys(userInfo).reduce((acc, key) => {
+        const error = validateField(key, userInfo[key]);
+        return error ? { ...acc, [key]: error } : acc;
+      }, {});
+
+      // Combine both sets of errors
+      const allErrors = { ...formDataErrors, ...userInfoErrors };
+
+      // Check if there are any validation errors
+      if (Object.keys(allErrors).length > 0) {
+        let showError = true; // Flag to track if an error has been shown
+        Object.values(allErrors).forEach(errorMessage => {
+          if (showError) {
+            toast.error(errorMessage); // Display the first encountered error message via toast notification
+            showError = false; // Set flag to false to prevent displaying more than one error
+          }
+        });
+        setErrors(allErrors); // Set errors state with collected errors
+        setLoading(false);
+        return;
+      }
       setLoading(true);
       setFetchError(false);
       setIsEditing(false);
@@ -187,7 +201,7 @@ const EditProfile = () => {
         },
       };
 
-      console.log(updatedFormData);
+
       const token = localStorage.getItem("authtoken");
       // Make PUT request to update data with editedData
       const response = await axios.put(

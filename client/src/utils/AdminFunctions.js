@@ -16,8 +16,14 @@ export const fetchBatches = async () => {
         });
 
         const fetchedBatches = response.data.data;
-        const sortedBatches = fetchedBatches.sort((b, a) => a.localeCompare(b));
-        console.log(sortedBatches);
+        const validBatches = fetchedBatches.filter(batch => batch !== null);
+        const sortedBatches = validBatches.sort((a, b) => {
+            const yearA = parseInt(a.split('-')[0], 10);
+            const yearB = parseInt(b.split('-')[0], 10);
+
+            return yearB - yearA;
+        });
+
         return { batches: sortedBatches };
     } catch (error) {
         console.error("Error fetching users:", error);
@@ -25,36 +31,21 @@ export const fetchBatches = async () => {
     }
 };
 
-export const fetchUsers = async () => {
+export const fetchUsers = async (selectedBatch,selectedTraining) => {
     try {
         const token = localStorage.getItem("authtoken");
-        const response = await axios.get(`${API_URL}users/getallusers/`, {
+        const response = await axios.get(`${API_URL}users/getUsersByBatch`, {
             headers: {
                 "auth-token": token,
             },
+            params: {
+                batch: selectedBatch,
+                trainingType: selectedTraining
+            }
         });
         const filteredUsers = response.data.data
-            .filter((user) => user.role === "user")
-            .filter((user) => user.userInfo.Name !== undefined)
-            .sort((a, b) => a.crn - b.crn);
-
-        // Extracting unique batches from userinfo.batch
-        const batches = filteredUsers.reduce((acc, user) => {
-            if (user.userInfo.batch) {
-                const batch = user.userInfo.batch.split("-")[0]; // Assuming batch is in format: YYYY-NNN
-                const endYear = user.userInfo.batch.split("-")[1]; // Assuming batch is in format: YYYY-NNN
-                const fullBatch = `${batch}-${endYear}`; // Combine start and end year to get full batch range
-                if (!acc.includes(fullBatch)) {
-                    acc.push(fullBatch);
-                }
-            }
-            return acc;
-        }, []);
-        const sortedBatches = batches.sort((b, a) => a.localeCompare(b));
-
-        console.log("dfhdkhfadsf");
-        console.log(sortedBatches);
-        return { users: filteredUsers, batches: sortedBatches };
+            
+        return { users: filteredUsers };
     } catch (error) {
         console.error("Error fetching users:", error);
         throw new Error("Error fetching users");
