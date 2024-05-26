@@ -80,3 +80,76 @@ export function handleFileErrors(appointmentFiledata) {
 function isEmptyObject(obj) {
     return typeof obj === 'object' && Object.keys(obj).length === 0 && obj.constructor === Object;
 }
+
+
+//Change Student Data Errors
+
+// validationUtils.js
+
+// Define error messages for each field
+export const errorMessages = {
+  password: "Password must be at least 8 characters long",
+  confirmPassword: "Passwords do not match",
+  email: "Invalid email format",
+  crn: "Invalid CRN",
+  isVerified: "Invalid verification status",
+  urn: "Invalid university roll number",
+  Name: "Name is required",
+  mother: "Mother's name is required",
+  father: "Father's name is required",
+  personalMail: "Invalid personal email format",
+  contact: "Invalid contact number",
+  section: "Invalid section",
+  branch: "Invalid branch",
+  mentor: "Mentor's name is required",
+  gender: "Invalid gender",
+  admissionType: "Invalid admission type",
+};
+
+// Function to validate field
+export const validateField = (fieldName, value) => {
+  switch (fieldName) {
+    case "password":
+      return value.length >= 8 ? "" : errorMessages.password;
+    case "confirmPassword":
+      return value === formData.password ? "" : errorMessages.confirmPassword;
+    case "email":
+      return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value)
+        ? ""
+        : errorMessages.email;
+    case "crn":
+      return /^\d{7}$|^Tr\d{3}$/.test(value) ? "" : errorMessages.crn;
+    case "isVerified":
+      return typeof value === "boolean" ? "" : errorMessages.isVerified;
+    case "urn":
+      return /^\d{7}$/.test(value) ? "" : errorMessages.urn;
+    case "Name":
+      return value.trim() !== "" ? "" : errorMessages.Name;
+    case "mother":
+      return value.trim() !== "" ? "" : errorMessages.mother;
+    case "father":
+      return value.trim() !== "" ? "" : errorMessages.father;
+    case "personalMail":
+      return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value)
+        ? ""
+        : errorMessages.personalMail;
+    case "contact":
+      return /^\d{10}$/.test(value) ? "" : errorMessages.contact;
+    case "section":
+      return ["A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2"].includes(value)
+        ? ""
+        : errorMessages.section;
+    case "branch":
+      return value === "CSE" ? "" : errorMessages.branch;
+    case "mentor":
+      return value.trim() !== "" ? "" : errorMessages.mentor;
+    case "gender":
+      return ["Male", "Female"].includes(value) ? "" : errorMessages.gender;
+    case "admissionType":
+      return ["Non LEET", "LEET"].includes(value)
+        ? ""
+        : errorMessages.admissionType;
+    default:
+      return "";
+  }
+};

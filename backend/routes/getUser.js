@@ -73,5 +73,35 @@ console.log(updatedFormData.userInfo)
     res.status(500).json({ success: false, message: 'Internal server error occurred' });
   }
 });
+router.get('/getUsersByBatch', fetchuser, isAdmin, async (req, res) => {
+  try {
+    const { batch, trainingType } = req.query;
+
+    if (!batch || !trainingType) {
+      return res.status(400).json({ success: false, message: 'Batch and training type are required' });
+    }
+
+    const allowedTrainingTypes = ['tr101', 'tr102', 'tr103', 'tr104', 'placementData'];
+    if (!allowedTrainingTypes.includes(trainingType)) {
+      return res.status(400).json({ success: false, message: 'Invalid training type' });
+    }
+
+  
+
+    // Fetch users with the specified batch and role 'user'
+    const users = await SignUp.find({
+      'userInfo.batch': batch,
+      role: 'user'
+    }).select(`crn email ${trainingType} userInfo`);
+
+    // Return the list of users with the specified training type and user data
+    return res.status(200).json({ success: true, data: users });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ success: false, message: 'Internal server error occurred' });
+  }
+});
+
+
 
 module.exports = router;
