@@ -31,7 +31,7 @@ export const fetchBatches = async () => {
     }
 };
 
-export const fetchUsers = async (selectedBatch,selectedTraining) => {
+export const fetchUsers = async (selectedBatch, selectedTraining) => {
     try {
         const token = localStorage.getItem("authtoken");
         const response = await axios.get(`${API_URL}users/getUsersByBatch`, {
@@ -44,7 +44,7 @@ export const fetchUsers = async (selectedBatch,selectedTraining) => {
             }
         });
         const filteredUsers = response.data.data
-            
+
         return { users: filteredUsers };
     } catch (error) {
         console.error("Error fetching users:", error);
@@ -94,8 +94,7 @@ export const getTrainingOptions = (adminType, trainingNames) => {
     const options = [{ value: "", label: "All" }];
 
     const trainingNumber = trainingNames[0]["Training_No"];
-    console.log(trainingNumber);
-    console.log(adminType);
+
     if (adminType == trainingNumber) {
         options.push({
             value: `tr10${adminType}`,

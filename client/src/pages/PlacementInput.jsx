@@ -65,7 +65,6 @@ useEffect(() => {
             });
             const userData = response.data.data;
             setFormData(userData)
-            console.log(userData)
 
             setIsPlaced(userData.isPlaced);
             if(userData.isPlaced){

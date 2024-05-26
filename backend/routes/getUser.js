@@ -35,7 +35,6 @@ router.get('/getallusers', fetchuser, isAdmin, async (req, res) => {
 router.put('/updateUser/:crn', fetchuser, isAdmin, async (req, res) => {
   const { crn } = req.params; // Get CRN from request parameters
   const updatedFormData = req.body.updatedFormData; // Get updated user data from request body
-console.log(updatedFormData.userInfo)
   try {
     // Find user by CRN and update with updatedFormData 
     const updatedUser = await SignUp.findOneAndUpdate(
@@ -58,16 +57,16 @@ console.log(updatedFormData.userInfo)
           'userInfo.personalMail': updatedFormData.userInfo.personalMail,
           'userInfo.section': updatedFormData.userInfo.section,
         }
-      }, 
+      },
       { new: true } // Return updated user data
     );
 
     if (!updatedUser) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
-    // console.log(updatedUser)
+    // (updatedUser)
     // User updated successfully
-    return res.status(200).json({ success: true, data: updatedUser,message:"Data Updated Successfully" });
+    return res.status(200).json({ success: true, data: updatedUser, message: "Data Updated Successfully" });
   } catch (error) {
     console.error('Error updating user:', error);
     res.status(500).json({ success: false, message: 'Internal server error occurred' });
@@ -86,7 +85,7 @@ router.get('/getUsersByBatch', fetchuser, isAdmin, async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid training type' });
     }
 
-  
+
 
     // Fetch users with the specified batch and role 'user'
     const users = await SignUp.find({

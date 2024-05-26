@@ -75,7 +75,6 @@ function Login() {
         body: JSON.stringify(credentials),
       });
       const json = await response.json();
-      // console.log(json);
       if (json.success) {
         if (json.message === "verify") {
           toast.warning("Please verify your account");
@@ -84,14 +83,13 @@ function Login() {
           }, 2000);
         } else {
           localStorage.setItem("authtoken", json.authtoken);
-          const role=decodeUserRole(json.authtoken)
-          // console.log(json.authtoken)
-          if (role === "superadmin" || role==="admin") {
+          const role = decodeUserRole(json.authtoken)
+          if (role === "superadmin" || role === "admin") {
             toast.success("Successfully logged in");
             setTimeout(() => {
               navigate("/superadmin");
             }, 1000);
-          }  else {
+          } else {
             toast.success("Successfully logged in");
             setTimeout(() => {
               navigate("/home");
@@ -99,7 +97,7 @@ function Login() {
           }
         }
       } else {
-        toast.error( json.message);
+        toast.error(json.message);
         setLoading(false);
       }
     } catch (error) {

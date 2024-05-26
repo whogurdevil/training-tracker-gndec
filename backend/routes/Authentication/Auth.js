@@ -31,10 +31,8 @@ router.post('/signup',
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      // console.log(errors.array());
       return res.status(400).json({ success: false, message: "Invalid Credentials", errors: errors.array() });
     }
-  //  console.log("Hello")
     const validateUser = await SignUp.findOne({ email: req.body.email });
     const validateCrn = await SignUp.findOne({ crn: req.body.crn });
     if (validateUser) {
@@ -43,13 +41,13 @@ router.post('/signup',
     if (validateCrn) {
       return res.status(400).json({ success: false, message: 'CRN already exist' });
     }
-    // console.log("hello")
+  
     try {
       const myPlaintextPassword = req.body.password;
       const salt = bcrypt.genSaltSync(10);
       const hash = bcrypt.hashSync(myPlaintextPassword, salt);
       const { crn, email } = req.body;
-      // console.log("ji")
+   
 
       try {
         const signup = await SignUp.create({
@@ -137,7 +135,7 @@ router.post('/login', body('password', 'Password should have a minimum length of
 
 
 
-router.delete('/deleteUser',fetchuser,isAdmin,  async (req, res) => {
+router.delete('/deleteUser', fetchuser, isAdmin, async (req, res) => {
   try {
     const { crn } = req.body;
     const deletedUser = await SignUp.findOneAndDelete({ crn });

@@ -37,7 +37,7 @@ function Login() {
         body: JSON.stringify({ email: credentials.email }),
       });
       const json = await response.json();
-      // console.log(json);
+     
       if (json.success) {
         toast('OTP sent successfully');
         setLoading(false);
@@ -74,7 +74,7 @@ function Login() {
         setLoading(false);
         // Optionally, redirect the user to the login page or another route
       } else {
-        toast.error( json.message);
+        toast.error(json.message);
         setLoading(false);
       }
     } catch (error) {
@@ -91,52 +91,52 @@ function Login() {
   const theme = createTheme();
 
   return (
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <ToastContainer />
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            marginTop:5
-          }}
-        >
-        
-          <Typography component="h1" variant="h5">
-            Forgot Password
-          </Typography>
-          <Box component="form" noValidate sx={{ mt: 1 }}>
+    <Container component="main" maxWidth="xs">
+      <CssBaseline />
+      <ToastContainer />
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          marginTop: 5
+        }}
+      >
+
+        <Typography component="h1" variant="h5">
+          Forgot Password
+        </Typography>
+        <Box component="form" noValidate sx={{ mt: 1 }}>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email Address"
+            name="email"
+            placeholder='nameCrn@gndec.ac.in'
+            value={credentials.email}
+            autoComplete="email"
+            onChange={onChange}
+            autoFocus
+
+          />
+          {showOtpField && (
             <TextField
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              placeholder='nameCrn@gndec.ac.in'
-              value={credentials.email}
-              autoComplete="email"
+              name="otp"
+              label="OTP"
+              value={credentials.otp}
               onChange={onChange}
-              autoFocus
-            
+              InputProps={{
+                sx: { padding: '8px' },
+              }}
             />
-            {showOtpField && (
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="otp"
-                label="OTP"
-                value={credentials.otp}
-                onChange={onChange}
-                InputProps={{
-                  sx: { padding: '8px' },
-                }}
-              />
-            )}
-            {showOtpField && (
-              <TextField
+          )}
+          {showOtpField && (
+            <TextField
               margin="normal"
               required
               fullWidth
@@ -159,30 +159,30 @@ function Login() {
                 ),
               }}
             />
-            )}
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
-            <Button
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              disabled={loading}
-              onClick={showOtpField ? handleResetPassword : handleGetOtp}
-            >
-              {loading ? 'Processing...' : showOtpField ? 'Reset Password' : 'Get OTP'}
-            </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link href="/login" variant="body2" style={{ color: '#0015ff' }}>
-                  Remembered your password? Log in
-                </Link>
-              </Grid>
+          )}
+          <FormControlLabel
+            control={<Checkbox value="remember" color="primary" />}
+            label="Remember me"
+          />
+          <Button
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+            disabled={loading}
+            onClick={showOtpField ? handleResetPassword : handleGetOtp}
+          >
+            {loading ? 'Processing...' : showOtpField ? 'Reset Password' : 'Get OTP'}
+          </Button>
+          <Grid container>
+            <Grid item xs>
+              <Link href="/login" variant="body2" style={{ color: '#0015ff' }}>
+                Remembered your password? Log in
+              </Link>
             </Grid>
-          </Box>
+          </Grid>
         </Box>
-      </Container>
+      </Box>
+    </Container>
   );
 }
 

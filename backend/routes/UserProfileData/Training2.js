@@ -46,7 +46,7 @@ router.post('/updatelock', fetchuser, isAdmin, async (req, res) => {
             { new: true }
         );
         if (!userData) {
-            return res.status(404).json({ success:false, message: 'User data not found' });
+            return res.status(404).json({ success: false, message: 'User data not found' });
         }
         // Respond with the updated user data
         res.status(200).json({ success: true });
@@ -85,9 +85,7 @@ router.post('/verifyall', fetchuser, isAdmin, async (req, res) => {
                 if (user.tr102) {
                     user.tr102.lock = true; // Set lock status to true
                     await user.save();
-                } else {
-                    console.log(`User with CRN ${user.crn} does not have tr101 field.`);
-                }
+                } 
                 return user;
             } catch (err) {
                 console.error(`Error updating user with CRN ${user.crn}: ${err.message}`);
@@ -117,9 +115,7 @@ router.post('/unverifyall', fetchuser, isAdmin, async (req, res) => {
                 if (user.tr102) {
                     user.tr102.lock = false; // Set lock status to true
                     await user.save();
-                } else {
-                    console.log(`User with CRN ${user.crn} does not have tr101 field.`);
-                }
+                } 
                 return user;
             } catch (err) {
                 console.error(`Error updating user with CRN ${user.crn}: ${err.message}`);
@@ -128,7 +124,7 @@ router.post('/unverifyall', fetchuser, isAdmin, async (req, res) => {
         }));
 
         // Respond with the updated user data
-        res.status(200).json({ success: true});
+        res.status(200).json({ success: true });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }

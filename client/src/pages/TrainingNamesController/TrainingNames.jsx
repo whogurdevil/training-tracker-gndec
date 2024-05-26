@@ -42,7 +42,7 @@ const TrainingNames = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem("authtoken");
-            const url = `${API_URL}api/admin/trainingNames`
+            const url = `${API_URL}admin/trainingNames`
             const response = await axios.post(url, trainingNames, {
                 headers: {
                     "auth-token": token
