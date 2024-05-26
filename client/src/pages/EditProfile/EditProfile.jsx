@@ -9,6 +9,9 @@ import Grid from "@mui/material/Grid";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import MenuItem from "@mui/material/MenuItem";
 import { CircularProgress, Typography, Alert, AlertTitle } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
@@ -16,7 +19,8 @@ import InputAdornment from "@mui/material/InputAdornment";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import DeleteIcon from '@mui/icons-material/Delete';
-import { validateField,errorMessages } from "../../utils/ErrorFunctions";
+import { validateField, errorMessages } from "../../utils/ErrorFunctions";
+import { convertBatchToDate } from "../../utils/DateConvertToFrontend";
 // API_URL should point to your backend API endpoint
 const API_URL =
   import.meta.env.VITE_ENV === "production"
@@ -27,7 +31,7 @@ const EditProfile = () => {
   // State variables
   const [showModal, setShowModal] = useState(false); // Controls modal visibility
   const [formData, setFormData] = useState({}); // Stores original fetched data
-  const [userInfo, setuserInfo] = useState({}); 
+  const [userInfo, setuserInfo] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false); // Indicates loading state
   const [fetchError, setFetchError] = useState(false); // Indicates if there's an error fetching data
@@ -37,26 +41,26 @@ const EditProfile = () => {
   const [isChanged, setIsChanged] = useState(false);
   const [showModal2, setShowModal2] = useState(false);
   const [showModal3, setShowModal3] = useState(false);
+  const [admissionYear, setAdmissionYear] = useState(null);
   const [errors, setErrors] = useState({
     password: "",
     confirmPassword: "",
   });
 
   const handleCheck = async (value) => {
-    console.log('hello')
     if (!/^\d{7}$|^Tr\d{3}$/.test(crn)) {
       toast.error("Invalid CRN ");
       setCrnError(true); // Set CRN error if it's not 7 digits
       return;
     }
     await Data();
-    if(value==="password"){
+    if (value === "password") {
       setShowModal2(true);
     }
-    if(value==="deleteUser"){
+    if (value === "deleteUser") {
       setShowModal3(true);
     }
-    
+
   };
   // Function to fetch data for a given CRN from the backend
   const fetchData = async () => {
@@ -84,10 +88,12 @@ const EditProfile = () => {
       });
 
       const data = response.data.data;
-      const userInfoData=response.data.data.userInfo
+      const userInfoData = response.data.data.userInfo
       if (data) {
-        setFormData(data);
-        setuserInfo(userInfoData)
+        const datePickerBatch = convertBatchToDate(userInfoData.batch);
+        setFormData({ ...data, password: '', confirmPassword: '' });
+        setuserInfo({ ...userInfoData, batch: datePickerBatch });
+        setAdmissionYear(datePickerBatch);
         // Store fetched data in state
         setFetchError(false); // Reset fetch error state
         setLoading(false);
@@ -107,14 +113,13 @@ const EditProfile = () => {
   };
   const hanldeChangePassword = async () => {
     try {
-      const validationErrors = Object.keys(formData).reduce((acc, key) => {
-        const error = validateField(key, formData[key]);
-        return error ? { ...acc, [key]: error } : acc;
-      }, {});
+      const passwordError = validateField('password', formData.password);
+      const confirmPasswordError = validateField('confirmPassword', formData.confirmPassword, formData);
 
-      if (Object.keys(validationErrors).length > 0) {
-        setErrors(validationErrors);
-        toast.error("Password doesn't match");
+      if (passwordError || confirmPasswordError) {
+        // Check if either password or confirm password has an error
+        const errorMessage = passwordError || confirmPasswordError;
+        toast.error(errorMessage);
         setLoading(false);
         return;
       }
@@ -132,7 +137,7 @@ const EditProfile = () => {
           password: formData.password,
         }),
       });
-      console.log(response);
+
       if (response.ok) {
         setLoading(false);
         setShowModal2(false);
@@ -234,7 +239,7 @@ const EditProfile = () => {
     setIsEditing((prevEditing) => !prevEditing);
 
     // You can implement this functionality based on your requirements
-  }; 
+  };
   const handleDeleteStudent = async () => {
     try {
       setLoading(true);
@@ -280,8 +285,20 @@ const EditProfile = () => {
     }));
     setErrors((prevErrors) => ({
       ...prevErrors,
-      [name]: validateField(name, value),
+      [name]: validateField(name, value, formData),
     }));
+  };
+  const handleBatchChange = (newDate) => {
+    // (newDate);
+    setIsChanged(true);
+    if (newDate) {
+      const year = newDate.$y;
+
+      setuserInfo({ ...userInfo, batch: `${year}-${year + 4}` });
+    } else {
+      // If newDate is null or undefined, clear the batch value
+      setuserInfo({ ...userInfo, batch: '' });
+    }
   };
   const handleChangeuserInfo = (e) => {
     const { name, value } = e.target;
@@ -317,7 +334,7 @@ const EditProfile = () => {
             variant="outlined"
             sx={{ mb: 2 }}
             fullWidth
-            error={crnError}
+            error={!crnError}
             value={crn}
             onChange={(e) => {
               if (validateField("crn", e.target.value)) {
@@ -343,7 +360,7 @@ const EditProfile = () => {
           >
             <Typography>Change Password</Typography>
           </Button>
-         
+
         </Grid>
       </Grid>
 
@@ -409,7 +426,7 @@ const EditProfile = () => {
                   >
                     Edit
                   </Button>
-                   
+
                   <Button
                     disabled={loading}
                     variant="text"
@@ -423,92 +440,92 @@ const EditProfile = () => {
                     Cancel
                   </Button>
                 </div>
-                  <div style={{ display: "flex" }}>
-                    <IconButton
-                      variant="contained"
-                      color="primary"
-                      onClick={() => setShowModal3(true)}
-                      disabled={loading}
-                      sx={{ mr: 2, mb: 2 }}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                <Button
-                  disabled={loading || !isChanged}
-                  variant="contained"
-                  onClick={handleSubmit}
-                  sx={{ mb: 2 }}
-                >
-                  {loading ? (
-                    <CircularProgress size={24} color="inherit" />
-                  ) : (
-                    "Submit"
-                  )}
-                </Button>
+                <div style={{ display: "flex" }}>
+                  <IconButton
+                    variant="contained"
+                    color="primary"
+                    onClick={() => setShowModal3(true)}
+                    disabled={loading}
+                    sx={{ mr: 2, mb: 2 }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                  <Button
+                    disabled={loading || !isChanged}
+                    variant="contained"
+                    onClick={handleSubmit}
+                    sx={{ mb: 2 }}
+                  >
+                    {loading ? (
+                      <CircularProgress size={24} color="inherit" />
+                    ) : (
+                      "Submit"
+                    )}
+                  </Button>
                 </div>
               </Box>
               <Box sx={{ marginTop: "10px" }}>
                 <hr />
-                  <TextField
-                    label="Email"
-                    variant="outlined"
-                    sx={{ mb: 2, marginTop: "20px" }}
-                    fullWidth
-                    placeholder="NameCrn@gndec.ac.in"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChangeformData}
-                    disabled={!isEditing}
-                    InputLabelProps={{ shrink: true }}
-                  /> 
-                  <TextField
-                    label="College Roll Number"
-                    variant="outlined"
-                    sx={{ mb: 2 }}
-                    fullWidth
-                    placeholder="1234567"
-                    name="crn"
-                    value={formData.crn}
-                    onChange={handleChangeformData}
-                    disabled={!isEditing}
-                    InputLabelProps={{ shrink: true }}
-                  />
-                  <TextField
-                    select
-                    label="Verification Status"
-                    variant="outlined"
-                    fullWidth
-                    name="isVerified"
-                    value={formData.isVerified}
-                    onChange={handleChangeformData}
-                    sx={{
-                      mb: 2,
-                      "& .MuiSelect-select": { textAlign: "left" }, // Aligns the selected value to the left
-                    }}
-                    disabled={!isEditing}
-                    InputLabelProps={{ shrink: true }}
-                  >
-                    <MenuItem value={true}>true</MenuItem>
-                    <MenuItem value={false}>false</MenuItem>
-                    
-                  </TextField>
-                  <TextField
-                    label="University Roll Number"
-                    variant="outlined"
-                    sx={{ mb: 2 }}
-                    fullWidth
-                    placeholder="1234567"
-                    name="urn"
-                    value={userInfo?.urn|| null}
-                    onChange={handleChangeuserInfo}
-                    disabled={!isEditing}
-                    InputLabelProps={{ shrink: true }}
-                  />
+                <TextField
+                  label="Email"
+                  variant="outlined"
+                  sx={{ mb: 2, marginTop: "20px" }}
+                  fullWidth
+                  placeholder="NameCrn@gndec.ac.in"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChangeformData}
+                  disabled={!isEditing}
+                  InputLabelProps={{ shrink: true }}
+                />
+                <TextField
+                  label="College Roll Number"
+                  variant="outlined"
+                  sx={{ mb: 2 }}
+                  fullWidth
+                  placeholder="1234567"
+                  name="crn"
+                  value={formData.crn}
+                  onChange={handleChangeformData}
+                  disabled={!isEditing}
+                  InputLabelProps={{ shrink: true }}
+                />
+                <TextField
+                  select
+                  label="Verification Status"
+                  variant="outlined"
+                  fullWidth
+                  name="isVerified"
+                  value={formData.isVerified}
+                  onChange={handleChangeformData}
+                  sx={{
+                    mb: 2,
+                    "& .MuiSelect-select": { textAlign: "left" }, // Aligns the selected value to the left
+                  }}
+                  disabled={!isEditing}
+                  InputLabelProps={{ shrink: true }}
+                >
+                  <MenuItem value={true}>true</MenuItem>
+                  <MenuItem value={false}>false</MenuItem>
+
+                </TextField>
+                <TextField
+                  label="University Roll Number"
+                  variant="outlined"
+                  sx={{ mb: 2 }}
+                  fullWidth
+                  placeholder="1234567"
+                  name="urn"
+                  value={userInfo?.urn || null}
+                  onChange={handleChangeuserInfo}
+                  disabled={!isEditing}
+                  InputLabelProps={{ shrink: true }}
+                />
                 <TextField
                   label="Name"
                   name="Name"
-                    value={userInfo?.Name}
-                    onChange={handleChangeuserInfo}
+                  value={userInfo?.Name}
+                  onChange={handleChangeuserInfo}
                   fullWidth
                   variant="outlined"
                   sx={{ mb: 2 }}
@@ -522,8 +539,8 @@ const EditProfile = () => {
                   fullWidth
                   placeholder="Mother’s Name"
                   name="mother"
-                    value={userInfo?.mother}
-                    onChange={handleChangeuserInfo}
+                  value={userInfo?.mother}
+                  onChange={handleChangeuserInfo}
                   disabled={!isEditing}
                   InputLabelProps={{ shrink: true }}
                 />
@@ -534,8 +551,8 @@ const EditProfile = () => {
                   fullWidth
                   placeholder="Father’s Name"
                   name="father"
-                    value={userInfo?.father}
-                    onChange={handleChangeuserInfo}
+                  value={userInfo?.father}
+                  onChange={handleChangeuserInfo}
                   disabled={!isEditing}
                   InputLabelProps={{ shrink: true }}
                 />
@@ -546,8 +563,8 @@ const EditProfile = () => {
                   fullWidth
                   placeholder="example@gndec.ac.in"
                   name="personalMail"
-                    value={userInfo?.personalMail}
-                    onChange={handleChangeuserInfo}
+                  value={userInfo?.personalMail}
+                  onChange={handleChangeuserInfo}
                   disabled={!isEditing}
                   InputLabelProps={{ shrink: true }}
                 />
@@ -558,8 +575,8 @@ const EditProfile = () => {
                   fullWidth
                   placeholder="9876543210"
                   name="contact"
-                    value={userInfo?.contact}
-                    onChange={handleChangeuserInfo}
+                  value={userInfo?.contact}
+                  onChange={handleChangeuserInfo}
                   disabled={!isEditing}
                   InputLabelProps={{ shrink: true }}
                 />
@@ -570,8 +587,8 @@ const EditProfile = () => {
                   variant="outlined"
                   fullWidth
                   name="section"
-                    value={userInfo?.section}
-                    onChange={handleChangeuserInfo}
+                  value={userInfo?.section}
+                  onChange={handleChangeuserInfo}
                   sx={{
                     mb: 2,
                     "& .MuiSelect-select": { textAlign: "left" }, // Aligns the selected value to the left
@@ -588,7 +605,18 @@ const EditProfile = () => {
                   <MenuItem value="D1">D1</MenuItem>
                   <MenuItem value="D2">D2</MenuItem>
                 </TextField>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    label="Batch Start Year"
 
+                    views={['year']}
+                    renderInput={(params) => <TextField {...params} helperText="Enter starting year only" />}
+                    onChange={handleBatchChange}
+                    value={admissionYear}
+                    sx={{ mb: 2 }}
+                    disabled={!isEditing}
+                  />
+                </LocalizationProvider>
                 <TextField
                   select
                   label="Branch"
@@ -596,8 +624,8 @@ const EditProfile = () => {
                   sx={{ mb: 2 }}
                   fullWidth
                   name="branch"
-                    value={userInfo?.branch}
-                    onChange={handleChangeuserInfo}
+                  value={userInfo?.branch}
+                  onChange={handleChangeuserInfo}
                   disabled={!isEditing}
                   InputLabelProps={{ shrink: true }}
                 >
@@ -613,8 +641,8 @@ const EditProfile = () => {
                   required
                   name="mentor"
                   placeholder="Your Mentor Name"
-                    value={userInfo?.mentor}
-                    onChange={handleChangeuserInfo}
+                  value={userInfo?.mentor}
+                  onChange={handleChangeuserInfo}
                   disabled={!isEditing}
                   InputLabelProps={{ shrink: true }}
                 />
@@ -626,8 +654,8 @@ const EditProfile = () => {
                   fullWidth
                   required
                   name="gender"
-                    value={userInfo?.gender}
-                    onChange={handleChangeuserInfo}
+                  value={userInfo?.gender}
+                  onChange={handleChangeuserInfo}
                   disabled={!isEditing}
                   InputLabelProps={{ shrink: true }}
                 >
@@ -641,8 +669,8 @@ const EditProfile = () => {
                   sx={{ mb: 2 }}
                   fullWidth
                   name="admissionType"
-                    value={userInfo?.admissionType}
-                    onChange={handleChangeuserInfo}
+                  value={userInfo?.admissionType}
+                  onChange={handleChangeuserInfo}
                   disabled={!isEditing}
                   InputLabelProps={{ shrink: true }}
                 >
@@ -783,7 +811,7 @@ const EditProfile = () => {
                   label="Confirm Password"
                   value={formData.confirmPassword}
                   type="password"
-                    onChange={handleChangeuserInfo}
+                  onChange={handleChangeformData}
                   InputLabelProps={{ shrink: true }}
                   disabled={!isEditing}
                   error={Boolean(errors.confirmPassword)}
@@ -794,14 +822,14 @@ const EditProfile = () => {
           )}
         </Box>
       </Modal>
-      <Modal 
-      open={showModal3}
-      onClose={() => setShowModal3(false)}
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}>
+      <Modal
+        open={showModal3}
+        onClose={() => setShowModal3(false)}
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}>
         <Box
           sx={{
             width: "700px",
@@ -812,7 +840,7 @@ const EditProfile = () => {
             overflowY: "auto",
           }}
         >
-       {fetchError ? (
+          {fetchError ? (
             <Box
               sx={{
                 mb: 2,
@@ -831,33 +859,33 @@ const EditProfile = () => {
                 Cancel
               </Button>
             </Box>
-          ):(
+          ) : (
             <>
-          <Alert
-            severity='warning'
-          >
-           Are you Sure you want to delete this Student data
-          </Alert>
-          <hr />
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 16, paddingBlock: 6 }}>
-              <Button
-                variant="contained"
-                onClick={() => setShowModal3(false)}
-                sx={{ mr: 2, mb: 2 }}
+              <Alert
+                severity='warning'
               >
-                Cancel
-              </Button>
-            <Button variant="contained" onClick={handleDeleteStudent} 
-                    sx={{ mr: 2, mb: 2 }}>
-              {loading ? <CircularProgress size={24} color='inherit' /> : 'Submit'}
-            </Button>
-          </div>
+                Are you Sure you want to delete this Student data
+              </Alert>
+              <hr />
+              <div style={{ display: 'flex', justifyContent: 'center', gap: 16, paddingBlock: 6 }}>
+                <Button
+                  variant="contained"
+                  onClick={() => setShowModal3(false)}
+                  sx={{ mr: 2, mb: 2 }}
+                >
+                  Cancel
+                </Button>
+                <Button variant="contained" onClick={handleDeleteStudent}
+                  sx={{ mr: 2, mb: 2 }}>
+                  {loading ? <CircularProgress size={24} color='inherit' /> : 'Submit'}
+                </Button>
+              </div>
             </>
           )
-        }
-        
-   </Box>
-    
+          }
+
+        </Box>
+
       </Modal>
       <ToastContainer />
     </Container>

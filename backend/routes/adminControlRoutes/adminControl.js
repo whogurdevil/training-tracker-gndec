@@ -17,7 +17,7 @@ router.post("/trainingNames", fetchuser, isAdmin, async (req, res) => {
         } = req.body;
 
         // Assuming you have a unique identifier to find the document, for example, its ID
-        const filter = { _id: "6601b9b78136ffb755b06ad8" }; // Replace with your actual unique identifier
+        const filter = {}; // No filter needed to update the first document
 
         const update = {
             Training_No,
@@ -35,16 +35,18 @@ router.post("/trainingNames", fetchuser, isAdmin, async (req, res) => {
             update,
             options,
         );
+
         if (!updatedDocument) {
-            return res
-                .status(404)
-                .json({ success: false, message: "Not able to update the data" });
+            return res.status(404).json({ success: false, message: "Document not found or not updated" });
         }
+
         res.status(200).json({ success: true, data: updatedDocument });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        console.error("Error:", error);
+        res.status(400).json({ success: false, message: error.message });
     }
 });
+
 
 router.get("/trainingNames", async (req, res) => {
     try {

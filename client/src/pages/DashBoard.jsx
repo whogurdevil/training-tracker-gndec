@@ -20,6 +20,7 @@ import { useMediaQuery } from '@mui/material';
 import { convertBatchToDate } from '../utils/DateConvertToFrontend';
 import Modal from '@mui/material/Modal';
 import { decodeAuthToken } from '../utils/AdminFunctions';
+import { validateField, errorMessages } from '../utils/ErrorFunctions';
 
 const API_URL = import.meta.env.VITE_ENV === 'production' ? import.meta.env.VITE_PROD_BASE_URL : import.meta.env.VITE_DEV_BASE_URL
 
@@ -42,7 +43,7 @@ export default function Form() {
     personalMail: ''
 
   });
-  
+
   const token = localStorage.getItem("authtoken");
   const crn = decodeAuthToken(token);
   const [isSubmitting, setIsSubmitting] = useState(true);
@@ -59,12 +60,12 @@ export default function Form() {
         const token = localStorage.getItem('authtoken');
         const url = `${API_URL}userprofiles/${crn}`;
         const response = await axios.get(url, {
-            headers: {
-                "auth-token": token
-            }
+          headers: {
+            "auth-token": token
+          }
         });
         const userData = response.data.data;
-        // console.log(userData)
+   
         // Check if all fields are filled in the fetched data
         if (
           userData.Name &&
@@ -82,7 +83,7 @@ export default function Form() {
         ) {
           const datePickerBatch = convertBatchToDate(userData.batch);
           setAdmissionYear(datePickerBatch);
-          // console.log(datePickerBatch)
+         
           setFormData({ ...userData, batch: datePickerBatch });
           setIsSubmitting(true)
 
@@ -96,7 +97,7 @@ export default function Form() {
         setLoading(false)
       } finally {
         setLoading(false)
-  
+
       }
     };
 
@@ -107,55 +108,13 @@ export default function Form() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     // Automatically format batch input
-    if (name === 'batch') {
-      if (value.length === 4 && /^\d{4}$/.test(value)) {
-        const formattedBatch = `${value}-${parseInt(value) + 4}`;
-        setFormData({ ...formData, [name]: formattedBatch });
-      } else if (value.length === 5 && /^\d{4}-\d{4}$/.test(value)) {
-        setFormData({ ...formData, [name]: value });
-      } else {
-        setFormData({ ...formData, [name]: value.slice(0, 4) });
-      }
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
+
+    let errorMsg = validateField(name, value);
+    setFormData({ ...formData, [name]: value });
+    setErrors({ ...errors, [name]: errorMsg });
+
     // Dynamic regex and validation check messages
-    let regex;
-    let errorMsg;
-    switch (name) {
-      case 'contact':
-        regex = /^\d{10}$/;
-        errorMsg = 'Contact must be 10 digits';
-        break;
-      case 'urn':
-        regex = /^\d{7}$/;
-        errorMsg = 'URN must be a 7-digit number';
-        break;
-      case 'personalMail':
-        regex = /^\S+@\S+\.\S+$/;
-        errorMsg = 'Invalid email address';
-        break;
-      case 'name':
-        regex = /^[A-Za-z]+$/;
-        errorMsg = 'Invalid Name format';
-        break;
-      case 'mother':
-        regex = /^[A-Za-z]+$/;
-        errorMsg = "Invalid Mother name format";
-        break;
-      case 'father':
-        regex = /^[A-Za-z]+$/;
-        errorMsg = "Invalid Father name format";
-        break;
-    
-      default:
-        break;
-    }
-    if (regex && !regex.test(value)) {
-      setErrors({ ...errors, [name]: errorMsg });
-    } else {
-      setErrors({ ...errors, [name]: '' });
-    }
+
   };
 
   const handleSubmit = async (e) => {
@@ -165,78 +124,25 @@ export default function Form() {
     try {
       // Form validation
       const formErrors = {};
-      if (!formData.Name) {
-        formErrors.Name = 'Name cannot be blank';
-        toast.error(formErrors.Name)
-        return;
-      }
-      else if (!formData.admissionType) {
-        formErrors.admissionType = "Admission Type cannot be blank"
-        toast.error(formErrors.admissionType)
-        return;
-      }
-      else if (!formData.batch) {
-        formErrors.batch = "Batch cannot be blank"
-        toast.error(formErrors.batch)
-        return;
-      }
-      else if (!formData.branch) {
-        formErrors.branch = "Branch cannot be blank"
-        toast.error(formErrors.branch)
-        return;
-      }
-      else if (!formData.contact) {
-        formErrors.contact = "Contact cannot be blank"
-        toast.error(formErrors.contact)
-        return;
-      }
-      else if (!formData.urn) {
-        formErrors.urn = "College Roll number cannot be blank"
-        toast.error(formErrors.urn)
-        return;
-      }
-      else if (!formData.father) {
-        formErrors.father = "Father's Name cannot be blank"
-        toast.error(formErrors.father)
-        return;
-      }
-      else if (!formData.gender) {
-        formErrors.gender = "Gender cannot be blank"
-        toast.error(formErrors.gender)
-        return;
-      }
-      else if (!formData.mentor.trim()) {
-        formErrors.mentor = "Mentor cannot be blank"
-        toast.error(formErrors.mentor)
-        return;
-      }
-      else if (!formData.mother.trim()) {
-        formErrors.mother = "Mother's Name cannot be blank"
-        toast.error(formErrors.mother)
-        return;
-      }
-      else if (!formData.personalMail.trim()) {
-        formErrors.personalMail = "Personal Mail cannot be blank"
-        toast.error(formErrors.personalMail)
-        return;
-      }
-      else if (!formData.section) {
-        formErrors.section = "Section cannot be blank"
-        toast.error(formErrors.section)
-        return;
-      }
+      Object.keys(formData).forEach((key) => {
+        const error = validateField(key, formData[key]);
+        if (error) {
+          formErrors[key] = error;
+          toast.error(error);
+        }
+      });
       if (Object.keys(formErrors).length > 0) {
         setErrors(formErrors);
-        setLoading(false)
+        setLoading(false);
         return;
       }
       const token = localStorage.getItem('authtoken');
       const response = await axios.post(`${API_URL}userprofiles`, { formData, crn: crn },
-       {
+        {
           headers: {
             "auth-token": token
           }
-        });      // console.log(response);
+        });      
       if (response.data.success) {
         toast.success('Form submitted successfully!');
         setIsSubmitting(true);
@@ -260,9 +166,8 @@ export default function Form() {
     setFormData({ ...formData, mentor: value });
   };
 
- 
+
   const handleBatchChange = (newDate) => {
-    // console.log(newDate);
     if (newDate) {
       const year = newDate.$y;
 
@@ -275,30 +180,30 @@ export default function Form() {
 
   return (
     <>
-    {loading && <LinearProgress/>}
-    <Container sx={{ paddingTop: 5 }} style={{ marginBottom: "100px" }}>
-      <ToastContainer />
-        <Container style={{ paddingBottom: 30  }}>
-            {isSubmitting ? (
-              <Alert severity="error">
+      {loading && <LinearProgress />}
+      <Container sx={{ paddingTop: 5 }} style={{ marginBottom: "100px" }}>
+        <ToastContainer />
+        <Container style={{ paddingBottom: 30 }}>
+          {isSubmitting ? (
+            <Alert severity="error">
               <AlertTitle>This information is read only !</AlertTitle>
               You have already submitted the form. Contact the training coordinator for any changes.
             </Alert>
-              ) : (
-              <>
-       
-          <Button
-            style={{ float: 'right' }}
-            type='submit'
-            color="primary"
-            variant="contained"
-            endIcon={<KeyboardArrowRightIcon />}
-            disabled={ isSubmitting}
-            onClick={() => setShowConfirmation(true)}
-          >
-            Submit
-          </Button>
-          </>
+          ) : (
+            <>
+
+              <Button
+                style={{ float: 'right' }}
+                type='submit'
+                color="primary"
+                variant="contained"
+                endIcon={<KeyboardArrowRightIcon />}
+                disabled={isSubmitting}
+                onClick={() => setShowConfirmation(true)}
+              >
+                Submit
+              </Button>
+            </>
           )}
         </Container>
         <Container sx={{ margin: 0, padding: 0 }}>
@@ -330,7 +235,7 @@ export default function Form() {
                 error={!!errors.mother}
                 helperText={errors.mother}
                 sx={{ mb: 2 }}
-                disabled={ isSubmitting}
+                disabled={isSubmitting}
               />
               <TextField
                 label="Father's Name"
@@ -344,7 +249,7 @@ export default function Form() {
                 error={!!errors.father}
                 helperText={errors.father}
                 sx={{ mb: 2 }}
-                disabled={ isSubmitting}
+                disabled={isSubmitting}
               />
               <TextField
                 label="Personal Mail"
@@ -358,7 +263,7 @@ export default function Form() {
                 error={!!errors.personalMail}
                 helperText={errors.personalMail}
                 sx={{ mb: 2 }}
-                disabled={ isSubmitting}
+                disabled={isSubmitting}
               />
               <TextField
                 label="Contact"
@@ -372,7 +277,7 @@ export default function Form() {
                 error={!!errors.contact}
                 helperText={errors.contact}
                 sx={{ mb: 2 }}
-                disabled={ isSubmitting}
+                disabled={isSubmitting}
               />
 
               <TextField
@@ -384,7 +289,7 @@ export default function Form() {
                 name="section"
                 value={formData.section}
                 onChange={(e) => setSection(e.target.value)}
-                disabled={ isSubmitting}
+                disabled={isSubmitting}
                 sx={{
                   mb: 2,
                   '& .MuiSelect-select': { textAlign: 'left' } // Aligns the selected value to the left
@@ -415,7 +320,7 @@ export default function Form() {
                 error={!!errors.urn}
                 helperText={errors.urn}
                 sx={{ mb: 2 }}
-                disabled={ isSubmitting}
+                disabled={isSubmitting}
               />
               <TextField
                 select
@@ -429,20 +334,20 @@ export default function Form() {
                 error={!!errors.branch}
                 helperText={errors.branch}
                 sx={{ mb: 2 }}
-                disabled={ isSubmitting}
+                disabled={isSubmitting}
               >
                 <MenuItem value="CSE">Computer Science & Engineering</MenuItem>
               </TextField>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   label="Batch Start Year"
-                  
+
                   views={['year']}
                   renderInput={(params) => <TextField {...params} helperText="Enter starting year only" />}
                   onChange={handleBatchChange}
                   value={admissionYear}
                   sx={{ mb: 2 }}
-                  disabled={ isSubmitting}
+                  disabled={isSubmitting}
                 />
               </LocalizationProvider>
               <TextField
@@ -457,7 +362,7 @@ export default function Form() {
                 error={!!errors.mentor}
                 helperText={errors.mentor}
                 sx={{ mb: 2 }}
-                disabled={ isSubmitting}
+                disabled={isSubmitting}
               />
               <TextField
                 select
@@ -471,7 +376,7 @@ export default function Form() {
                 error={!!errors.gender}
                 helperText={errors.gender}
                 sx={{ mb: 2 }}
-                disabled={ isSubmitting}
+                disabled={isSubmitting}
               >
                 <MenuItem value="Male">Male</MenuItem>
                 <MenuItem value="Female">Female</MenuItem>
@@ -488,7 +393,7 @@ export default function Form() {
                 error={!!errors.admissionType}
                 helperText={errors.admissionType}
                 sx={{ mb: 2 }}
-                disabled={ isSubmitting}
+                disabled={isSubmitting}
               >
                 <MenuItem value="Non LEET">Non LEET</MenuItem>
                 <MenuItem value="LEET">LEET</MenuItem>
@@ -496,7 +401,7 @@ export default function Form() {
             </Grid>
           </Grid>
         </Container>
-    </Container>
+      </Container>
       <Modal open={showConfirmation} onClose={() => setShowConfirmation(false)}>
         <div style={{
           position: 'absolute',
@@ -517,13 +422,13 @@ export default function Form() {
             severity='warning'
           >
             Once you submit the form, you won't be able to edit it.
-            </Alert>
-          <hr/>
-          <div style={{ display: 'flex', justifyContent: 'end', gap: 16, paddingBlock:6 }}>
-            <Button variant="text"  onClick={() => setShowConfirmation(false)}>
+          </Alert>
+          <hr />
+          <div style={{ display: 'flex', justifyContent: 'end', gap: 16, paddingBlock: 6 }}>
+            <Button variant="text" onClick={() => setShowConfirmation(false)}>
               Cancel
             </Button>
-            <Button variant="contained"  onClick={handleSubmit}>
+            <Button variant="contained" onClick={handleSubmit}>
               {loading ? <CircularProgress size={24} color='inherit' /> : 'Submit'}
             </Button>
           </div>
