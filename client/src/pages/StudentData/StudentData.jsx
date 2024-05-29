@@ -94,29 +94,24 @@ const SuperAdminForm = () => {
     if (selectedBatch && selectedTraining && selectedBranch) {
       try {
         setLoading(true);
-     
+
         const usersData = await fetchUsers(selectedBatch, selectedTraining);
         if (usersData && usersData.users) {
-         
           setUsers(usersData.users);
         } else {
-       
           setUsers([]);
         }
       } catch (error) {
         console.error("Error fetching user details:", error);
         setUsers([]); // Reset users state or handle as needed
       } finally {
-        
         setLoading(false);
-      
       }
     } else {
       setUsers([]);
       console.warn("Batch, training, or branch selection is missing.");
     }
   };
-
 
   const navigateToStats = (data) => {
     return navigate("/superadmin/placementStats", { state: { data } });
@@ -142,17 +137,20 @@ const SuperAdminForm = () => {
           {
             accessorKey: `${selectedTraining}.isPlaced`,
             header: "Placement Status",
-            Cell: ({ row }) => (row.original[selectedTraining]?.isPlaced ? "Yes" : "No"),
+            Cell: ({ row }) =>
+              row.original[selectedTraining]?.isPlaced ? "Yes" : "No",
           },
           {
             accessorKey: `${selectedTraining}.highStudy`,
             header: "Higher Study",
-            Cell: ({ row }) => (row.original[selectedTraining]?.highStudy ? "Yes" : "No"),
+            Cell: ({ row }) =>
+              row.original[selectedTraining]?.highStudy ? "Yes" : "No",
           },
           {
             accessorKey: `${selectedTraining}.gateStatus`,
             header: "Gate Status",
-            Cell: ({ row }) => (row.original[selectedTraining]?.gateStatus ? "Yes" : "No"),
+            Cell: ({ row }) =>
+              row.original[selectedTraining]?.gateStatus ? "Yes" : "No",
           },
           {
             accessorKey: "viewMore",
@@ -166,7 +164,7 @@ const SuperAdminForm = () => {
                 style={{ cursor: "pointer" }}
               />
             ),
-          }
+          },
         );
       }
       if (selectedTraining !== "placementData") {
@@ -174,7 +172,8 @@ const SuperAdminForm = () => {
           {
             accessorKey: `${selectedTraining}.technology`,
             header: "Technology",
-            Cell: ({ row }) => row.original[selectedTraining]?.technology.join(" , "),
+            Cell: ({ row }) =>
+              row.original[selectedTraining]?.technology.join(" , "),
           },
           {
             accessorKey: `${selectedTraining}.organization`,
@@ -197,7 +196,7 @@ const SuperAdminForm = () => {
                 style={{ cursor: "pointer" }}
               />
             ),
-          }
+          },
         );
       }
 
@@ -206,7 +205,8 @@ const SuperAdminForm = () => {
         {
           accessorKey: `${selectedTraining}.lock`,
           header: "Verified",
-          Cell: ({ row }) => (row.original[selectedTraining]?.lock ? "Yes" : "No"),
+          Cell: ({ row }) =>
+            row.original[selectedTraining]?.lock ? "Yes" : "No",
         },
         {
           accessorKey: "edit",
@@ -218,7 +218,7 @@ const SuperAdminForm = () => {
               row={row}
             />
           ),
-        }
+        },
       );
     }
 
@@ -288,6 +288,10 @@ const SuperAdminForm = () => {
   const table = useMaterialReactTable({
     data: users,
     columns,
+    localization: {
+      noRecordsToDisplay:
+        "Please Select Branch , Batch and Training type to view data.",
+    },
   });
 
   // Function to handle refreshing data after verification status change
