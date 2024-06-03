@@ -1,13 +1,17 @@
 # See this app in action: [https://training-tracker-gndec.vercel.app/home](https://training-tracker-gndec.vercel.app/home)
-## Use demo credentials:
-Super Admin: username: Tr000, password: password
 
-User: username: 2104181, password: sam210902
+# Steps to push for production
 
+1. change VITE_ENV from development to production in client/.env.production
+2. in root direcotry `docker compose up`
 
-run following commands:
+# TODO
 
-```bash
+1. add clickable breadcrumbs for navigation (easy)
+2. setup ci/cd
+3. better state management
+
+```
 git clone https://github.com/whogurdevil/training-tracker-gndec
 cd training-tracker-gndec
 
