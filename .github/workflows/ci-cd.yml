@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: kat
+    runs-on: self.hosted
     steps:
       - name: stop the server if running
         run: echo test >> running.txt
