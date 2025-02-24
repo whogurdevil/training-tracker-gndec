@@ -1,4 +1,5 @@
-# See this app in action: [https://training-tracker-gndec.vercel.app/home](https://training-tracker-gndec.vercel.app/home)
+# See this app in action:
+ [https://training-tracker-gndec.vercel.app/home](https://training-tracker-gndec.vercel.app/home)
 
 # Steps to push for production
 
