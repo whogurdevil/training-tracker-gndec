@@ -11,7 +11,7 @@
 1. add clickable breadcrumbs for navigation (easy)
 2. setup ci/cd
 3. better state management
-
+ 
 ```
 git clone https://github.com/whogurdevil/training-tracker-gndec
 cd training-tracker-gndec
