@@ -5,7 +5,7 @@
 
 1. change VITE_ENV from development to production in client/.env.production
 2. in root direcotry `docker compose up`
-
+ 
 # TODO
 
 1. add clickable breadcrumbs for navigation (easy)
